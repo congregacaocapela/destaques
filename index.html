@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joias</title>
+    <title>Joias Espirituais</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,11 +39,6 @@
             transform: translateX(0);
             opacity: 1;
         }
-        /* Estilo para desabilitar elementos */
-        .disabled-form fieldset {
-            pointer-events: none;
-            opacity: 0.5;
-        }
         /* Estilo para capítulo com destaque */
         .has-highlight {
             background-color: #4a6da7;
@@ -61,12 +56,12 @@
 </head>
 <body class="text-gray-800">
 
-    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-6xl">
-        <div class="bg-white shadow-md min-h-screen">
+    <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl">
+        <div class="bg-white shadow-md min-h-screen rounded-lg">
 
             <!-- Navegação com Abas -->
-            <nav class="border-b sticky top-0 bg-white z-10">
-                <div class="px-8 py-3 flex space-x-8">
+            <nav class="border-b sticky top-0 bg-white z-10 rounded-t-lg">
+                <div class="px-4 sm:px-8 py-3 flex justify-center sm:justify-start space-x-6 sm:space-x-8">
                     <a href="#" id="tab-livros" class="text-sm font-semibold pb-3 tab-active flex items-center">
                         <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
                         DESTAQUES
@@ -90,37 +85,39 @@
             </main>
             
             <!-- Visualização Adicionar Destaques -->
-            <div id="view-destaques" class="hidden p-4 sm:p-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Adicionar Destaque</h2>
-                <form id="form-destaque" class="space-y-4 max-w-lg disabled-form">
-                    <fieldset>
-                        <div>
-                            <label for="input-autor" class="block text-sm font-medium text-gray-700">Seu Nome</label>
-                            <input type="text" id="input-autor" name="autor" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                        </div>
-                        <div>
-                            <label for="select-livro" class="block text-sm font-medium text-gray-700">Livro</label>
-                            <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
+            <div id="view-destaques" class="hidden p-4 sm:p-8 flex flex-col items-center">
+                <div class="w-full max-w-lg">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Adicionar Destaque</h2>
+                    <form id="form-destaque" class="space-y-4">
+                        <fieldset>
                             <div>
-                                <label for="input-capitulo" class="block text-sm font-medium text-gray-700">Capítulo</label>
-                                <input type="number" id="input-capitulo" name="capitulo" min="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <label for="input-autor" class="block text-sm font-medium text-gray-700">Seu Nome</label>
+                                <input type="text" id="input-autor" name="autor" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                             </div>
                             <div>
-                                <label for="input-versiculo" class="block text-sm font-medium text-gray-700">Versículo</label>
-                                <input type="number" id="input-versiculo" name="versiculo" min="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <label for="select-livro" class="block text-sm font-medium text-gray-700">Livro</label>
+                                <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
                             </div>
-                        </div>
-                        <div>
-                            <label for="textarea-destaque" class="block text-sm font-medium text-gray-700">Destaque</label>
-                            <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
-                        </div>
-                        <div>
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Destaque</button>
-                        </div>
-                    </fieldset>
-                </form>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="input-capitulo" class="block text-sm font-medium text-gray-700">Capítulo</label>
+                                    <input type="number" id="input-capitulo" name="capitulo" min="1" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label for="input-versiculo" class="block text-sm font-medium text-gray-700">Versículo(s)</label>
+                                    <input type="text" id="input-versiculo" name="versiculo" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 5 ou 5,6 ou 5-7" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="textarea-destaque" class="block text-sm font-medium text-gray-700">Destaque</label>
+                                <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Destaque</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
             </div>
 
             <!-- Visualização dos Capítulos (Grid de números) -->
@@ -131,7 +128,7 @@
                 </header>
                 <div class="p-4 sm:p-8">
                     <h3 class="font-semibold text-gray-700 mb-4">Capítulos</h3>
-                    <div id="grid-capitulos" class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2"></div>
+                    <div id="grid-capitulos" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-2"></div>
                 </div>
             </div>
 
@@ -151,7 +148,7 @@
     
     <!-- Modal de Exclusão -->
     <div id="delete-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40 modal-overlay">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">Confirmar Exclusão</h3>
                 <div class="mt-2 px-7 py-3">
@@ -172,7 +169,6 @@
     <script type="module">
         // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, where, getDocs, setLogLevel, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Configuração do Firebase fornecida pelo usuário
@@ -188,12 +184,12 @@
 
         // Inicialização do Firebase
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const appId = firebaseConfig.appId || 'default-app-id';
         setLogLevel('debug');
 
-        let userId = null;
         let docIdParaDeletar = null;
+        const publicCollectionPath = `/artifacts/${appId}/public/data/destaques`;
 
         const biblia = {
             "Antigo Testamento": {"Gênesis": 50, "Êxodo": 40, "Levítico": 27, "Números": 36, "Deuteronômio": 34, "Josué": 24, "Juízes": 21, "Rute": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reis": 22, "2 Reis": 25, "1 Crônicas": 29, "2 Crônicas": 36, "Esdras": 10, "Neemias": 13, "Ester": 10, "Jó": 42, "Salmos": 150, "Provérbios": 31, "Eclesiastes": 12, "Cântico de Salomão": 8, "Isaías": 66, "Jeremias": 52, "Lamentações": 5, "Ezequiel": 48, "Daniel": 12, "Oseias": 14, "Joel": 3, "Amós": 9, "Obadias": 1, "Jonas": 4, "Miqueias": 7, "Naum": 3, "Habacuque": 3, "Sofonias": 3, "Ageu": 2, "Zacarias": 14, "Malaquias": 4},
@@ -217,7 +213,7 @@
         const deleteModal = document.getElementById('delete-modal');
         const passwordError = document.getElementById('password-error');
 
-        function showToast(message, isSuccess = true, showReload = false) {
+        function showToast(message, isSuccess = true) {
             const toastContainer = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const bgColor = isSuccess ? 'bg-green-500' : 'bg-red-500';
@@ -227,23 +223,13 @@
             messageSpan.textContent = message;
             toast.appendChild(messageSpan);
 
-            if (showReload) {
-                const reloadButton = document.createElement('button');
-                reloadButton.textContent = 'Recarregar';
-                reloadButton.className = 'ml-4 bg-white/20 hover:bg-white/30 text-white font-bold py-1 px-3 rounded';
-                reloadButton.onclick = () => location.reload();
-                toast.appendChild(reloadButton);
-            }
-
             toastContainer.appendChild(toast);
             setTimeout(() => { toast.classList.add('show'); }, 10);
 
-            if (!showReload) {
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    toast.addEventListener('transitionend', () => toast.remove());
-                }, 3000);
-            }
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
         }
 
         function esconderTudo() { Object.values(views).forEach(view => view.classList.add('hidden')); }
@@ -261,52 +247,70 @@
 
         async function salvarDestaque(event) {
             event.preventDefault();
-            if (!userId) {
-                showToast("Erro: Usuário não autenticado.", false);
-                return;
-            }
             const formData = new FormData(formDestaque);
             const destaqueData = {
                 autor: formData.get('autor'),
                 livro: formData.get('livro'),
                 capitulo: parseInt(formData.get('capitulo'), 10),
-                versiculo: parseInt(formData.get('versiculo'), 10),
+                versiculo: formData.get('versiculo'), // Salva como string
                 texto: formData.get('destaque'),
                 createdAt: new Date()
             };
 
             try {
-                const collectionPath = `destaques/${userId}/items`;
-                await addDoc(collection(db, collectionPath), destaqueData);
+                await addDoc(collection(db, publicCollectionPath), destaqueData);
                 showToast("Destaque salvo com sucesso!");
                 formDestaque.reset();
+                popularLivros(); // Atualiza a visualização dos livros
             } catch (e) {
                 console.error("Erro ao adicionar documento: ", e);
                 showToast("Falha ao salvar o destaque.", false);
             }
         }
 
-        function popularLivros() {
+        async function popularLivros() {
             const containerAntigo = document.querySelector('#antigo-testamento .grid');
             const containerNovo = document.querySelector('#novo-testamento .grid');
+            containerAntigo.innerHTML = '<p class="text-gray-500 col-span-full">Carregando livros...</p>';
+            containerNovo.innerHTML = '';
+
+            const livrosComDestaque = new Set();
+            try {
+                const querySnapshot = await getDocs(collection(db, publicCollectionPath));
+                querySnapshot.forEach((doc) => {
+                    livrosComDestaque.add(doc.data().livro);
+                });
+            } catch(e) {
+                console.error("Erro ao buscar destaques dos livros: ", e);
+                showToast("Não foi possível verificar os destaques dos livros.", false);
+            }
+
             containerAntigo.innerHTML = '';
             containerNovo.innerHTML = '';
-            const criarBotao = (nome, caps) => {
+
+            const criarBotao = (nome, caps, temDestaque) => {
                 const div = document.createElement('div');
                 div.textContent = nome;
-                div.className = 'bg-custom-blue hover:bg-custom-blue-dark text-white font-medium p-4 text-center cursor-pointer transition-colors duration-200';
+                let classes = 'font-medium p-4 text-center cursor-pointer transition-colors duration-200';
+                if (temDestaque) {
+                    classes += ' bg-custom-blue hover:bg-custom-blue-dark text-white';
+                } else {
+                    classes += ' bg-white hover:bg-gray-100 text-gray-800';
+                }
+                div.className = classes;
                 div.onclick = () => mostrarCapitulos(nome, caps);
                 return div;
             };
-            Object.entries(biblia["Antigo Testamento"]).forEach(([l, c]) => containerAntigo.appendChild(criarBotao(l, c)));
-            Object.entries(biblia["Novo Testamento"]).forEach(([l, c]) => containerNovo.appendChild(criarBotao(l, c)));
+
+            Object.entries(biblia["Antigo Testamento"]).forEach(([livro, caps]) => {
+                containerAntigo.appendChild(criarBotao(livro, caps, livrosComDestaque.has(livro)));
+            });
+            Object.entries(biblia["Novo Testamento"]).forEach(([livro, caps]) => {
+                containerNovo.appendChild(criarBotao(livro, caps, livrosComDestaque.has(livro)));
+            });
         }
 
         async function mostrarCapitulos(nomeLivro, numCapitulos) {
-            if (!userId) {
-                showToast("Aguarde, autenticando...", false);
-                return;
-            }
             estadoAtual.livro = nomeLivro;
             esconderTudo();
             views.capitulos.classList.remove('hidden');
@@ -317,8 +321,7 @@
 
             const capitulosComDestaque = new Set();
             try {
-                const collectionPath = `destaques/${userId}/items`;
-                const q = query(collection(db, collectionPath), where("livro", "==", nomeLivro));
+                const q = query(collection(db, publicCollectionPath), where("livro", "==", nomeLivro));
                 const querySnapshot = await getDocs(q);
                 querySnapshot.forEach((doc) => {
                     capitulosComDestaque.add(doc.data().capitulo);
@@ -348,15 +351,15 @@
         }
         
         async function deletarDestaque(docId) {
-            if (!userId || !docId) {
-                showToast("Erro ao deletar: ID do usuário ou do documento ausente.", false);
+            if (!docId) {
+                showToast("Erro ao deletar: ID do documento ausente.", false);
                 return;
             }
             try {
-                const collectionPath = `destaques/${userId}/items`;
-                await deleteDoc(doc(db, collectionPath, docId));
+                await deleteDoc(doc(db, publicCollectionPath, docId));
                 showToast("Destaque removido.");
-                mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
+                await mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
+                popularLivros(); // Atualiza a visualização dos livros
             } catch (error) {
                 console.error("Erro ao deletar destaque: ", error);
                 showToast("Falha ao remover o destaque.", false);
@@ -373,19 +376,18 @@
             const container = document.getElementById('destaques-container');
             container.innerHTML = '<p class="text-gray-500">Carregando destaques...</p>';
 
-            if (!userId) {
-                container.innerHTML = '<p class="text-red-500">Erro de autenticação. Não é possível carregar destaques.</p>';
-                return;
-            }
-
             try {
-                const collectionPath = `destaques/${userId}/items`;
-                const q = query(collection(db, collectionPath), where("livro", "==", nomeLivro), where("capitulo", "==", numCapitulo));
+                const q = query(collection(db, publicCollectionPath), where("livro", "==", nomeLivro), where("capitulo", "==", numCapitulo));
                 const querySnapshot = await getDocs(q);
                 const destaquesDoCapitulo = [];
                 querySnapshot.forEach((doc) => destaquesDoCapitulo.push({ id: doc.id, ...doc.data() }));
 
-                destaquesDoCapitulo.sort((a, b) => a.versiculo - b.versiculo);
+                // Ordena pelo primeiro número do versículo
+                destaquesDoCapitulo.sort((a, b) => {
+                    const firstNumA = parseInt(String(a.versiculo).split(/[,-]/)[0], 10);
+                    const firstNumB = parseInt(String(b.versiculo).split(/[,-]/)[0], 10);
+                    return firstNumA - firstNumB;
+                });
 
                 container.innerHTML = '';
                 if (destaquesDoCapitulo.length > 0) {
@@ -394,7 +396,7 @@
                         card.className = 'border border-gray-200 rounded-lg p-4 bg-gray-50 flex justify-between items-start';
                         card.innerHTML = `
                             <div>
-                                <p class="font-bold text-blue-600">Versículo ${versiculo}</p>
+                                <p class="font-bold text-blue-600">Versículo(s) ${versiculo}</p>
                                 <p class="mt-2 text-gray-700 whitespace-pre-wrap">${texto}</p>
                                 <p class="text-xs text-gray-500 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
                             </div>
@@ -422,6 +424,7 @@
             if (abaAtiva === 'livros') {
                 views.livros.classList.remove('hidden');
                 tabs.livros.classList.replace('tab-inactive', 'tab-active');
+                popularLivros(); // Atualiza a visualização dos livros ao mudar para a aba
             } else if (abaAtiva === 'destaques') {
                 views.destaques.classList.remove('hidden');
                 tabs.destaques.classList.replace('tab-inactive', 'tab-active');
@@ -449,28 +452,8 @@
                 passwordError.classList.remove('hidden');
             }
         }
-
-        async function inicializarApp() {
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Falha na autenticação:", error);
-                showToast("Falha na autenticação.", false, true);
-            }
-        }
-
-        onAuthStateChanged(auth, user => {
-            if (user) {
-                userId = user.uid;
-                formDestaque.classList.remove('disabled-form');
-            } else {
-                userId = null;
-                formDestaque.classList.add('disabled-form');
-            }
-        });
         
         document.addEventListener('DOMContentLoaded', () => {
-            inicializarApp();
             popularLivros();
             popularSelectLivros();
 
