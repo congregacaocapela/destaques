@@ -67,6 +67,7 @@
                         DESTAQUES
                     </a>
                     <a href="#" id="tab-destaques" class="text-sm font-semibold pb-3 tab-inactive">ADICIONAR DESTAQUES</a>
+                    <a href="#" id="tab-pesquisar" class="text-sm font-semibold pb-3 tab-inactive">PESQUISAR</a>
                 </div>
             </nav>
 
@@ -117,6 +118,20 @@
                             </div>
                         </fieldset>
                     </form>
+                </div>
+            </div>
+
+            <!-- Visualização de Pesquisa -->
+            <div id="view-pesquisar" class="hidden p-4 sm:p-8 flex flex-col items-center">
+                 <div class="w-full max-w-2xl">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Pesquisar Destaques</h2>
+                    <form id="form-pesquisa" class="flex gap-2 mb-8">
+                        <input type="search" id="input-pesquisa" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite uma palavra-chave...">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Buscar</button>
+                    </form>
+                    <div id="container-resultados" class="space-y-4">
+                        <!-- Resultados da pesquisa aparecerão aqui -->
+                    </div>
                 </div>
             </div>
 
@@ -201,14 +216,17 @@
         const views = {
             livros: document.getElementById('view-livros'),
             destaques: document.getElementById('view-destaques'),
+            pesquisar: document.getElementById('view-pesquisar'),
             capitulos: document.getElementById('view-capitulos'),
             conteudo: document.getElementById('view-conteudo'),
         };
         const tabs = {
             livros: document.getElementById('tab-livros'),
             destaques: document.getElementById('tab-destaques'),
+            pesquisar: document.getElementById('tab-pesquisar'),
         };
         const formDestaque = document.getElementById('form-destaque');
+        const formPesquisa = document.getElementById('form-pesquisa');
         const selectLivro = document.getElementById('select-livro');
         const deleteModal = document.getElementById('delete-modal');
         const passwordError = document.getElementById('password-error');
@@ -252,7 +270,7 @@
                 autor: formData.get('autor'),
                 livro: formData.get('livro'),
                 capitulo: parseInt(formData.get('capitulo'), 10),
-                versiculo: formData.get('versiculo'), // Salva como string
+                versiculo: formData.get('versiculo'),
                 texto: formData.get('destaque'),
                 createdAt: new Date()
             };
@@ -261,7 +279,7 @@
                 await addDoc(collection(db, publicCollectionPath), destaqueData);
                 showToast("Destaque salvo com sucesso!");
                 formDestaque.reset();
-                popularLivros(); // Atualiza a visualização dos livros
+                popularLivros();
             } catch (e) {
                 console.error("Erro ao adicionar documento: ", e);
                 showToast("Falha ao salvar o destaque.", false);
@@ -358,12 +376,41 @@
             try {
                 await deleteDoc(doc(db, publicCollectionPath, docId));
                 showToast("Destaque removido.");
-                await mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
-                popularLivros(); // Atualiza a visualização dos livros
+                if (document.getElementById('view-conteudo').classList.contains('hidden')) {
+                    // Se estiver na view de pesquisa, refaz a pesquisa
+                    document.getElementById('form-pesquisa').requestSubmit();
+                } else {
+                    // Se estiver na view de conteúdo, atualiza o capítulo
+                    await mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
+                }
+                popularLivros();
             } catch (error) {
                 console.error("Erro ao deletar destaque: ", error);
                 showToast("Falha ao remover o destaque.", false);
             }
+        }
+
+        function criarCardDestaque(destaque) {
+            const { id, versiculo, texto, autor, livro, capitulo } = destaque;
+            const card = document.createElement('div');
+            card.className = 'border border-gray-200 rounded-lg p-4 bg-gray-50 flex justify-between items-start';
+            
+            // Adiciona a referência do livro e capítulo para o card de pesquisa
+            const isSearchView = !document.getElementById('view-pesquisar').classList.contains('hidden');
+            const referencia = isSearchView ? `<p class="font-semibold text-gray-600 text-sm mb-2">${livro} ${capitulo}</p>` : '';
+
+            card.innerHTML = `
+                <div>
+                    ${referencia}
+                    <p class="font-bold text-blue-600">Versículo(s) ${versiculo}</p>
+                    <p class="mt-2 text-gray-700 whitespace-pre-wrap">${texto}</p>
+                    <p class="text-xs text-gray-500 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
+                </div>
+                <button data-doc-id="${id}" class="delete-btn text-gray-400 hover:text-red-500 p-1 ml-4 flex-shrink-0">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
+                </button>
+            `;
+            return card;
         }
 
         async function mostrarConteudo(nomeLivro, numCapitulo) {
@@ -382,7 +429,6 @@
                 const destaquesDoCapitulo = [];
                 querySnapshot.forEach((doc) => destaquesDoCapitulo.push({ id: doc.id, ...doc.data() }));
 
-                // Ordena pelo primeiro número do versículo
                 destaquesDoCapitulo.sort((a, b) => {
                     const firstNumA = parseInt(String(a.versiculo).split(/[,-]/)[0], 10);
                     const firstNumB = parseInt(String(b.versiculo).split(/[,-]/)[0], 10);
@@ -391,19 +437,8 @@
 
                 container.innerHTML = '';
                 if (destaquesDoCapitulo.length > 0) {
-                    destaquesDoCapitulo.forEach(({ id, versiculo, texto, autor }) => {
-                        const card = document.createElement('div');
-                        card.className = 'border border-gray-200 rounded-lg p-4 bg-gray-50 flex justify-between items-start';
-                        card.innerHTML = `
-                            <div>
-                                <p class="font-bold text-blue-600">Versículo(s) ${versiculo}</p>
-                                <p class="mt-2 text-gray-700 whitespace-pre-wrap">${texto}</p>
-                                <p class="text-xs text-gray-500 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
-                            </div>
-                            <button data-doc-id="${id}" class="delete-btn text-gray-400 hover:text-red-500 p-1 ml-4 flex-shrink-0">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
-                            </button>
-                        `;
+                    destaquesDoCapitulo.forEach(destaque => {
+                        const card = criarCardDestaque(destaque);
                         container.appendChild(card);
                     });
                     container.querySelectorAll('.delete-btn').forEach(button => {
@@ -417,6 +452,49 @@
                 container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar os destaques.</p>';
             }
         }
+        
+        async function pesquisarDestaques(event) {
+            event.preventDefault();
+            const termo = document.getElementById('input-pesquisa').value.toLowerCase();
+            const container = document.getElementById('container-resultados');
+            container.innerHTML = '<p class="text-gray-500">Pesquisando...</p>';
+
+            if (!termo) {
+                container.innerHTML = '';
+                return;
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, publicCollectionPath));
+                const todosDestaques = [];
+                querySnapshot.forEach((doc) => {
+                    todosDestaques.push({ id: doc.id, ...doc.data() });
+                });
+
+                const resultados = todosDestaques.filter(d => {
+                    const texto = d.texto ? d.texto.toLowerCase() : '';
+                    const autor = d.autor ? d.autor.toLowerCase() : '';
+                    return texto.includes(termo) || autor.includes(termo);
+                });
+
+                container.innerHTML = '';
+                if (resultados.length > 0) {
+                    resultados.forEach(destaque => {
+                         const card = criarCardDestaque(destaque);
+                         container.appendChild(card);
+                    });
+                    container.querySelectorAll('.delete-btn').forEach(button => {
+                        button.addEventListener('click', () => abrirModalDelecao(button.dataset.docId));
+                    });
+                } else {
+                    container.innerHTML = `<p class="text-gray-500">Nenhum resultado encontrado para "${termo}".</p>`;
+                }
+
+            } catch(e) {
+                console.error("Erro ao pesquisar: ", e);
+                container.innerHTML = `<p class="text-red-500">Ocorreu um erro ao realizar a pesquisa.</p>`;
+            }
+        }
 
         function mudarAba(abaAtiva) {
             esconderTudo();
@@ -424,10 +502,13 @@
             if (abaAtiva === 'livros') {
                 views.livros.classList.remove('hidden');
                 tabs.livros.classList.replace('tab-inactive', 'tab-active');
-                popularLivros(); // Atualiza a visualização dos livros ao mudar para a aba
+                popularLivros();
             } else if (abaAtiva === 'destaques') {
                 views.destaques.classList.remove('hidden');
                 tabs.destaques.classList.replace('tab-inactive', 'tab-active');
+            } else if (abaAtiva === 'pesquisar') {
+                views.pesquisar.classList.remove('hidden');
+                tabs.pesquisar.classList.replace('tab-inactive', 'tab-active');
             }
         }
         
@@ -458,8 +539,10 @@
             popularSelectLivros();
 
             formDestaque.addEventListener('submit', salvarDestaque);
+            formPesquisa.addEventListener('submit', pesquisarDestaques);
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
             tabs.destaques.addEventListener('click', (e) => { e.preventDefault(); mudarAba('destaques'); });
+            tabs.pesquisar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisar'); });
             document.getElementById('btn-voltar-livros').addEventListener('click', () => mudarAba('livros'));
             document.getElementById('btn-voltar-capitulos').addEventListener('click', () => {
                 const livro = estadoAtual.livro;
@@ -467,7 +550,6 @@
                 mostrarCapitulos(livro, numCapitulos);
             });
             
-            // Event Listeners do Modal
             document.getElementById('cancel-delete-btn').addEventListener('click', fecharModalDelecao);
             document.getElementById('confirm-delete-btn').addEventListener('click', confirmarDelecao);
             deleteModal.addEventListener('click', (e) => {
