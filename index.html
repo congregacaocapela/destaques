@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bíblia Sagrada</title>
+    <title>Joias</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,6 +53,10 @@
         .has-highlight:hover {
             background-color: #3e5a8a;
         }
+        /* Estilos para o Modal */
+        .modal-overlay {
+            transition: opacity 0.2s ease-in-out;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -90,6 +94,10 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Adicionar Destaque</h2>
                 <form id="form-destaque" class="space-y-4 max-w-lg disabled-form">
                     <fieldset>
+                        <div>
+                            <label for="input-autor" class="block text-sm font-medium text-gray-700">Seu Nome</label>
+                            <input type="text" id="input-autor" name="autor" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
                         <div>
                             <label for="select-livro" class="block text-sm font-medium text-gray-700">Livro</label>
                             <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
@@ -140,6 +148,25 @@
 
     <!-- Container para as notificações (Toasts) -->
     <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+    
+    <!-- Modal de Exclusão -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-40 modal-overlay">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Confirmar Exclusão</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500 mb-4">Para excluir este destaque, por favor, insira a senha.</p>
+                    <input type="password" id="delete-password" placeholder="Senha" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <p id="password-error" class="text-red-500 text-sm mt-2 hidden">Senha incorreta.</p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="cancel-delete-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 mr-2">Cancelar</button>
+                    <button id="confirm-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -160,14 +187,13 @@
         };
 
         // Inicialização do Firebase
-        console.log("Usando a seguinte configuração do Firebase:", firebaseConfig);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = firebaseConfig.appId;
         setLogLevel('debug');
 
         let userId = null;
+        let docIdParaDeletar = null;
 
         const biblia = {
             "Antigo Testamento": {"Gênesis": 50, "Êxodo": 40, "Levítico": 27, "Números": 36, "Deuteronômio": 34, "Josué": 24, "Juízes": 21, "Rute": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reis": 22, "2 Reis": 25, "1 Crônicas": 29, "2 Crônicas": 36, "Esdras": 10, "Neemias": 13, "Ester": 10, "Jó": 42, "Salmos": 150, "Provérbios": 31, "Eclesiastes": 12, "Cântico de Salomão": 8, "Isaías": 66, "Jeremias": 52, "Lamentações": 5, "Ezequiel": 48, "Daniel": 12, "Oseias": 14, "Joel": 3, "Amós": 9, "Obadias": 1, "Jonas": 4, "Miqueias": 7, "Naum": 3, "Habacuque": 3, "Sofonias": 3, "Ageu": 2, "Zacarias": 14, "Malaquias": 4},
@@ -188,6 +214,8 @@
         };
         const formDestaque = document.getElementById('form-destaque');
         const selectLivro = document.getElementById('select-livro');
+        const deleteModal = document.getElementById('delete-modal');
+        const passwordError = document.getElementById('password-error');
 
         function showToast(message, isSuccess = true, showReload = false) {
             const toastContainer = document.getElementById('toast-container');
@@ -239,6 +267,7 @@
             }
             const formData = new FormData(formDestaque);
             const destaqueData = {
+                autor: formData.get('autor'),
                 livro: formData.get('livro'),
                 capitulo: parseInt(formData.get('capitulo'), 10),
                 versiculo: parseInt(formData.get('versiculo'), 10),
@@ -360,22 +389,23 @@
 
                 container.innerHTML = '';
                 if (destaquesDoCapitulo.length > 0) {
-                    destaquesDoCapitulo.forEach(({ id, versiculo, texto }) => {
+                    destaquesDoCapitulo.forEach(({ id, versiculo, texto, autor }) => {
                         const card = document.createElement('div');
                         card.className = 'border border-gray-200 rounded-lg p-4 bg-gray-50 flex justify-between items-start';
                         card.innerHTML = `
                             <div>
                                 <p class="font-bold text-blue-600">Versículo ${versiculo}</p>
                                 <p class="mt-2 text-gray-700 whitespace-pre-wrap">${texto}</p>
+                                <p class="text-xs text-gray-500 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
                             </div>
-                            <button data-doc-id="${id}" class="delete-btn text-gray-400 hover:text-red-500 p-1 ml-4">
+                            <button data-doc-id="${id}" class="delete-btn text-gray-400 hover:text-red-500 p-1 ml-4 flex-shrink-0">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
                             </button>
                         `;
                         container.appendChild(card);
                     });
                     container.querySelectorAll('.delete-btn').forEach(button => {
-                        button.addEventListener('click', () => deletarDestaque(button.dataset.docId));
+                        button.addEventListener('click', () => abrirModalDelecao(button.dataset.docId));
                     });
                 } else {
                     container.innerHTML = '<p class="text-gray-500">Nenhum destaque salvo para este capítulo.</p>';
@@ -397,6 +427,28 @@
                 tabs.destaques.classList.replace('tab-inactive', 'tab-active');
             }
         }
+        
+        function abrirModalDelecao(docId) {
+            docIdParaDeletar = docId;
+            deleteModal.classList.remove('hidden');
+        }
+
+        function fecharModalDelecao() {
+            deleteModal.classList.add('hidden');
+            document.getElementById('delete-password').value = '';
+            passwordError.classList.add('hidden');
+            docIdParaDeletar = null;
+        }
+
+        function confirmarDelecao() {
+            const password = document.getElementById('delete-password').value;
+            if (password === 'xetays2468') {
+                deletarDestaque(docIdParaDeletar);
+                fecharModalDelecao();
+            } else {
+                passwordError.classList.remove('hidden');
+            }
+        }
 
         async function inicializarApp() {
             try {
@@ -408,13 +460,10 @@
         }
 
         onAuthStateChanged(auth, user => {
-            console.log("Auth State Changed. User:", user);
             if (user) {
-                console.log("Usuário autenticado:", user.uid);
                 userId = user.uid;
                 formDestaque.classList.remove('disabled-form');
             } else {
-                console.log("Nenhum usuário logado.");
                 userId = null;
                 formDestaque.classList.add('disabled-form');
             }
@@ -433,6 +482,15 @@
                 const livro = estadoAtual.livro;
                 const numCapitulos = biblia["Antigo Testamento"][livro] || biblia["Novo Testamento"][livro];
                 mostrarCapitulos(livro, numCapitulos);
+            });
+            
+            // Event Listeners do Modal
+            document.getElementById('cancel-delete-btn').addEventListener('click', fecharModalDelecao);
+            document.getElementById('confirm-delete-btn').addEventListener('click', confirmarDelecao);
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) {
+                    fecharModalDelecao();
+                }
             });
         });
     </script>
