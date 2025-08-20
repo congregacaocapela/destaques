@@ -73,6 +73,14 @@
             background-color: #3b82f6; /* bg-blue-600 */
             color: white;
         }
+        /* Oculta a barra de rolagem */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -82,18 +90,18 @@
 
             <!-- Navegação com Abas -->
             <nav class="border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10 rounded-t-lg">
-                <div class="px-4 sm:px-8 py-3 flex justify-center sm:justify-start space-x-4 sm:space-x-6">
-                    <a href="#" id="tab-livros" class="text-sm font-semibold pb-3 tab-active flex items-center">
+                <div class="px-4 py-3 flex items-center space-x-5 overflow-x-auto whitespace-nowrap no-scrollbar">
+                    <a href="#" id="tab-livros" class="text-sm font-semibold pb-3 tab-active flex-shrink-0 flex items-center">
                         <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
                         JOIAS
                     </a>
-                    <a href="#" id="tab-pesquisas" class="text-sm font-semibold pb-3 tab-inactive flex items-center">
+                    <a href="#" id="tab-pesquisas" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0 flex items-center">
                         <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
                         PESQUISAS
                     </a>
-                    <a href="#" id="tab-adicionar-destaque" class="text-sm font-semibold pb-3 tab-inactive flex items-center">ADICIONAR JOIA</a>
-                    <a href="#" id="tab-adicionar-pesquisa" class="text-sm font-semibold pb-3 tab-inactive flex items-center">ADICIONAR PESQUISA</a>
-                    <a href="#" id="tab-pesquisar" class="text-sm font-semibold pb-3 tab-inactive flex items-center ml-auto">
+                    <a href="#" id="tab-adicionar-destaque" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">ADD. JOIA</a>
+                    <a href="#" id="tab-adicionar-pesquisa" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">ADD. PESQUISA</a>
+                    <a href="#" id="tab-pesquisar" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
                     </a>
                 </div>
