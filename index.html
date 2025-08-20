@@ -566,6 +566,23 @@
             const textoBiblicoHTML = textoBiblico
                 ? `<blockquote class="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 bg-gray-50 dark:bg-gray-700/50 rounded-r-lg"><p class="italic text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${textoBiblico}</p></blockquote>`
                 : '';
+            
+            const anotacoesId = `anotacoes-${id}`;
+            const toggleBtnId = `toggle-btn-${id}`;
+            let anotacoesHTML = '';
+            const MAX_LENGTH = 250; // Limite de caracteres para truncar
+
+            if (anotacoes && anotacoes.length > MAX_LENGTH) {
+                const textoTruncado = anotacoes.substring(0, MAX_LENGTH) + '...';
+                anotacoesHTML = `
+                    <div>
+                        <p id="${anotacoesId}" class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${textoTruncado}</p>
+                        <button id="${toggleBtnId}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mt-2">Mostrar tudo</button>
+                    </div>
+                `;
+            } else {
+                anotacoesHTML = `<p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${anotacoes || ''}</p>`;
+            }
 
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
@@ -581,9 +598,27 @@
                 </div>
                 ${tagsHTML}
                 ${textoBiblicoHTML}
-                <p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${anotacoes}</p>
+                ${anotacoesHTML}
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">Pesquisa de: ${autor || 'Anônimo'}</p>
             `;
+
+            if (anotacoes && anotacoes.length > MAX_LENGTH) {
+                const toggleBtn = card.querySelector(`#${toggleBtnId}`);
+                const anotacoesP = card.querySelector(`#${anotacoesId}`);
+                let isTruncated = true;
+
+                toggleBtn.addEventListener('click', () => {
+                    isTruncated = !isTruncated;
+                    if (isTruncated) {
+                        anotacoesP.textContent = anotacoes.substring(0, MAX_LENGTH) + '...';
+                        toggleBtn.textContent = 'Mostrar tudo';
+                    } else {
+                        anotacoesP.textContent = anotacoes;
+                        toggleBtn.textContent = 'Mostrar menos';
+                    }
+                });
+            }
+
             return card;
         }
 
