@@ -559,6 +559,23 @@
             const isSearchView = !document.getElementById('view-pesquisar').classList.contains('hidden');
             const referencia = isSearchView ? `<p class="font-semibold text-gray-600 dark:text-gray-300 text-sm mb-2">${livro} ${capitulo}</p>` : '';
 
+            const textoId = `texto-${id}`;
+            const toggleBtnId = `toggle-btn-texto-${id}`;
+            let textoHTML = '';
+            const MAX_LENGTH = 250; 
+
+            if (texto && texto.length > MAX_LENGTH) {
+                const textoTruncado = texto.substring(0, MAX_LENGTH) + '...';
+                textoHTML = `
+                    <div>
+                        <p id="${textoId}" class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${textoTruncado}</p>
+                        <button id="${toggleBtnId}" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mt-2">Mostrar tudo</button>
+                    </div>
+                `;
+            } else {
+                textoHTML = `<p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${texto || ''}</p>`;
+            }
+
             card.innerHTML = `
                 <div class="flex justify-between items-start mb-2">
                     <p class="font-bold text-blue-600 dark:text-blue-400">Versículo(s) ${versiculo}</p>
@@ -576,10 +593,28 @@
                 </div>
                 <div>
                     ${referencia}
-                    <p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${texto}</p>
+                    ${textoHTML}
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
                 </div>
             `;
+
+            if (texto && texto.length > MAX_LENGTH) {
+                const toggleBtn = card.querySelector(`#${toggleBtnId}`);
+                const textoP = card.querySelector(`#${textoId}`);
+                let isTruncated = true;
+
+                toggleBtn.addEventListener('click', () => {
+                    isTruncated = !isTruncated;
+                    if (isTruncated) {
+                        textoP.textContent = texto.substring(0, MAX_LENGTH) + '...';
+                        toggleBtn.textContent = 'Mostrar tudo';
+                    } else {
+                        textoP.textContent = texto;
+                        toggleBtn.textContent = 'Mostrar menos';
+                    }
+                });
+            }
+
             return card;
         }
 
