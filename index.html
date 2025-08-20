@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joias Espirituais</title>
+    <title>Estudo Pessoal</title>
     <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/pw/AP1GczP6O7T9Df_GZb1K2fuF1p49BlTc8wY3BuChHezCEFbr_knqISjsKGQp9ham81jh1en611SYYgNWsTNQthqDPZ0PvRac69ikrHRZ9X0vQOCifx2fPvbLm9NkPjEVPArzDG7x-68dKx33RAnHhc0qx0SeaA=w898-h898-s-no-gm?authuser=0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -362,6 +362,24 @@
             }, 3000);
         }
 
+        function copiarTexto(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Texto copiado!");
+            } catch (err) {
+                console.error('Falha ao copiar', err);
+                showToast("Falha ao copiar.", false);
+            }
+            document.body.removeChild(textArea);
+        }
+
         function esconderTudo() { Object.values(views).forEach(view => view.classList.add('hidden')); }
 
         function popularSelectLivros() {
@@ -542,10 +560,13 @@
                 <div class="flex justify-between items-start mb-2">
                     <p class="font-bold text-blue-600 dark:text-blue-400">Versículo(s) ${versiculo}</p>
                     <div class="flex">
-                        <button data-doc-id="${id}" class="edit-btn text-gray-400 hover:text-blue-500 p-1">
+                         <button class="copy-btn text-gray-400 hover:text-green-500 p-1">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
+                        </button>
+                        <button class="edit-btn text-gray-400 hover:text-blue-500 p-1">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
                         </button>
-                        <button data-doc-id="${id}" class="delete-btn text-gray-400 hover:text-red-500 p-1">
+                        <button class="delete-btn text-gray-400 hover:text-red-500 p-1">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
@@ -553,7 +574,7 @@
                 <div>
                     ${referencia}
                     <p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${texto}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">Joia de: ${autor || 'Anônimo'}</p>
                 </div>
             `;
             return card;
@@ -593,10 +614,13 @@
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">${titulo}</h3>
                     <div class="flex">
-                        <button data-doc-id="${id}" class="edit-btn text-gray-400 hover:text-blue-500 p-1">
+                        <button class="copy-btn text-gray-400 hover:text-green-500 p-1">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
+                        </button>
+                        <button class="edit-btn text-gray-400 hover:text-blue-500 p-1">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
                         </button>
-                        <button data-doc-id="${id}" class="delete-btn text-gray-400 hover:text-red-500 p-1">
+                        <button class="delete-btn text-gray-400 hover:text-red-500 p-1">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
                         </button>
                     </div>
@@ -653,10 +677,14 @@
                 if (destaquesDoCapitulo.length > 0) {
                     destaquesDoCapitulo.forEach(destaque => {
                         const card = criarCardDestaque(destaque);
+                        card.querySelector('.copy-btn').addEventListener('click', () => {
+                            const textoParaCopiar = `${destaque.livro} ${destaque.capitulo}:${destaque.versiculo}\n\n${destaque.texto}`;
+                            copiarTexto(textoParaCopiar);
+                        });
+                        card.querySelector('.edit-btn').addEventListener('click', () => iniciarAcao('edit', destaque.id, 'destaques'));
+                        card.querySelector('.delete-btn').addEventListener('click', () => iniciarAcao('delete', destaque.id, 'destaques'));
                         container.appendChild(card);
                     });
-                    container.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', () => iniciarAcao('delete', b.dataset.docId, 'destaques')));
-                    container.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => iniciarAcao('edit', b.dataset.docId, 'destaques')));
                 } else {
                     container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhum destaque salvo para este capítulo.</p>';
                 }
@@ -704,11 +732,24 @@
                 container.innerHTML = '';
                 if (resultados.length > 0) {
                     resultados.forEach(item => {
-                         const card = isPesquisas ? criarCardPesquisa(item) : criarCardDestaque(item);
-                         container.appendChild(card);
+                        const card = isPesquisas ? criarCardPesquisa(item) : criarCardDestaque(item);
+                        card.querySelector('.copy-btn').addEventListener('click', () => {
+                            let textoParaCopiar = '';
+                            if (isPesquisas) {
+                                textoParaCopiar = `${item.titulo}\n\n`;
+                                if (item.textoBiblico) {
+                                    textoParaCopiar += `Texto Bíblico:\n${item.textoBiblico}\n\n`;
+                                }
+                                textoParaCopiar += `Anotações:\n${item.anotacoes}`;
+                            } else {
+                                textoParaCopiar = `${item.livro} ${item.capitulo}:${item.versiculo}\n\n${item.texto}`;
+                            }
+                            copiarTexto(textoParaCopiar);
+                        });
+                        card.querySelector('.edit-btn').addEventListener('click', () => iniciarAcao('edit', item.id, isPesquisas ? 'pesquisas' : 'destaques'));
+                        card.querySelector('.delete-btn').addEventListener('click', () => iniciarAcao('delete', item.id, isPesquisas ? 'pesquisas' : 'destaques'));
+                        container.appendChild(card);
                     });
-                    container.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', () => iniciarAcao('delete', b.dataset.docId, isPesquisas ? 'pesquisas' : 'destaques')));
-                    container.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => iniciarAcao('edit', b.dataset.docId, isPesquisas ? 'pesquisas' : 'destaques')));
                 } else {
                     container.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Nenhum resultado encontrado para "${termo}".</p>`;
                 }
@@ -759,7 +800,7 @@
 
         async function confirmarSenha() {
             const password = document.getElementById('password-input').value;
-            if (password === 'xetays2468') {
+            if (password === 'estudopessoal') {
                 const { type, docId, collection } = acaoPendente;
                 fecharModalSenha();
                 if (type === 'delete') {
@@ -774,7 +815,84 @@
         }
         
         async function abrirFormularioEdicao(docId, collection) {
-            // Implementação da edição para ambos os tipos
+            const collectionPath = collection === 'destaques' ? destaquesCollectionPath : pesquisasCollectionPath;
+            const formEdit = document.getElementById('form-edit');
+            const modalTitle = document.getElementById('edit-modal-title');
+            formEdit.innerHTML = ''; // Limpa o formulário anterior
+
+            try {
+                const docRef = doc(db, collectionPath, docId);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    showToast("Documento não encontrado.", false);
+                    return;
+                }
+
+                const data = docSnap.data();
+                let formHTML = '';
+
+                if (collection === 'destaques') {
+                    modalTitle.textContent = 'Editar Joia';
+                    formHTML = `
+                        <input type="hidden" name="docId" value="${docId}">
+                        <input type="hidden" name="collection" value="destaques">
+                        <div>
+                            <label for="edit-autor" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Seu Nome</label>
+                            <input type="text" id="edit-autor" name="autor" value="${data.autor || ''}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="edit-versiculo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Versículo(s)</label>
+                            <input type="text" id="edit-versiculo" name="versiculo" value="${data.versiculo || ''}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="edit-texto" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Joia</label>
+                            <textarea id="edit-texto" name="texto" rows="6" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>${data.texto || ''}</textarea>
+                        </div>
+                    `;
+                } else { // collection === 'pesquisas'
+                    modalTitle.textContent = 'Editar Pesquisa';
+                    formHTML = `
+                        <input type="hidden" name="docId" value="${docId}">
+                        <input type="hidden" name="collection" value="pesquisas">
+                        <div>
+                            <label for="edit-pesquisa-autor" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Seu Nome</label>
+                            <input type="text" id="edit-pesquisa-autor" name="autor" value="${data.autor || ''}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="edit-pesquisa-titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
+                            <input type="text" id="edit-pesquisa-titulo" name="titulo" value="${data.titulo || ''}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="edit-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
+                            <input type="text" id="edit-pesquisa-tags" name="tags" value="${(data.tags || []).join(', ')}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="edit-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico</label>
+                            <textarea id="edit-pesquisa-texto-biblico" name="textoBiblico" rows="3" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">${data.textoBiblico || ''}</textarea>
+                        </div>
+                         <div>
+                            <label for="edit-pesquisa-anotacoes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anotações</label>
+                            <textarea id="edit-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>${data.anotacoes || ''}</textarea>
+                        </div>
+                    `;
+                }
+
+                formHTML += `
+                    <div class="flex justify-end gap-4 pt-4">
+                        <button type="button" id="cancel-edit-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Salvar Alterações</button>
+                    </div>
+                `;
+
+                formEdit.innerHTML = formHTML;
+                document.getElementById('cancel-edit-btn').addEventListener('click', fecharFormularioEdicao);
+                editModal.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Erro ao abrir formulário de edição:", error);
+                showToast("Erro ao carregar dados para edição.", false);
+            }
         }
 
         function fecharFormularioEdicao() {
@@ -783,7 +901,54 @@
         }
 
         async function salvarEdicao(event) {
-            // Implementação do salvamento da edição
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const docId = formData.get('docId');
+            const collection = formData.get('collection');
+            const collectionPath = collection === 'destaques' ? destaquesCollectionPath : pesquisasCollectionPath;
+            
+            let updatedData = {};
+
+            if (collection === 'destaques') {
+                updatedData = {
+                    autor: formData.get('autor'),
+                    versiculo: formData.get('versiculo'),
+                    texto: formData.get('texto')
+                };
+            } else { // pesquisas
+                updatedData = {
+                    autor: formData.get('autor'),
+                    titulo: formData.get('titulo'),
+                    tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+                    textoBiblico: formData.get('textoBiblico'),
+                    anotacoes: formData.get('anotacoes')
+                };
+            }
+
+            try {
+                const docRef = doc(db, collectionPath, docId);
+                await updateDoc(docRef, updatedData);
+                showToast("Atualizado com sucesso!");
+                fecharFormularioEdicao();
+
+                // Refresh the view
+                if (collection === 'destaques') {
+                    if (!views.conteudo.classList.contains('hidden')) {
+                        mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
+                    } else if (!views.pesquisar.classList.contains('hidden')) {
+                        formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
+                    }
+                } else { // pesquisas
+                     if (!views.pesquisas.classList.contains('hidden')) {
+                        mostrarPesquisas();
+                    } else if (!views.pesquisar.classList.contains('hidden')) {
+                         formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
+                    }
+                }
+            } catch (error) {
+                console.error("Erro ao salvar edição:", error);
+                showToast("Falha ao salvar as alterações.", false);
+            }
         }
         
         async function mostrarPesquisas() {
@@ -807,10 +972,18 @@
                     
                     pesquisas.forEach(pesquisa => {
                         const card = criarCardPesquisa(pesquisa);
+                        card.querySelector('.copy-btn').addEventListener('click', () => {
+                            let textoParaCopiar = `${pesquisa.titulo}\n\n`;
+                            if (pesquisa.textoBiblico) {
+                                textoParaCopiar += `Texto Bíblico:\n${pesquisa.textoBiblico}\n\n`;
+                            }
+                            textoParaCopiar += `Anotações:\n${pesquisa.anotacoes}`;
+                            copiarTexto(textoParaCopiar);
+                        });
+                        card.querySelector('.edit-btn').addEventListener('click', () => iniciarAcao('edit', pesquisa.id, 'pesquisas'));
+                        card.querySelector('.delete-btn').addEventListener('click', () => iniciarAcao('delete', pesquisa.id, 'pesquisas'));
                         container.appendChild(card);
                     });
-                    container.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', () => iniciarAcao('delete', b.dataset.docId, 'pesquisas')));
-                    container.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => iniciarAcao('edit', b.dataset.docId, 'pesquisas')));
                 } else {
                     container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa salva ainda.</p>';
                 }
