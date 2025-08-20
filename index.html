@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joias Espirituais</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configura o Tailwind CSS para usar a estratégia de 'class' para o modo escuro.
+        // Isto é essencial para que o botão de alternância de tema funcione.
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -256,10 +263,7 @@
         const passwordModal = document.getElementById('password-modal');
         const editModal = document.getElementById('edit-modal');
         const passwordError = document.getElementById('password-error');
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const sunIcon = document.getElementById('theme-toggle-sun');
-        const moonIcon = document.getElementById('theme-toggle-moon');
-
+        
         function showToast(message, isSuccess = true) {
             const toastContainer = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -420,19 +424,19 @@
         function criarCardDestaque(destaque) {
             const { id, versiculo, texto, autor, livro, capitulo } = destaque;
             const card = document.createElement('div');
-            card.className = 'border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50 flex justify-between items-start';
+            card.className = 'relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50';
             
             const isSearchView = !document.getElementById('view-pesquisar').classList.contains('hidden');
             const referencia = isSearchView ? `<p class="font-semibold text-gray-600 dark:text-gray-300 text-sm mb-2">${livro} ${capitulo}</p>` : '';
 
             card.innerHTML = `
-                <div class="flex-1 mr-4">
+                <div class="pr-14">
                     ${referencia}
                     <p class="font-bold text-blue-600 dark:text-blue-400">Versículo(s) ${versiculo}</p>
                     <p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${texto}</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
                 </div>
-                <div class="flex flex-shrink-0">
+                <div class="absolute top-2 right-2 flex">
                     <button data-doc-id="${id}" class="edit-btn text-gray-400 hover:text-blue-500 p-1">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
                     </button>
@@ -651,21 +655,25 @@
                 console.error(e);
             }
         }
-
-        // Lógica do Tema
-        function setTema(isDark) {
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-                sunIcon.classList.add('hidden');
-                moonIcon.classList.remove('hidden');
-            } else {
-                document.documentElement.classList.remove('dark');
-                sunIcon.classList.remove('hidden');
-                moonIcon.classList.add('hidden');
-            }
-        }
         
         document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('theme-toggle-sun');
+            const moonIcon = document.getElementById('theme-toggle-moon');
+
+            function setTema(isDark) {
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                }
+            }
+
             popularLivros();
             popularSelectLivros();
 
@@ -703,7 +711,6 @@
             themeToggleBtn.addEventListener('click', () => {
                 const isDark = document.documentElement.classList.contains('dark');
                 setTema(!isDark);
-                localStorage.setItem('theme', !isDark ? 'dark' : 'light');
             });
         });
     </script>
