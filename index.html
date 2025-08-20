@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudo Pessoal</title>
+    <title>Joias Espirituais</title>
     <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/pw/AP1GczP6O7T9Df_GZb1K2fuF1p49BlTc8wY3BuChHezCEFbr_knqISjsKGQp9ham81jh1en611SYYgNWsTNQthqDPZ0PvRac69ikrHRZ9X0vQOCifx2fPvbLm9NkPjEVPArzDG7x-68dKx33RAnHhc0qx0SeaA=w898-h898-s-no-gm?authuser=0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -20,7 +20,7 @@
             font-family: 'Inter', sans-serif;
         }
         .bg-custom-blue {
-            background-color: #4a6da7;
+            background-color: #3e5a8a;
         }
         .hover\:bg-custom-blue-dark:hover {
             background-color: #3e5a8a;
@@ -244,6 +244,9 @@
             </div>
 
         </div>
+        <footer class="text-center py-4">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Desenvolvido por Guilherme Almeida</p>
+        </footer>
     </div>
 
     <!-- Container para as notificações (Toasts) -->
@@ -574,7 +577,7 @@
                 <div>
                     ${referencia}
                     <p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${texto}</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">Joia de: ${autor || 'Anônimo'}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">Destaque de: ${autor || 'Anônimo'}</p>
                 </div>
             `;
             return card;
@@ -800,7 +803,7 @@
 
         async function confirmarSenha() {
             const password = document.getElementById('password-input').value;
-            if (password === 'estudopessoal') {
+            if (password === 'xetays2468') {
                 const { type, docId, collection } = acaoPendente;
                 fecharModalSenha();
                 if (type === 'delete') {
