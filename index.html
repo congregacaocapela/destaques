@@ -157,7 +157,7 @@
                                 <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
                             </div>
                             <div>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Joia</button>
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Joia</button>
                             </div>
                         </fieldset>
                     </form>
@@ -186,7 +186,15 @@
             <div id="view-capitulos" class="hidden">
                  <header class="p-4 sm:p-6 border-b dark:border-gray-700">
                     <button id="btn-voltar-livros" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Livros</button>
-                    <h1 id="titulo-livro-capitulos" class="text-3xl font-bold text-slate-800 dark:text-slate-100"></h1>
+                    <div class="flex items-center justify-between">
+                        <button id="btn-livro-anterior" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <h1 id="titulo-livro-capitulos" class="text-xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 text-center mx-2"></h1>
+                        <button id="btn-livro-seguinte" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
                 </header>
                 <div class="p-4 sm:p-8">
                     <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Capítulos</h3>
@@ -236,7 +244,7 @@
                                 <textarea id="textarea-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
                             </div>
                             <div>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Pesquisa</button>
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Pesquisa</button>
                             </div>
                         </fieldset>
                     </form>
@@ -319,6 +327,8 @@
             "Novo Testamento": {"Mateus": 28, "Marcos": 16, "Lucas": 24, "João": 21, "Atos": 28, "Romanos": 16, "1 Coríntios": 16, "2 Coríntios": 13, "Gálatas": 6, "Efésios": 6, "Filipenses": 4, "Colossenses": 4, "1 Tessalonicenses": 5, "2 Tessalonicenses": 3, "1 Timóteo": 6, "2 Timóteo": 4, "Tito": 3, "Filemom": 1, "Hebreus": 13, "Tiago": 5, "1 Pedro": 5, "2 Pedro": 3, "1 João": 5, "2 João": 1, "3 João": 1, "Judas": 1, "Apocalipse": 22}
         };
         
+        const allBooks = [...Object.keys(biblia["Antigo Testamento"]), ...Object.keys(biblia["Novo Testamento"])];
+        const allChapters = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
         let estadoAtual = { livro: null, capitulo: null };
 
         const views = {
@@ -398,17 +408,21 @@
 
         async function salvarDestaque(event) {
             event.preventDefault();
-            const formData = new FormData(formDestaque);
-            const destaqueData = {
-                autor: formData.get('autor'),
-                livro: formData.get('livro'),
-                capitulo: parseInt(formData.get('capitulo'), 10),
-                versiculo: formData.get('versiculo'),
-                texto: formData.get('destaque'),
-                createdAt: new Date()
-            };
+            const submitButton = formDestaque.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Salvando...';
 
             try {
+                const formData = new FormData(formDestaque);
+                const destaqueData = {
+                    autor: formData.get('autor'),
+                    livro: formData.get('livro'),
+                    capitulo: parseInt(formData.get('capitulo'), 10),
+                    versiculo: formData.get('versiculo'),
+                    texto: formData.get('destaque'),
+                    createdAt: new Date()
+                };
+
                 await addDoc(collection(db, destaquesCollectionPath), destaqueData);
                 showToast("Joia salva com sucesso!");
                 formDestaque.reset();
@@ -418,28 +432,38 @@
             } catch (e) {
                 console.error("Erro ao adicionar documento: ", e);
                 showToast("Falha ao salvar a joia.", false);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Salvar Joia';
             }
         }
 
         async function salvarPesquisa(event) {
             event.preventDefault();
-            const formData = new FormData(formAdicionarPesquisa);
-            const pesquisaData = {
-                autor: formData.get('autor'),
-                titulo: formData.get('titulo'),
-                tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
-                textoBiblico: formData.get('textoBiblico'),
-                anotacoes: formData.get('anotacoes'),
-                createdAt: new Date()
-            };
+            const submitButton = formAdicionarPesquisa.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Salvando...';
 
             try {
+                const formData = new FormData(formAdicionarPesquisa);
+                const pesquisaData = {
+                    autor: formData.get('autor'),
+                    titulo: formData.get('titulo'),
+                    tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+                    textoBiblico: formData.get('textoBiblico'),
+                    anotacoes: formData.get('anotacoes'),
+                    createdAt: new Date()
+                };
+
                 await addDoc(collection(db, pesquisasCollectionPath), pesquisaData);
                 showToast("Pesquisa salva com sucesso!");
                 formAdicionarPesquisa.reset();
             } catch (e) {
                 console.error("Erro ao salvar pesquisa: ", e);
                 showToast("Falha ao salvar a pesquisa.", false);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Salvar Pesquisa';
             }
         }
 
@@ -491,6 +515,35 @@
             views.capitulos.classList.remove('hidden');
             window.scrollTo(0, 0);
             document.getElementById('titulo-livro-capitulos').textContent = `O Livro de ${nomeLivro}`;
+            
+            const btnAnterior = document.getElementById('btn-livro-anterior');
+            const btnSeguinte = document.getElementById('btn-livro-seguinte');
+            const currentIndex = allBooks.indexOf(nomeLivro);
+
+            if (currentIndex > 0) {
+                const livroAnterior = allBooks[currentIndex - 1];
+                const capsAnterior = allChapters[livroAnterior];
+                btnAnterior.onclick = () => mostrarCapitulos(livroAnterior, capsAnterior);
+                btnAnterior.disabled = false;
+                btnAnterior.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnAnterior.onclick = null;
+                btnAnterior.disabled = true;
+                btnAnterior.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (currentIndex < allBooks.length - 1) {
+                const livroSeguinte = allBooks[currentIndex + 1];
+                const capsSeguinte = allChapters[livroSeguinte];
+                btnSeguinte.onclick = () => mostrarCapitulos(livroSeguinte, capsSeguinte);
+                btnSeguinte.disabled = false;
+                btnSeguinte.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnSeguinte.onclick = null;
+                btnSeguinte.disabled = true;
+                btnSeguinte.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
             const grid = document.getElementById('grid-capitulos');
             grid.innerHTML = '<p class="text-gray-500 dark:text-gray-400 col-span-full">Verificando destaques...</p>';
 
@@ -1130,3 +1183,4 @@
     </script>
 </body>
 </html>
+mude a cor do header para #3e5
