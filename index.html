@@ -489,39 +489,65 @@
             containerAntigo.innerHTML = '<p class="text-gray-500 dark:text-gray-400 col-span-full">Carregando livros...</p>';
             containerNovo.innerHTML = '';
 
-            const livrosComDestaque = new Set();
+            const progressData = {};
             try {
                 const querySnapshot = await getDocs(collection(db, destaquesCollectionPath));
                 querySnapshot.forEach((doc) => {
-                    livrosComDestaque.add(doc.data().livro);
+                    const data = doc.data();
+                    if (!progressData[data.livro]) {
+                        progressData[data.livro] = new Set();
+                    }
+                    progressData[data.livro].add(data.capitulo);
                 });
             } catch(e) {
                 console.error("Erro ao buscar destaques dos livros: ", e);
-                showToast("Não foi possível verificar os destaques dos livros.", false);
+                showToast("Não foi possível carregar o progresso dos livros.", false);
             }
 
             containerAntigo.innerHTML = '';
             containerNovo.innerHTML = '';
 
-            const criarBotao = (nome, caps, temDestaque) => {
+            const criarBotaoLivro = (nome, totalCaps, completedChaptersSet) => {
+                const completedCount = completedChaptersSet ? completedChaptersSet.size : 0;
+                const percentage = totalCaps > 0 ? (completedCount / totalCaps) * 100 : 0;
+                const isCompleted = completedCount === totalCaps;
+                const hasProgress = completedCount > 0;
+
                 const div = document.createElement('div');
-                div.textContent = nome;
-                let classes = 'font-medium p-4 text-center cursor-pointer transition-colors duration-200';
-                if (temDestaque) {
-                    classes += ' bg-custom-blue hover:bg-custom-blue-dark text-white';
+                
+                let baseClasses = 'font-medium p-4 text-center cursor-pointer transition-colors duration-200 relative overflow-hidden';
+                let colorClasses = '';
+                let progressBgColor = 'bg-blue-500';
+
+                if (isCompleted) {
+                    colorClasses = ' bg-custom-blue text-white'; 
+                    progressBgColor = 'bg-green-500';
+                } else if (hasProgress) {
+                    colorClasses = ' bg-custom-blue text-white';
                 } else {
-                    classes += ' bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200';
+                    colorClasses = ' bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600';
                 }
-                div.className = classes;
-                div.onclick = () => mostrarCapitulos(nome, caps);
+
+                div.className = baseClasses + colorClasses;
+                div.onclick = () => mostrarCapitulos(nome, totalCaps);
+
+                div.innerHTML = `
+                    ${nome}
+                    <div class="absolute bottom-0 left-0 w-full bg-gray-200 dark:bg-gray-600/50 h-1">
+                        <div class="${progressBgColor} h-1" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+
                 return div;
             };
 
             Object.entries(biblia["Antigo Testamento"]).forEach(([livro, caps]) => {
-                containerAntigo.appendChild(criarBotao(livro, caps, livrosComDestaque.has(livro)));
+                const completedChapters = progressData[livro] || new Set();
+                containerAntigo.appendChild(criarBotaoLivro(livro, caps, completedChapters));
             });
             Object.entries(biblia["Novo Testamento"]).forEach(([livro, caps]) => {
-                containerNovo.appendChild(criarBotao(livro, caps, livrosComDestaque.has(livro)));
+                const completedChapters = progressData[livro] || new Set();
+                containerNovo.appendChild(criarBotaoLivro(livro, caps, completedChapters));
             });
         }
 
@@ -1292,4 +1318,3 @@
     </script>
 </body>
 </html>
-
