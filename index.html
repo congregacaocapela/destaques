@@ -86,8 +86,24 @@
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200" style="padding-top: 4rem;">
 
     <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center" style="height: 4rem;">
-        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-        <h1 class="text-xl font-bold">Estudo Pessoal</h1>
+        <div class="flex items-center">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h1 class="text-xl font-bold">Estudo Pessoal</h1>
+        </div>
+        <div class="absolute right-4 top-1/2 -translate-y-1/2">
+            <button id="notification-bell" class="relative">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
+                <span id="notification-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
+            </button>
+            <div id="notification-panel" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-md shadow-lg z-30 border dark:border-gray-700">
+                <div class="p-3 border-b dark:border-gray-700">
+                    <h3 class="font-semibold text-gray-800 dark:text-gray-200">Notificações</h3>
+                </div>
+                <div id="notification-list" class="py-1 max-h-96 overflow-y-auto">
+                    <!-- Notificações serão inseridas aqui -->
+                </div>
+            </div>
+        </div>
     </header>
 
     <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl">
@@ -299,7 +315,7 @@
     <script type="module">
         // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs, setLogLevel, doc, deleteDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, setLogLevel, doc, deleteDoc, getDoc, updateDoc, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Configuração do Firebase
         const firebaseConfig = {
@@ -891,7 +907,7 @@
 
         async function confirmarSenha() {
             const password = document.getElementById('password-input').value;
-            if (password === 'estudopessoal') {
+            if (password === 'xetays2468') {
                 const { type, docId, collection } = acaoPendente;
                 fecharModalSenha();
                 if (type === 'delete') {
@@ -1088,6 +1104,98 @@
             const themeToggleBtn = document.getElementById('theme-toggle');
             const sunIcon = document.getElementById('theme-toggle-sun');
             const moonIcon = document.getElementById('theme-toggle-moon');
+            const notificationBell = document.getElementById('notification-bell');
+            const notificationPanel = document.getElementById('notification-panel');
+            const notificationCount = document.getElementById('notification-count');
+            const notificationList = document.getElementById('notification-list');
+
+            let unreadCount = 0;
+            let allNotifications = [];
+
+            function updateNotificationUI() {
+                notificationCount.textContent = unreadCount;
+                if (unreadCount > 0) {
+                    notificationCount.classList.remove('hidden');
+                } else {
+                    notificationCount.classList.add('hidden');
+                }
+                renderNotificationsList();
+            }
+
+            function renderNotificationsList() {
+                notificationList.innerHTML = '';
+                if (allNotifications.length === 0) {
+                    notificationList.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 p-4 text-center">Nenhuma notificação recente.</p>';
+                    return;
+                }
+                allNotifications.forEach(notif => {
+                    const item = document.createElement('a');
+                    item.href = '#';
+                    item.className = 'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700';
+                    if (notif.type === 'joia') {
+                        item.innerHTML = `<p class="font-bold">Nova joia de: ${notif.data.autor}</p><p>Em ${notif.data.livro} ${notif.data.capitulo}:${notif.data.versiculo}</p>`;
+                        item.onclick = (e) => {
+                            e.preventDefault();
+                            mostrarConteudo(notif.data.livro, notif.data.capitulo);
+                            notificationPanel.classList.add('hidden');
+                        };
+                    } else { // pesquisa
+                        item.innerHTML = `<p class="font-bold">Nova pesquisa de: ${notif.data.autor}</p><p>${notif.data.titulo}</p>`;
+                        item.onclick = (e) => {
+                            e.preventDefault();
+                            mudarAba('pesquisas');
+                            notificationPanel.classList.add('hidden');
+                        };
+                    }
+                    notificationList.appendChild(item);
+                });
+            }
+
+            function setupNotificationListener() {
+                const lastViewed = localStorage.getItem('lastViewedNotification') || 0;
+                
+                const processChanges = (snapshot, type) => {
+                    let newNotifications = false;
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            const docData = change.doc.data();
+                            const docTimestamp = docData.createdAt.toMillis();
+                            
+                            allNotifications.unshift({
+                                type: type,
+                                data: docData,
+                                id: change.doc.id,
+                                timestamp: docTimestamp
+                            });
+
+                            if (docTimestamp > lastViewed) {
+                                unreadCount++;
+                                newNotifications = true;
+                            }
+                        }
+                    });
+                    
+                    allNotifications.sort((a, b) => b.timestamp - a.timestamp);
+                    if(allNotifications.length > 10) allNotifications.length = 10; // Limita a 10 notificações
+
+                    if(newNotifications) updateNotificationUI();
+                };
+
+                const qJoias = query(collection(db, destaquesCollectionPath), orderBy("createdAt", "desc"), limit(5));
+                onSnapshot(qJoias, (snapshot) => processChanges(snapshot, 'joia'));
+
+                const qPesquisas = query(collection(db, pesquisasCollectionPath), orderBy("createdAt", "desc"), limit(5));
+                onSnapshot(qPesquisas, (snapshot) => processChanges(snapshot, 'pesquisa'));
+            }
+
+            notificationBell.addEventListener('click', () => {
+                notificationPanel.classList.toggle('hidden');
+                if (!notificationPanel.classList.contains('hidden')) {
+                    unreadCount = 0;
+                    localStorage.setItem('lastViewedNotification', Date.now());
+                    updateNotificationUI();
+                }
+            });
 
             function setTema(isDark) {
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -1104,6 +1212,7 @@
 
             popularLivros();
             popularSelectLivros();
+            setupNotificationListener();
 
             formDestaque.addEventListener('submit', salvarDestaque);
             formPesquisa.addEventListener('submit', realizarPesquisa);
