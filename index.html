@@ -474,6 +474,11 @@
             document.body.removeChild(textArea);
         }
 
+        function removerAcentos(texto) {
+            if (!texto) return '';
+            return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
         function esconderTudo() { Object.values(views).forEach(view => view.classList.add('hidden')); }
 
         function popularSelectLivros() {
@@ -919,7 +924,7 @@
         
         async function realizarPesquisa(event) {
             event.preventDefault();
-            const termo = document.getElementById('input-pesquisa').value.toLowerCase();
+            const termo = removerAcentos(document.getElementById('input-pesquisa').value.toLowerCase());
             const container = document.getElementById('container-resultados');
             const searchTypeJoias = document.getElementById('search-type-joias');
             const isPesquisas = !searchTypeJoias.classList.contains('active');
@@ -941,13 +946,13 @@
 
                 const resultados = todosItens.filter(item => {
                     if(isPesquisas) {
-                        const titulo = item.titulo ? item.titulo.toLowerCase() : '';
-                        const anotacoes = item.anotacoes ? item.anotacoes.toLowerCase() : '';
-                        const tags = item.tags ? item.tags.join(' ').toLowerCase() : '';
+                        const titulo = removerAcentos(item.titulo ? item.titulo.toLowerCase() : '');
+                        const anotacoes = removerAcentos(item.anotacoes ? item.anotacoes.toLowerCase() : '');
+                        const tags = removerAcentos(item.tags ? item.tags.join(' ').toLowerCase() : '');
                         return titulo.includes(termo) || anotacoes.includes(termo) || tags.includes(termo);
                     } else {
-                        const texto = item.texto ? item.texto.toLowerCase() : '';
-                        const autor = item.autor ? item.autor.toLowerCase() : '';
+                        const texto = removerAcentos(item.texto ? item.texto.toLowerCase() : '');
+                        const autor = removerAcentos(item.autor ? item.autor.toLowerCase() : '');
                         return texto.includes(termo) || autor.includes(termo);
                     }
                 });
@@ -974,7 +979,7 @@
                         container.appendChild(card);
                     });
                 } else {
-                    container.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Nenhum resultado encontrado para "${termo}".</p>`;
+                    container.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Nenhum resultado encontrado para "${document.getElementById('input-pesquisa').value}".</p>`;
                 }
 
             } catch(e) {
