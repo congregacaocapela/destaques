@@ -81,6 +81,21 @@
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
+        /* Estilos para o Modal de Sucesso */
+        #success-modal {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+        #success-modal > div {
+             transition: transform 0.3s ease-in-out;
+             transform: scale(0.95);
+        }
+        #success-modal.show {
+            opacity: 1;
+        }
+        #success-modal.show > div {
+            transform: scale(1);
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200" style="padding-top: 4rem;">
@@ -312,6 +327,19 @@
          </div>
     </div>
 
+    <!-- Modal de Sucesso -->
+    <div id="success-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 text-center max-w-sm mx-auto">
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900 mb-4">
+                <svg class="h-10 w-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Sucesso!</h3>
+            <p id="success-modal-message" class="mt-2 text-sm text-gray-600 dark:text-gray-400">Sua joia foi salva com sucesso.</p>
+        </div>
+    </div>
+
     <!-- Botão de Tema (Sol/Lua) -->
     <button id="theme-toggle" class="fixed bottom-5 right-5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-3 shadow-lg focus:outline-none">
         <svg id="theme-toggle-sun" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zm7.536 2.464a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414z"></path></svg>
@@ -345,6 +373,14 @@
         let acaoPendente = { type: null, docId: null, collection: null };
         const destaquesCollectionPath = `/artifacts/${appId}/public/data/destaques`;
         const pesquisasCollectionPath = `/artifacts/${appId}/public/data/pesquisas`;
+
+        const MENSAGENS_JOIAS = [
+            "Salvo! Você está se tornando um verdadeiro joalheiro.", "Ok, guardado. Mas não pare agora, Continue!", "Salvo! Bela Joia. O que você vai encontrar a seguir?", "Salvo com sucesso! Continue aumentando seu conhecimento.", "Prontinho, está salvo! Mal podemos esperar para ver sua próxima descoberta.", "Adicionado à sua coleção! Continue explorando, sempre há mais para descobrir.", "Salvo! Continue procurando, há verdadeiras joias escondidas nos detalhes.", "Joia Rara! Cuidado pra não ofuscar os outros com suas joias.", "Bling! Mais uma joias brilhando na lista.", "Expandindo o Repertorio! Essa joia foi adicionada.", "Sua coleção de joias esta ficando impressionante! Parabens."
+        ];
+
+        const MENSAGENS_PESQUISAS = [
+            "Pesquisa salva. Continue Pesquisando mais!", "Valeu! Sua pesquisa está segura aqui.", "Ótima pesquisa! Guardamos para você.", "Sua pesquisa foi guardada. Ótimo achado!", "Salvo com sucesso! Continue pesquisando."
+        ];
 
         const biblia = {
             "Antigo Testamento": {"Gênesis": 50, "Êxodo": 40, "Levítico": 27, "Números": 36, "Deuteronômio": 34, "Josué": 24, "Juízes": 21, "Rute": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reis": 22, "2 Reis": 25, "1 Crônicas": 29, "2 Crônicas": 36, "Esdras": 10, "Neemias": 13, "Ester": 10, "Jó": 42, "Salmos": 150, "Provérbios": 31, "Eclesiastes": 12, "Cântico de Salomão": 8, "Isaías": 66, "Jeremias": 52, "Lamentações": 5, "Ezequiel": 48, "Daniel": 12, "Oseias": 14, "Joel": 3, "Amós": 9, "Obadias": 1, "Jonas": 4, "Miqueias": 7, "Naum": 3, "Habacuque": 3, "Sofonias": 3, "Ageu": 2, "Zacarias": 14, "Malaquias": 4},
@@ -399,6 +435,27 @@
             }, 3000);
         }
 
+        function showSuccessModal(type) {
+            const modal = document.getElementById('success-modal');
+            const messageP = document.getElementById('success-modal-message');
+            
+            const messages = type === 'joia' ? MENSAGENS_JOIAS : MENSAGENS_PESQUISAS;
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            messageP.textContent = messages[randomIndex];
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                modal.classList.remove('show');
+                modal.addEventListener('transitionend', () => {
+                    modal.classList.add('hidden');
+                }, { once: true });
+            }, 3000);
+        }
+
         function copiarTexto(text) {
             const textArea = document.createElement("textarea");
             textArea.value = text;
@@ -448,7 +505,7 @@
                 };
 
                 await addDoc(collection(db, destaquesCollectionPath), destaqueData);
-                showToast("Joia salva com sucesso!");
+                showSuccessModal('joia');
                 formDestaque.reset();
                 selectCapitulo.disabled = true;
                 selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
@@ -480,7 +537,7 @@
                 };
 
                 await addDoc(collection(db, pesquisasCollectionPath), pesquisaData);
-                showToast("Pesquisa salva com sucesso!");
+                showSuccessModal('pesquisa');
                 formAdicionarPesquisa.reset();
             } catch (e) {
                 console.error("Erro ao salvar pesquisa: ", e);
