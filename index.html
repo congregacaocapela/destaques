@@ -1272,7 +1272,7 @@
                 const lastViewed = localStorage.getItem('lastViewedNotification') || 0;
                 
                 const processChanges = (snapshot, type) => {
-                    let newNotifications = false;
+                    let needsUiUpdate = false;
                     snapshot.docChanges().forEach(change => {
                         if (change.type === 'added') {
                             const docData = change.doc.data();
@@ -1287,15 +1287,23 @@
 
                             if (docTimestamp > lastViewed) {
                                 unreadCount++;
-                                newNotifications = true;
+                            }
+                            needsUiUpdate = true;
+                        } else if (change.type === 'removed') {
+                            const removedId = change.doc.id;
+                            const indexToRemove = allNotifications.findIndex(notif => notif.id === removedId);
+                            if (indexToRemove > -1) {
+                                allNotifications.splice(indexToRemove, 1);
+                                needsUiUpdate = true;
                             }
                         }
                     });
                     
-                    allNotifications.sort((a, b) => b.timestamp - a.timestamp);
-                    if(allNotifications.length > 10) allNotifications.length = 10; // Limita a 10 notificações
-
-                    if(newNotifications) updateNotificationUI();
+                    if(needsUiUpdate){
+                        allNotifications.sort((a, b) => b.timestamp - a.timestamp);
+                        if(allNotifications.length > 10) allNotifications.length = 10; // Limita a 10 notificações
+                        updateNotificationUI();
+                    }
                 };
 
                 const qJoias = query(collection(db, destaquesCollectionPath), orderBy("createdAt", "desc"), limit(5));
