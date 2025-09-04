@@ -1258,13 +1258,13 @@
                 }
             });
 
-            window.addEventListener('click', (e) => {
-                if (!notificationPanel.classList.contains('hidden')) {
-                    if (!notificationPanel.contains(e.target) && !notificationBell.contains(e.target)) {
-                        notificationPanel.classList.add('hidden');
-                    }
+            const closePanelIfNeeded = (e) => {
+                 if (!notificationPanel.classList.contains('hidden') && !notificationPanel.contains(e.target) && !notificationBell.contains(e.target)) {
+                    notificationPanel.classList.add('hidden');
                 }
-            });
+            }
+            window.addEventListener('click', closePanelIfNeeded);
+            window.addEventListener('touchstart', closePanelIfNeeded);
 
             function setTema(isDark) {
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -1362,4 +1362,3 @@
     </script>
 </body>
 </html>
-
