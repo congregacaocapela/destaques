@@ -86,7 +86,7 @@
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200" style="padding-top: 4rem;">
 
     <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center" style="height: 4rem;">
-        <div class="flex items-center">
+        <div id="header-title" class="flex items-center cursor-pointer">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             <h1 class="text-xl font-bold">Estudo Pessoal</h1>
         </div>
@@ -222,7 +222,15 @@
             <div id="view-conteudo" class="hidden">
                 <header class="p-4 sm:p-6 border-b dark:border-gray-700">
                     <button id="btn-voltar-capitulos" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Capítulos</button>
-                    <h1 id="titulo-conteudo" class="text-3xl font-bold text-slate-800 dark:text-slate-100"></h1>
+                    <div class="flex items-center justify-between">
+                        <button id="btn-capitulo-anterior" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <h1 id="titulo-conteudo" class="text-xl sm:text-3xl font-bold text-slate-800 dark:text-slate-100 text-center mx-2"></h1>
+                        <button id="btn-capitulo-seguinte" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
                 </header>
                 <div id="destaques-container" class="p-4 sm:p-8 space-y-4"></div>
             </div>
@@ -791,6 +799,31 @@
             views.conteudo.classList.remove('hidden');
             window.scrollTo(0, 0);
             document.getElementById('titulo-conteudo').textContent = `${nomeLivro} ${numCapitulo}`;
+            
+            const btnAnterior = document.getElementById('btn-capitulo-anterior');
+            const btnSeguinte = document.getElementById('btn-capitulo-seguinte');
+            const totalCapitulos = allChapters[nomeLivro];
+
+            if (numCapitulo > 1) {
+                btnAnterior.onclick = () => mostrarConteudo(nomeLivro, numCapitulo - 1);
+                btnAnterior.disabled = false;
+                btnAnterior.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnAnterior.onclick = null;
+                btnAnterior.disabled = true;
+                btnAnterior.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            if (numCapitulo < totalCapitulos) {
+                btnSeguinte.onclick = () => mostrarConteudo(nomeLivro, numCapitulo + 1);
+                btnSeguinte.disabled = false;
+                btnSeguinte.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnSeguinte.onclick = null;
+                btnSeguinte.disabled = true;
+                btnSeguinte.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
             const container = document.getElementById('destaques-container');
             container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando destaques...</p>';
 
@@ -1134,6 +1167,7 @@
             const notificationPanel = document.getElementById('notification-panel');
             const notificationCount = document.getElementById('notification-count');
             const notificationList = document.getElementById('notification-list');
+            const headerTitle = document.getElementById('header-title');
 
             let unreadCount = 0;
             let allNotifications = [];
@@ -1214,12 +1248,21 @@
                 onSnapshot(qPesquisas, (snapshot) => processChanges(snapshot, 'pesquisa'));
             }
 
-            notificationBell.addEventListener('click', () => {
+            notificationBell.addEventListener('click', (e) => {
+                e.stopPropagation();
                 notificationPanel.classList.toggle('hidden');
                 if (!notificationPanel.classList.contains('hidden')) {
                     unreadCount = 0;
                     localStorage.setItem('lastViewedNotification', Date.now());
                     updateNotificationUI();
+                }
+            });
+
+            window.addEventListener('click', (e) => {
+                if (!notificationPanel.classList.contains('hidden')) {
+                    if (!notificationPanel.contains(e.target) && !notificationBell.contains(e.target)) {
+                        notificationPanel.classList.add('hidden');
+                    }
                 }
             });
 
@@ -1245,6 +1288,7 @@
             formAdicionarPesquisa.addEventListener('submit', salvarPesquisa);
             document.getElementById('form-edit').addEventListener('submit', salvarEdicao);
             
+            headerTitle.addEventListener('click', () => mudarAba('livros'));
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
             tabs.adicionarDestaque.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionarDestaque'); });
             tabs.pesquisar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisar'); });
@@ -1318,3 +1362,4 @@
     </script>
 </body>
 </html>
+
