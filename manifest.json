@@ -2,7 +2,7 @@
   "name": "Estudo Pessoal",
   "short_name": "Estudo",
   "description": "Seu app pessoal de estudo.",
-  "start_url": "/",
+  "start_url": "/destaques/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3e5a8a",
