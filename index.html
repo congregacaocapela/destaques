@@ -182,15 +182,8 @@
         </div>
     </div>
     
-    <!-- Conteúdo Principal da Aplicação -->
-    <div id="app-content" class="hidden" style="padding-top: 4rem;">
+    <div id="app-content" class="hidden">
 
-        <!-- 
-            ====================================================================
-            EDIÇÃO 3: Layout do Cabeçalho Revertido
-            Título centralizado, ícone de perfil posicionado absolutamente à direita.
-            ==================================================================== 
-        -->
         <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center relative" style="height: 4rem;">
             <!-- Título Centralizado -->
             <div id="header-title" class="flex items-center cursor-pointer min-w-0">
@@ -198,15 +191,10 @@
                 <h1 class="text-xl font-bold truncate">Estudo Pessoal</h1>
             </div>
         
-            <!-- 
-                ====================================================================
-                EDIÇÃO 4: Botão de Perfil e Menu Dropdown
-                Substitui o nome de usuário e botão de logout por um ícone de perfil.
-                ==================================================================== 
-            -->
+            <!-- Botão de Perfil e Menu Dropdown -->
             <div class="absolute right-4 top-1/2 -translate-y-1/2">
                 <button id="profile-button" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold text-lg hover:bg-white/30 transition-colors focus:outline-none">
-                    <span id="profile-initials"></span> <!-- JS vai popular isso -->
+                    <span id="profile-initials"></span>
                 </button>
 
                 <!-- Menu Dropdown (Oculto por padrão) -->
@@ -223,11 +211,22 @@
             </div>
         </header>
 
-        <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl">
+        <!-- 
+          Este container segura todo o conteúdo (incluindo a nav) e 
+          começa *abaixo* do header fixo (graças ao padding-top).
+        -->
+        <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl" style="padding-top: 4rem;">
             <div class="bg-white dark:bg-gray-800 shadow-md min-h-screen rounded-lg">
 
-                <!-- Navegação com Abas -->
-                <nav class="border-b border-gray-200 dark:border-gray-700 sticky bg-white dark:bg-gray-800 z-10 rounded-t-lg" style="top: 4rem;">
+                <!-- 
+                  ====================================================================
+                  CORREÇÃO: <nav>
+                  Removida a classe `sticky` e o `style="top: 4rem;"`.
+                  Agora esta barra é "estática" e vai rolar para cima
+                  junto com o restante do conteúdo.
+                  ==================================================================== 
+                -->
+                <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10 rounded-t-lg">
                     <div class="px-4 py-3 flex items-center space-x-5 overflow-x-auto whitespace-nowrap no-scrollbar">
                         <a href="#" id="tab-inicio" class="text-sm font-semibold pb-3 tab-active flex-shrink-0 flex items-center">
                             ● INICIO
@@ -250,12 +249,6 @@
 
                 <!-- Visualização Início -->
                 <div id="view-inicio" class="p-4 sm:p-8 space-y-8">
-                    <!-- 
-                        ====================================================================
-                        EDIÇÃO 2: Progresso de Capítulos
-                        Adicionados novos elementos para a barra de progresso dos capítulos.
-                        ==================================================================== 
-                    -->
                    <section id="inicio-grafico">
                        <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
@@ -557,7 +550,7 @@
         let estadoAtual = { livro: null, capitulo: null };
 
         const views = {
-            inicio: document.getElementById('view-inicio'), // NOVO
+            inicio: document.getElementById('view-inicio'),
             livros: document.getElementById('view-livros'),
             adicionarDestaque: document.getElementById('view-adicionar-destaque'),
             pesquisar: document.getElementById('view-pesquisar'),
@@ -567,7 +560,7 @@
             conteudo: document.getElementById('view-conteudo'),
         };
         const tabs = {
-            inicio: document.getElementById('tab-inicio'), // NOVO
+            inicio: document.getElementById('tab-inicio'),
             livros: document.getElementById('tab-livros'),
             adicionarDestaque: document.getElementById('tab-adicionar-destaque'),
             pesquisar: document.getElementById('tab-pesquisar'),
@@ -591,7 +584,7 @@
         const passwordInput = document.getElementById('login-password');
         const loginError = document.getElementById('login-error');
         
-        // --- LÓGICA DO TEMA (MOVIDO PARA FORA) ---
+        // --- LÓGICA DO TEMA ---
         const themeToggleBtn = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-toggle-sun');
         const moonIcon = document.getElementById('theme-toggle-moon');
@@ -623,7 +616,6 @@
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Usuário está logado
                 currentUserId = user.uid;
                 userDestaquesCollectionPath = `/artifacts/${appId}/users/${currentUserId}/destaques`;
                 userPesquisasCollectionPath = `/artifacts/${appId}/users/${currentUserId}/pesquisas`;
@@ -635,7 +627,6 @@
                 
                 appContent.classList.remove('hidden');
                 
-                // EDIÇÃO 4: Popular o menu de perfil
                 const displayName = getDisplayNameFromEmail(user.email);
                 const initials = displayName.charAt(0).toUpperCase();
                 document.getElementById('profile-initials').textContent = initials;
@@ -644,7 +635,6 @@
 
                 initializeMainApp(user);
             } else {
-                // Usuário está deslogado
                 currentUserId = null;
                 userDestaquesCollectionPath = null;
                 userPesquisasCollectionPath = null;
@@ -696,13 +686,11 @@
         }
         // --- FIM DA LÓGICA DE LOGIN ---
 
-        // Função para capitalizar a primeira letra
         function capitalizeFirstLetter(string) {
             if (!string) return string;
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-        // Função para pegar o nome de exibição do e-mail
         function getDisplayNameFromEmail(email) {
             if (!email) return 'Anônimo';
             const namePart = email.split('@')[0];
@@ -917,14 +905,12 @@
                 }
             }
             
-            // EDIÇÃO: Ordenar por 'createdAt' se a query não tiver um 'orderBy'
-            // Isso é crucial para 'fetchDocs' sem constraints pegar os mais recentes
-            const hasOrderBy = queryConstraints.some(c => c.type === 'orderBy');
+            const hasOrderBy = queryConstraints.some(c => typeof c === 'object' && c.type === 'orderBy');
             if (!hasOrderBy) {
                  items.sort((a, b) => {
                     const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
                     const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
-                    return dateB - dateA; // Mais recente primeiro
+                    return dateB - dateA;
                 });
             }
 
@@ -945,7 +931,7 @@
                 const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
                 
                 allDestaques.forEach((data) => {
-                    if (data.livro && data.capitulo) { // Adiciona checagem
+                    if (data.livro && data.capitulo) {
                         if (!progressData[data.livro]) {
                             progressData[data.livro] = new Set();
                         }
@@ -1426,18 +1412,13 @@
             }
         }
 
-        /* ====================================================================
-            EDIÇÃO 1: buscarUltimasJoias
-            Limite alterado de 5 para 3.
-            ==================================================================== 
-        */
         async function buscarUltimasJoias() {
             const container = document.getElementById('container-ultimas-joias');
             container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando joias...</p>';
             try {
                 const constraints = [
                     orderBy("createdAt", "desc"),
-                    limit(3) // ALTERADO DE 5 PARA 3
+                    limit(3) // 3 joias
                 ];
                 const joias = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
 
@@ -1456,18 +1437,13 @@
             }
         }
 
-        /* ====================================================================
-            EDIÇÃO 1: buscarUltimasPesquisas
-            Limite alterado de 5 para 1.
-            ==================================================================== 
-        */
         async function buscarUltimasPesquisas() {
             const container = document.getElementById('container-ultimas-pesquisas');
             container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando pesquisas...</p>';
             try {
                 const constraints = [
                     orderBy("createdAt", "desc"),
-                    limit(1) // ALTERADO DE 5 PARA 1
+                    limit(1) // 1 pesquisa
                 ];
                 const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath, constraints);
 
@@ -1486,11 +1462,6 @@
             }
         }
 
-        /* ====================================================================
-            EDIÇÃO 2: calcularProgressoTotal
-            Função atualizada para calcular também o progresso dos capítulos.
-            ==================================================================== 
-        */
         async function calcularProgressoTotal() {
             const progressBarTotal = document.getElementById('progress-bar-total');
             const progressTextTotal = document.getElementById('progress-text-total');
@@ -1509,7 +1480,7 @@
                 
                 const progressData = {};
                 allDestaques.forEach((data) => {
-                     if (data.livro && data.capitulo) { // Adiciona checagem
+                     if (data.livro && data.capitulo) {
                         if (!progressData[data.livro]) {
                             progressData[data.livro] = new Set();
                         }
@@ -1535,7 +1506,7 @@
                 progressBarTotal.style.width = `${percentageLivros}%`;
                 progressTextTotal.textContent = `${percentageLivros.toFixed(1)}% (${livrosCompletos} de ${totalLivros} livros)`;
 
-                // Cálculo de Capítulos (NOVO)
+                // Cálculo de Capítulos
                 const totalCapitulosGlobal = Object.values(allChapters).reduce((acc, val) => acc + val, 0);
                 const capitulosConcluidosGlobal = Object.values(progressData).reduce((acc, capSet) => acc + capSet.size, 0);
                 const percentageCapitulos = totalCapitulosGlobal > 0 ? (capitulosConcluidosGlobal / totalCapitulosGlobal) * 100 : 0;
@@ -1773,21 +1744,15 @@
             }
         }
         
-        /* ====================================================================
-            EDIÇÃO 4: initializeMainApp
-            Adicionada lógica para o novo menu de perfil.
-            ==================================================================== 
-        */
         function initializeMainApp(user) {
             const headerTitle = document.getElementById('header-title');
             
-            // Lógica do Menu de Perfil (NOVO)
             const profileButton = document.getElementById('profile-button');
             const profileMenu = document.getElementById('profile-menu');
             const logoutButton = document.getElementById('profile-menu-logout');
 
             profileButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Impede que o clique feche o menu imediatamente
+                e.stopPropagation();
                 profileMenu.classList.toggle('hidden');
             });
 
@@ -1798,7 +1763,6 @@
                 });
             };
             
-            // Fechar o menu ao clicar fora
             window.addEventListener('click', (e) => {
                 if (!profileMenu.classList.contains('hidden')) {
                     if (!profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
@@ -1806,7 +1770,6 @@
                     }
                 }
             });
-            // Fim da lógica do Menu de Perfil
 
             popularSelectLivros();
             popularInicio(); 
