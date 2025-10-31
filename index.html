@@ -185,18 +185,41 @@
     <!-- Conteúdo Principal da Aplicação -->
     <div id="app-content" class="hidden" style="padding-top: 4rem;">
 
-        <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center" style="height: 4rem;">
-            <div id="header-title" class="flex items-center cursor-pointer">
-                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                <h1 class="text-xl font-bold">Estudo Pessoal</h1>
+        <!-- 
+            ====================================================================
+            EDIÇÃO 3: Layout do Cabeçalho Revertido
+            Título centralizado, ícone de perfil posicionado absolutamente à direita.
+            ==================================================================== 
+        -->
+        <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center relative" style="height: 4rem;">
+            <!-- Título Centralizado -->
+            <div id="header-title" class="flex items-center cursor-pointer min-w-0">
+                <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <h1 class="text-xl font-bold truncate">Estudo Pessoal</h1>
             </div>
-            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center space-x-3">
-                <!-- Nome do Usuário Logado -->
-                <span id="user-display-name" class="text-sm font-medium text-white hidden"></span>
-                <!-- Botão de Sair (Logout) -->
-                <button id="logout-button" class="text-white hover:text-gray-200" title="Sair">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        
+            <!-- 
+                ====================================================================
+                EDIÇÃO 4: Botão de Perfil e Menu Dropdown
+                Substitui o nome de usuário e botão de logout por um ícone de perfil.
+                ==================================================================== 
+            -->
+            <div class="absolute right-4 top-1/2 -translate-y-1/2">
+                <button id="profile-button" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold text-lg hover:bg-white/30 transition-colors focus:outline-none">
+                    <span id="profile-initials"></span> <!-- JS vai popular isso -->
                 </button>
+
+                <!-- Menu Dropdown (Oculto por padrão) -->
+                <div id="profile-menu" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50 text-gray-800 dark:text-gray-200 ring-1 ring-black ring-opacity-5">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+                        <p class="font-medium truncate" id="profile-menu-name">Nome do Usuário</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate" id="profile-menu-email">email@usuario.com</p>
+                    </div>
+                    <button id="profile-menu-logout" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Sair</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -206,7 +229,10 @@
                 <!-- Navegação com Abas -->
                 <nav class="border-b border-gray-200 dark:border-gray-700 sticky bg-white dark:bg-gray-800 z-10 rounded-t-lg" style="top: 4rem;">
                     <div class="px-4 py-3 flex items-center space-x-5 overflow-x-auto whitespace-nowrap no-scrollbar">
-                        <a href="#" id="tab-livros" class="text-sm font-semibold pb-3 tab-active flex-shrink-0 flex items-center">
+                        <a href="#" id="tab-inicio" class="text-sm font-semibold pb-3 tab-active flex-shrink-0 flex items-center">
+                            ● INICIO
+                        </a>
+                        <a href="#" id="tab-livros" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0 flex items-center">
                             <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
                             JOIAS
                         </a>
@@ -222,8 +248,52 @@
                     </div>
                 </nav>
 
-                <!-- Visualização dos Livros -->
-                <main id="view-livros">
+                <!-- Visualização Início -->
+                <div id="view-inicio" class="p-4 sm:p-8 space-y-8">
+                    <!-- 
+                        ====================================================================
+                        EDIÇÃO 2: Progresso de Capítulos
+                        Adicionados novos elementos para a barra de progresso dos capítulos.
+                        ==================================================================== 
+                    -->
+                   <section id="inicio-grafico">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
+                       <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
+                           <!-- Progresso dos Livros -->
+                           <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Conclusão total dos livros:</p>
+                           <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                               <div id="progress-bar-total" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                           </div>
+                           <p id="progress-text-total" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                           
+                           <!-- Progresso dos Capítulos (NOVO) -->
+                           <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Conclusão total dos capítulos:</p>
+                           <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                               <div id="progress-bar-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                           </div>
+                           <p id="progress-text-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                       </div>
+                   </section>
+               
+                   <!-- Seção de Últimas Joias -->
+                   <section id="inicio-joias">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Últimas Joias Adicionadas (3)</h2>
+                       <div id="container-ultimas-joias" class="space-y-4">
+                           <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+                       </div>
+                   </section>
+               
+                   <!-- Seção de Últimas Pesquisas -->
+                   <section id="inicio-pesquisas">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Pesquisa Adicionada (1)</h2>
+                       <div id="container-ultimas-pesquisas" class="space-y-4">
+                           <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+                       </div>
+                   </section>
+               </div>
+
+                <!-- Visualização dos Livros (agora 'hidden') -->
+                <main id="view-livros" class="hidden">
                     <div class="p-4 sm:p-8 space-y-8">
                         <section id="antigo-testamento">
                             <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
@@ -487,6 +557,7 @@
         let estadoAtual = { livro: null, capitulo: null };
 
         const views = {
+            inicio: document.getElementById('view-inicio'), // NOVO
             livros: document.getElementById('view-livros'),
             adicionarDestaque: document.getElementById('view-adicionar-destaque'),
             pesquisar: document.getElementById('view-pesquisar'),
@@ -496,6 +567,7 @@
             conteudo: document.getElementById('view-conteudo'),
         };
         const tabs = {
+            inicio: document.getElementById('tab-inicio'), // NOVO
             livros: document.getElementById('tab-livros'),
             adicionarDestaque: document.getElementById('tab-adicionar-destaque'),
             pesquisar: document.getElementById('tab-pesquisar'),
@@ -518,10 +590,8 @@
         const emailInput = document.getElementById('login-email');
         const passwordInput = document.getElementById('login-password');
         const loginError = document.getElementById('login-error');
-        const userDisplayName = document.getElementById('user-display-name');
-
+        
         // --- LÓGICA DO TEMA (MOVIDO PARA FORA) ---
-        // Deve rodar imediatamente no carregamento, independente do login
         const themeToggleBtn = document.getElementById('theme-toggle');
         const sunIcon = document.getElementById('theme-toggle-sun');
         const moonIcon = document.getElementById('theme-toggle-moon');
@@ -539,13 +609,11 @@
             }
         }
 
-        // Define o tema inicial no carregamento da página
         const temaSalvo = localStorage.getItem('theme');
         const prefereEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const ehEscuro = temaSalvo === 'dark' || (temaSalvo === null && prefereEscuro);
         setTema(ehEscuro);
 
-        // Adiciona o listener de clique ao botão
         themeToggleBtn.addEventListener('click', () => {
             const isDark = document.documentElement.classList.contains('dark');
             setTema(!isDark);
@@ -556,7 +624,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // Usuário está logado
-                currentUserId = user.uid; // Armazena o ID do usuário
+                currentUserId = user.uid;
                 userDestaquesCollectionPath = `/artifacts/${appId}/users/${currentUserId}/destaques`;
                 userPesquisasCollectionPath = `/artifacts/${appId}/users/${currentUserId}/pesquisas`;
 
@@ -567,10 +635,12 @@
                 
                 appContent.classList.remove('hidden');
                 
-                if (userDisplayName) {
-                    userDisplayName.textContent = getDisplayNameFromEmail(user.email);
-                    userDisplayName.classList.remove('hidden');
-                }
+                // EDIÇÃO 4: Popular o menu de perfil
+                const displayName = getDisplayNameFromEmail(user.email);
+                const initials = displayName.charAt(0).toUpperCase();
+                document.getElementById('profile-initials').textContent = initials;
+                document.getElementById('profile-menu-name').textContent = displayName;
+                document.getElementById('profile-menu-email').textContent = user.email;
 
                 initializeMainApp(user);
             } else {
@@ -580,14 +650,9 @@
                 userPesquisasCollectionPath = null;
                 
                 loginScreen.style.display = 'flex';
-                setTimeout(() => loginScreen.classList.remove('opacity-0'), 10); // Garante que a transição de fade-in ocorra
+                setTimeout(() => loginScreen.classList.remove('opacity-0'), 10);
                 
                 appContent.classList.add('hidden');
-
-                if (userDisplayName) {
-                    userDisplayName.textContent = '';
-                    userDisplayName.classList.add('hidden');
-                }
             }
         });
 
@@ -600,7 +665,7 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // Login bem-sucedido, o onAuthStateChanged cuidará de mostrar o app
+                    // Login bem-sucedido
                 })
                 .catch((error) => {
                     console.error("Erro de login:", error.code, error.message);
@@ -641,9 +706,7 @@
         function getDisplayNameFromEmail(email) {
             if (!email) return 'Anônimo';
             const namePart = email.split('@')[0];
-            // Remove pontos ou números comuns em e-mails
             const cleanedName = namePart.replace(/[\._0-9]/g, ' '); 
-            // Pega a primeira parte (caso tenha espaço) e capitaliza
             return capitalizeFirstLetter(cleanedName.split(' ')[0]);
         }
 
@@ -739,8 +802,8 @@
                 const formData = new FormData(formDestaque);
                 const visibility = formData.get('visibility');
                 const destaqueData = {
-                    autorEmail: auth.currentUser.email, // Salva o email
-                    autorId: auth.currentUser.uid, // Salva o UID
+                    autorEmail: auth.currentUser.email,
+                    autorId: auth.currentUser.uid,
                     livro: formData.get('livro'),
                     capitulo: parseInt(formData.get('capitulo'), 10),
                     versiculo: formData.get('versiculo'),
@@ -754,7 +817,6 @@
                 
                 showSuccessModal('joia');
                 formDestaque.reset();
-                // Resetar botões de visibilidade para o padrão (Público)
                 document.getElementById('input-visibility-destaque').value = 'public';
                 document.querySelector('.visibility-btn-destaque[data-value="public"]').classList.add('active');
                 document.querySelector('.visibility-btn-destaque[data-value="private"]').classList.remove('active');
@@ -762,6 +824,11 @@
                 selectCapitulo.disabled = true;
                 selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
                 popularLivros();
+                
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
+
             } catch (e) {
                 console.error("Erro ao adicionar documento: ", e);
                 showToast("Falha ao salvar a joia.", false);
@@ -801,10 +868,13 @@
 
                 showSuccessModal('pesquisa');
                 formAdicionarPesquisa.reset();
-                // Resetar botões de visibilidade para o padrão (Público)
                 document.getElementById('input-visibility-pesquisa').value = 'public';
                 document.querySelector('.visibility-btn-pesquisa[data-value="public"]').classList.add('active');
                 document.querySelector('.visibility-btn-pesquisa[data-value="private"]').classList.remove('active');
+                
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
 
             } catch (e) {
                 console.error("Erro ao salvar pesquisa: ", e);
@@ -815,12 +885,10 @@
             }
         }
 
-        // Função genérica para buscar documentos públicos e privados
         async function fetchDocs(publicPath, userPath, queryConstraints = []) {
             let items = [];
-            const itemIds = new Set(); // Para evitar duplicatas se algo der errado
+            const itemIds = new Set();
 
-            // Buscar públicos
             try {
                 const publicQuery = query(collection(db, publicPath), ...queryConstraints);
                 const publicSnapshot = await getDocs(publicQuery);
@@ -833,13 +901,12 @@
                 console.error(`Erro ao buscar em ${publicPath}: `, e);
             }
 
-            // Buscar privados (só se o usuário estiver logado)
             if (userPath && currentUserId) {
                  try {
                     const privateQuery = query(collection(db, userPath), ...queryConstraints);
                     const privateSnapshot = await getDocs(privateQuery);
                     privateSnapshot.forEach(doc => {
-                        if (!itemIds.has(doc.id)) { // Evita duplicatas
+                        if (!itemIds.has(doc.id)) {
                             const data = { id: doc.id, ...doc.data(), path: userPath };
                             items.push(data);
                             itemIds.add(doc.id);
@@ -850,12 +917,23 @@
                 }
             }
             
+            // EDIÇÃO: Ordenar por 'createdAt' se a query não tiver um 'orderBy'
+            // Isso é crucial para 'fetchDocs' sem constraints pegar os mais recentes
+            const hasOrderBy = queryConstraints.some(c => c.type === 'orderBy');
+            if (!hasOrderBy) {
+                 items.sort((a, b) => {
+                    const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
+                    const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA; // Mais recente primeiro
+                });
+            }
+
             return items;
         }
 
 
         async function popularLivros() {
-            if (!currentUserId) return; // Não popular se deslogado
+            if (!currentUserId) return; 
 
             const containerAntigo = document.querySelector('#antigo-testamento .grid');
             const containerNovo = document.querySelector('#novo-testamento .grid');
@@ -864,14 +942,15 @@
 
             const progressData = {};
             try {
-                // Busca destaques públicos E privados
                 const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
                 
                 allDestaques.forEach((data) => {
-                    if (!progressData[data.livro]) {
-                        progressData[data.livro] = new Set();
+                    if (data.livro && data.capitulo) { // Adiciona checagem
+                        if (!progressData[data.livro]) {
+                            progressData[data.livro] = new Set();
+                        }
+                        progressData[data.livro].add(data.capitulo);
                     }
-                    progressData[data.livro].add(data.capitulo);
                 });
             } catch(e) {
                 console.error("Erro ao buscar destaques dos livros: ", e);
@@ -1014,6 +1093,10 @@
                     mostrarPesquisas();
                 }
 
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
+
             } catch (error) {
                 console.error("Erro ao deletar item: ", error);
                 showToast("Falha ao remover o item.", false);
@@ -1029,7 +1112,9 @@
             card.className = 'relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50';
             
             const isSearchView = !document.getElementById('view-pesquisar').classList.contains('hidden');
-            const referencia = isSearchView ? `<p class="font-semibold text-gray-600 dark:text-gray-300 text-sm mb-2">${livro} ${capitulo}</p>` : ``;
+            const isInicioView = !document.getElementById('view-inicio').classList.contains('hidden');
+            
+            const referencia = (isSearchView || isInicioView) ? `<p class="font-semibold text-gray-600 dark:text-gray-300 text-sm mb-2">${livro} ${capitulo}</p>` : ``;
 
             const textoId = `texto-${id}`;
             const toggleBtnId = `toggle-btn-texto-${id}`;
@@ -1054,14 +1139,13 @@
                     <span class="text-xs font-semibold text-red-500 dark:text-red-400 ml-2" title="Privado (só você pode ver)">
                         (PRIVADO)
                     </span>`;
-            } else { // public
+            } else {
                 visibilityIconHTML = `
                     <span class="text-xs font-semibold text-green-500 dark:text-green-400 ml-2" title="Público (todos podem ver)">
                         (PUBLICO)
                     </span>`;
             }
             
-            // Botões de Ação (Copiar, Editar, Deletar)
             let actionButtonsHTML = `
                 <button class="copy-btn text-gray-400 hover:text-green-500 p-1" title="Copiar">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
@@ -1109,7 +1193,6 @@
                 });
             }
             
-            // Adiciona listeners aos botões que existem
             card.querySelector('.copy-btn').addEventListener('click', () => {
                 const textoParaCopiar = `${destaque.livro} ${destaque.capitulo}:${destaque.versiculo}\n\n${destaque.texto}`;
                 copiarTexto(textoParaCopiar);
@@ -1141,7 +1224,7 @@
             const anotacoesId = `anotacoes-${id}`;
             const toggleBtnId = `toggle-btn-${id}`;
             let anotacoesHTML = '';
-            const MAX_LENGTH = 250; // Limite de caracteres para truncar
+            const MAX_LENGTH = 250; 
 
             if (anotacoes && anotacoes.length > MAX_LENGTH) {
                 const textoTruncado = anotacoes.substring(0, MAX_LENGTH) + '...';
@@ -1161,14 +1244,13 @@
                     <span class="text-xs font-semibold text-red-500 dark:text-red-400 ml-2" title="Privado (só você pode ver)">
                         (PRIVADO)
                     </span>`;
-            } else { // public
+            } else {
                 visibilityIconHTML = `
                     <span class="text-xs font-semibold text-green-500 dark:text-green-400 ml-2" title="Público (todos podem ver)">
                         (PUBLICO)
                     </span>`;
             }
 
-            // Botões de Ação (Copiar, Editar, Deletar)
             let actionButtonsHTML = `
                 <button class="copy-btn text-gray-400 hover:text-green-500 p-1" title="Copiar">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>
@@ -1216,7 +1298,6 @@
                 });
             }
             
-            // Adiciona listeners aos botões que existem
             card.querySelector('.copy-btn').addEventListener('click', () => {
                 let textoParaCopiar = `${pesquisa.titulo}\n\n`;
                 if (pesquisa.textoBiblico) {
@@ -1345,11 +1426,147 @@
             }
         }
 
+        /* ====================================================================
+            EDIÇÃO 1: buscarUltimasJoias
+            Limite alterado de 5 para 3.
+            ==================================================================== 
+        */
+        async function buscarUltimasJoias() {
+            const container = document.getElementById('container-ultimas-joias');
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando joias...</p>';
+            try {
+                const constraints = [
+                    orderBy("createdAt", "desc"),
+                    limit(3) // ALTERADO DE 5 PARA 3
+                ];
+                const joias = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
+
+                container.innerHTML = '';
+                if (joias.length > 0) {
+                    joias.forEach(joia => {
+                        const card = criarCardDestaque(joia);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma joia adicionada ainda.</p>';
+                }
+            } catch (e) {
+                console.error("Erro ao buscar últimas joias:", e);
+                container.innerHTML = '<p class="text-red-500">Erro ao carregar joias.</p>';
+            }
+        }
+
+        /* ====================================================================
+            EDIÇÃO 1: buscarUltimasPesquisas
+            Limite alterado de 5 para 1.
+            ==================================================================== 
+        */
+        async function buscarUltimasPesquisas() {
+            const container = document.getElementById('container-ultimas-pesquisas');
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando pesquisas...</p>';
+            try {
+                const constraints = [
+                    orderBy("createdAt", "desc"),
+                    limit(1) // ALTERADO DE 5 PARA 1
+                ];
+                const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath, constraints);
+
+                container.innerHTML = '';
+                if (pesquisas.length > 0) {
+                    pesquisas.forEach(pesquisa => {
+                        const card = criarCardPesquisa(pesquisa);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa adicionada ainda.</p>';
+                }
+            } catch (e) {
+                console.error("Erro ao buscar últimas pesquisas:", e);
+                container.innerHTML = '<p class="text-red-500">Erro ao carregar pesquisas.</p>';
+            }
+        }
+
+        /* ====================================================================
+            EDIÇÃO 2: calcularProgressoTotal
+            Função atualizada para calcular também o progresso dos capítulos.
+            ==================================================================== 
+        */
+        async function calcularProgressoTotal() {
+            const progressBarTotal = document.getElementById('progress-bar-total');
+            const progressTextTotal = document.getElementById('progress-text-total');
+            const progressBarCapitulos = document.getElementById('progress-bar-capitulos');
+            const progressTextCapitulos = document.getElementById('progress-text-capitulos');
+            
+            if (!progressBarTotal || !progressTextTotal || !progressBarCapitulos || !progressTextCapitulos) return;
+
+            progressBarTotal.style.width = '0%';
+            progressTextTotal.textContent = 'Calculando...';
+            progressBarCapitulos.style.width = '0%';
+            progressTextCapitulos.textContent = 'Calculando...';
+
+            try {
+                const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
+                
+                const progressData = {};
+                allDestaques.forEach((data) => {
+                     if (data.livro && data.capitulo) { // Adiciona checagem
+                        if (!progressData[data.livro]) {
+                            progressData[data.livro] = new Set();
+                        }
+                        progressData[data.livro].add(data.capitulo);
+                    }
+                });
+
+                let totalLivros = 0;
+                let livrosCompletos = 0;
+                
+                Object.values(biblia).forEach(testamento => {
+                    Object.entries(testamento).forEach(([livro, totalCaps]) => {
+                        totalLivros++;
+                        const capitulosFeitos = progressData[livro] ? progressData[livro].size : 0;
+                        if (capitulosFeitos === totalCaps) {
+                            livrosCompletos++;
+                        }
+                    });
+                });
+
+                // Cálculo de Livros
+                const percentageLivros = totalLivros > 0 ? (livrosCompletos / totalLivros) * 100 : 0;
+                progressBarTotal.style.width = `${percentageLivros}%`;
+                progressTextTotal.textContent = `${percentageLivros.toFixed(1)}% (${livrosCompletos} de ${totalLivros} livros)`;
+
+                // Cálculo de Capítulos (NOVO)
+                const totalCapitulosGlobal = Object.values(allChapters).reduce((acc, val) => acc + val, 0);
+                const capitulosConcluidosGlobal = Object.values(progressData).reduce((acc, capSet) => acc + capSet.size, 0);
+                const percentageCapitulos = totalCapitulosGlobal > 0 ? (capitulosConcluidosGlobal / totalCapitulosGlobal) * 100 : 0;
+                
+                progressBarCapitulos.style.width = `${percentageCapitulos}%`;
+                progressTextCapitulos.textContent = `${percentageCapitulos.toFixed(1)}% (${capitulosConcluidosGlobal} de ${totalCapitulosGlobal} capítulos)`;
+
+
+            } catch(e) {
+                console.error("Erro ao calcular progresso: ", e);
+                progressTextTotal.textContent = 'Erro ao calcular.';
+                progressTextCapitulos.textContent = 'Erro ao calcular.';
+            }
+        }
+
+        async function popularInicio() {
+            if (!currentUserId) return;
+            buscarUltimasJoias();
+            buscarUltimasPesquisas();
+            calcularProgressoTotal();
+        }
+
         function mudarAba(abaAtiva) {
             esconderTudo();
             Object.values(tabs).forEach(tab => tab.classList.replace('tab-active', 'tab-inactive'));
             
-            if (abaAtiva === 'livros') {
+            if (abaAtiva === 'inicio') {
+                views.inicio.classList.remove('hidden');
+                tabs.inicio.classList.replace('tab-inactive', 'tab-active');
+                popularInicio();
+            } else if (abaAtiva === 'livros') {
                 views.livros.classList.remove('hidden');
                 tabs.livros.classList.replace('tab-inactive', 'tab-active');
                 popularLivros();
@@ -1385,8 +1602,6 @@
 
         async function confirmarSenha() {
             const password = document.getElementById('password-input').value;
-            // ATENÇÃO: Esta senha é insegura! O ideal é re-autenticar o usuário.
-            // Mas, mantendo a lógica de senha "mestra" para ações:
             if (password === 'estudopessoal') { 
                 const { type, docId, path } = acaoPendente;
                 fecharModalSenha();
@@ -1403,7 +1618,7 @@
         async function abrirFormularioEdicao(docId, collectionPath) {
             const formEdit = document.getElementById('form-edit');
             const modalTitle = document.getElementById('edit-modal-title');
-            formEdit.innerHTML = ''; // Limpa o formulário anterior
+            formEdit.innerHTML = ''; 
 
             try {
                 const docRef = doc(db, collectionPath, docId);
@@ -1507,20 +1722,24 @@
                 showToast("Atualizado com sucesso!");
                 fecharFormularioEdicao();
 
-                // Refresh the view
                 if (isDestaque) {
                     if (!views.conteudo.classList.contains('hidden')) {
                         mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
                     } else if (!views.pesquisar.classList.contains('hidden')) {
                         formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
-                } else { // pesquisas
+                } else {
                      if (!views.pesquisas.classList.contains('hidden')) {
                         mostrarPesquisas();
                     } else if (!views.pesquisar.classList.contains('hidden')) {
                          formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
                 }
+                
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
+                }
+
             } catch (error) {
                 console.error("Erro ao salvar edição:", error);
                 showToast("Falha ao salvar as alterações.", false);
@@ -1535,7 +1754,6 @@
 
                 container.innerHTML = '';
                 if (pesquisas.length > 0) {
-                    // Ordena as pesquisas pela data de criação, da mais recente para a mais antiga
                     pesquisas.sort((a, b) => {
                         const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
                         const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
@@ -1555,30 +1773,51 @@
             }
         }
         
-        // Esta função agora só inicializa o que depende do usuário estar logado
+        /* ====================================================================
+            EDIÇÃO 4: initializeMainApp
+            Adicionada lógica para o novo menu de perfil.
+            ==================================================================== 
+        */
         function initializeMainApp(user) {
             const headerTitle = document.getElementById('header-title');
-            const logoutButton = document.getElementById('logout-button');
+            
+            // Lógica do Menu de Perfil (NOVO)
+            const profileButton = document.getElementById('profile-button');
+            const profileMenu = document.getElementById('profile-menu');
+            const logoutButton = document.getElementById('profile-menu-logout');
 
-            // Listener de Logout
-            if (logoutButton) {
-                logoutButton.onclick = () => {
-                    signOut(auth).catch((error) => {
-                        console.error("Erro ao sair:", error);
-                        showToast("Erro ao tentar sair.", false);
-                    });
-                };
-            }
+            profileButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Impede que o clique feche o menu imediatamente
+                profileMenu.classList.toggle('hidden');
+            });
 
-            popularLivros();
+            logoutButton.onclick = () => {
+                signOut(auth).catch((error) => {
+                    console.error("Erro ao sair:", error);
+                    showToast("Erro ao tentar sair.", false);
+                });
+            };
+            
+            // Fechar o menu ao clicar fora
+            window.addEventListener('click', (e) => {
+                if (!profileMenu.classList.contains('hidden')) {
+                    if (!profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
+                        profileMenu.classList.add('hidden');
+                    }
+                }
+            });
+            // Fim da lógica do Menu de Perfil
+
             popularSelectLivros();
+            popularInicio(); 
 
             formDestaque.addEventListener('submit', salvarDestaque);
             formPesquisa.addEventListener('submit', realizarPesquisa);
             formAdicionarPesquisa.addEventListener('submit', salvarPesquisa);
             document.getElementById('form-edit').addEventListener('submit', salvarEdicao);
             
-            headerTitle.addEventListener('click', () => mudarAba('livros'));
+            headerTitle.addEventListener('click', () => mudarAba('inicio')); 
+            tabs.inicio.addEventListener('click', (e) => { e.preventDefault(); mudarAba('inicio'); }); 
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
             tabs.adicionarDestaque.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionarDestaque'); });
             tabs.pesquisar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisar'); });
@@ -1592,7 +1831,6 @@
                 mostrarCapitulos(livro, numCapitulos);
             });
             
-            // Event Listeners dos Modais
             document.getElementById('cancel-password-btn').addEventListener('click', fecharModalSenha);
             document.getElementById('confirm-password-btn').addEventListener('click', confirmarSenha);
             passwordModal.addEventListener('click', (e) => {
@@ -1607,7 +1845,7 @@
                 const todosLivros = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
                 const numCapitulos = todosLivros[nomeLivro];
 
-                selectCapitulo.innerHTML = ''; // Limpa opções anteriores
+                selectCapitulo.innerHTML = ''; 
 
                 if (numCapitulos) {
                     selectCapitulo.disabled = false;
@@ -1624,7 +1862,6 @@
                 }
             });
 
-            // Lógica do seletor de pesquisa
             const searchTypeJoias = document.getElementById('search-type-joias');
             const searchTypePesquisas = document.getElementById('search-type-pesquisas');
 
@@ -1638,7 +1875,6 @@
                 searchTypeJoias.classList.remove('active');
             });
             
-            // Lógica do seletor de visibilidade (Joia)
             const visButtonsDestaque = document.querySelectorAll('.visibility-btn-destaque');
             const hiddenInputDestaque = document.getElementById('input-visibility-destaque');
             visButtonsDestaque.forEach(button => {
@@ -1649,7 +1885,6 @@
                 });
             });
 
-            // Lógica do seletor de visibilidade (Pesquisa)
             const visButtonsPesquisa = document.querySelectorAll('.visibility-btn-pesquisa');
             const hiddenInputPesquisa = document.getElementById('input-visibility-pesquisa');
             visButtonsPesquisa.forEach(button => {
@@ -1660,7 +1895,6 @@
                 });
             });
         }
-        // A função initializeMainApp() agora é chamada pelo listener onAuthStateChanged
         
     </script>
 </body>
