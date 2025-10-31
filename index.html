@@ -218,16 +218,13 @@
         <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl" style="padding-top: 4rem;">
             <div class="bg-white dark:bg-gray-800 shadow-md min-h-screen rounded-lg">
 
-                <!-- 
-                  ====================================================================
-                  CORREÇÃO: <nav>
-                  Removida a classe `sticky` e o `style="top: 4rem;"`.
-                  Agora esta barra é "estática" e vai rolar para cima
-                  junto com o restante do conteúdo.
-                  ==================================================================== 
-                -->
                 <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10 rounded-t-lg">
-                    <div class="px-4 py-3 flex items-center space-x-5 overflow-x-auto whitespace-nowrap no-scrollbar">
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                      ==================================================================== 
+                    -->
+                    <div class="px-4 py-3 flex items-center space-x-5 overflow-x-auto whitespace-nowrap no-scrollbar no-swipe">
                         <a href="#" id="tab-inicio" class="text-sm font-semibold pb-3 tab-active flex-shrink-0 flex items-center">
                             ● INICIO
                         </a>
@@ -247,8 +244,12 @@
                     </div>
                 </nav>
 
-                <!-- Visualização Início -->
-                <div id="view-inicio" class="p-4 sm:p-8 space-y-8">
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-inicio" class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
                    <section id="inicio-grafico">
                        <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
@@ -287,20 +288,39 @@
 
                 <!-- Visualização dos Livros (agora 'hidden') -->
                 <main id="view-livros" class="hidden">
-                    <div class="p-4 sm:p-8 space-y-8">
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                      ==================================================================== 
+                    -->
+                    <div class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
                         <section id="antigo-testamento">
                             <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
+                            <!-- 
+                              ====================================================================
+                              ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                              ==================================================================== 
+                            -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 no-swipe"></div>
                         </section>
                         <section id="novo-testamento">
                             <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS GREGAS CRISTÃS</h2>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
+                            <!-- 
+                              ====================================================================
+                              ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                              ==================================================================== 
+                            -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 no-swipe"></div>
                         </section>
                     </div>
                 </main>
                 
-                <!-- Visualização Adicionar Destaques -->
-                <div id="view-adicionar-destaque" class="hidden p-4 sm:p-8 flex flex-col items-center">
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-adicionar-destaque" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
                     <div class="w-full max-w-lg">
                         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Joia</h2>
                         <form id="form-destaque" class="space-y-4">
@@ -341,8 +361,12 @@
                     </div>
                 </div>
 
-                <!-- Visualização de Pesquisa -->
-                <div id="view-pesquisar" class="hidden p-4 sm:p-8 flex flex-col items-center">
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-pesquisar" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
                      <div class="w-full max-w-2xl">
                         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Pesquisar</h2>
                         <div id="search-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
@@ -353,7 +377,12 @@
                             <input type="search" id="input-pesquisa" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite uma palavra-chave...">
                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Buscar</button>
                         </form>
-                        <div id="container-resultados" class="space-y-4">
+                        <!-- 
+                          ====================================================================
+                          ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                          ==================================================================== 
+                        -->
+                        <div id="container-resultados" class="space-y-4 no-swipe">
                             <!-- Resultados da pesquisa aparecerão aqui -->
                         </div>
                     </div>
@@ -361,7 +390,12 @@
 
                 <!-- Visualização dos Capítulos (Grid de números) -->
                 <div id="view-capitulos" class="hidden">
-                     <header class="p-4 sm:p-6 border-b dark:border-gray-700">
+                     <!-- 
+                       ====================================================================
+                       ALTERAÇÃO (PADDING): "p-4 sm:p-6" mudou para "px-4 sm:px-6 py-3 sm:py-4"
+                       ==================================================================== 
+                     -->
+                     <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
                         <button id="btn-voltar-livros" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Livros</button>
                         <div class="flex items-center justify-between">
                             <button id="btn-livro-anterior" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
@@ -373,15 +407,30 @@
                             </button>
                         </div>
                     </header>
-                    <div class="p-4 sm:p-8">
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                      ==================================================================== 
+                    -->
+                    <div class="px-4 sm:px-8 py-3 sm:py-6">
                         <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Capítulos</h3>
-                        <div id="grid-capitulos" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-2"></div>
+                        <!-- 
+                          ====================================================================
+                          ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                          ==================================================================== 
+                        -->
+                        <div id="grid-capitulos" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-2 no-swipe"></div>
                     </div>
                 </div>
 
                 <!-- Visualização do Conteúdo do Capítulo (com destaques) -->
                 <div id="view-conteudo" class="hidden">
-                    <header class="p-4 sm:p-6 border-b dark:border-gray-700">
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-6" mudou para "px-4 sm:px-6 py-3 sm:py-4"
+                      ==================================================================== 
+                    -->
+                    <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
                         <button id="btn-voltar-capitulos" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Capítulos</button>
                         <div class="flex items-center justify-between">
                             <button id="btn-capitulo-anterior" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
@@ -393,17 +442,36 @@
                             </button>
                         </div>
                     </header>
-                    <div id="destaques-container" class="p-4 sm:p-8 space-y-4"></div>
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                      ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                      ==================================================================== 
+                    -->
+                    <div id="destaques-container" class="px-4 sm:px-8 py-3 sm:py-6 space-y-4 no-swipe"></div>
                 </div>
                 
-                <!-- Visualização de Pesquisas Salvas -->
-                <div id="view-pesquisas" class="hidden p-4 sm:p-8">
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-pesquisas" class="hidden px-4 sm:px-8 py-3 sm:py-6">
                     <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Pesquisas Salvas</h2>
-                    <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto"></div>
+                    <!-- 
+                      ====================================================================
+                      ALTERAÇÃO (SWIPE): Adicionada classe "no-swipe"
+                      ==================================================================== 
+                    -->
+                    <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto no-swipe"></div>
                 </div>
                 
-                <!-- Visualização Adicionar Pesquisa -->
-                <div id="view-adicionar-pesquisa" class="hidden p-4 sm:p-8 flex flex-col items-center">
+                <!-- 
+                  ====================================================================
+                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  ==================================================================== 
+                -->
+                <div id="view-adicionar-pesquisa" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
                     <div class="w-full max-w-lg">
                         <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Pesquisa</h2>
                         <form id="form-adicionar-pesquisa" class="space-y-4">
@@ -1857,6 +1925,95 @@
                     hiddenInputPesquisa.value = button.dataset.value;
                 });
             });
+            
+            // ====================================================================
+            // INÍCIO DA LÓGICA DE SWIPE
+            // ====================================================================
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchEndX = 0;
+            let touchEndY = 0;
+
+            // Ordem das abas para swipe
+            const tabOrder = [
+                'inicio', 
+                'livros', 
+                'pesquisas', 
+                'adicionarDestaque', 
+                'adicionarPesquisa', 
+                'pesquisar'
+            ];
+            
+            // Mapeamento de IDs de tabs para nomes de abas
+            const tabIdToName = {
+                'tab-inicio': 'inicio',
+                'tab-livros': 'livros',
+                'tab-pesquisas': 'pesquisas',
+                'tab-adicionar-destaque': 'adicionarDestaque',
+                'tab-adicionar-pesquisa': 'adicionarPesquisa',
+                'tab-pesquisar': 'pesquisar'
+            };
+
+            appContent.addEventListener('touchstart', (e) => {
+                // Ignora swipes em elementos com 'no-swipe' ou inputs
+                if (e.target.closest('.no-swipe') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    touchStartX = 0; // Reseta para evitar swipe acidental
+                    touchStartY = 0;
+                    return;
+                }
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            appContent.addEventListener('touchend', (e) => {
+                if (touchStartX === 0) return; // Não iniciou um swipe válido
+
+                if (e.target.closest('.no-swipe') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    return;
+                }
+                
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                
+                handleSwipeGesture();
+                
+                // Reseta os valores
+                touchStartX = 0;
+                touchStartY = 0;
+            }, { passive: true });
+
+            function handleSwipeGesture() {
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+                const threshold = 75; // Mínimo de pixels para considerar um swipe
+
+                // Verifica se foi um swipe mais horizontal do que vertical
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+                    
+                    // Encontra a aba ativa
+                    const activeTabEl = document.querySelector('.tab-active');
+                    if (!activeTabEl) return;
+                    
+                    const activeTabName = tabIdToName[activeTabEl.id];
+                    if (!activeTabName) return;
+
+                    const currentIndex = tabOrder.indexOf(activeTabName);
+                    if (currentIndex === -1) return;
+
+                    if (diffX > 0) {
+                        // Swipe para a Direita (voltar)
+                        const newIndex = (currentIndex - 1 + tabOrder.length) % tabOrder.length;
+                        mudarAba(tabOrder[newIndex]);
+                    } else {
+                        // Swipe para a Esquerda (avançar)
+                        const newIndex = (currentIndex + 1) % tabOrder.length;
+                        mudarAba(tabOrder[newIndex]);
+                    }
+                }
+            }
+            // ====================================================================
+            // FIM DA LÓGICA DE SWIPE
+            // ====================================================================
         }
         
     </script>
