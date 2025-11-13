@@ -1,15 +1,19 @@
-# 1. Substitua "meu-projeto" pelo nome real que você quer dar
 name = "destaques"
-
-# 2. A data de compatibilidade que vimos no log
 compatibility_date = "2025-11-13"
 
-# 3. A parte MAIS IMPORTANTE que o novo log revelou:
-# Ele precisa servir os arquivos estáticos da pasta "./dist".
-# Esta é a sintaxe .toml para "ativos": {"diretório": "./dist"}
-[site]
-bucket = "./dist"
+# 1. Aponte para o script que acabamos de criar.
+#    (Ajuste o caminho se você colocou em /src/index.js)
+main = "index.js"
 
-# 4. Se você também tiver um SCRIPT (como uma API), descomente a linha abaixo
-# e aponte para o seu arquivo principal.
-# main = "src/index.js"
+# 2. Em vez de [site], definimos a pasta "dist" como uma variável
+#    que o script "index.js" pode acessar.
+[vars]
+ASSETS = { binding_type = "kv_namespace", id = "destaques" }
+
+# 3. Esta parte é necessária para VINCULAR a pasta "dist"
+#    à variável ASSETS.
+[[kv_namespaces]]
+binding = "ASSETS"
+id = "destaques"
+preview_id = "destaques_preview"
+bucket = "./dist" # <-- A pasta que seu build cria
