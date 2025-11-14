@@ -1908,7 +1908,7 @@
         // ====================================================================
         function handleTouchStart(e) {
             // Ignora swipes em 'no-swipe' ou formulários
-            if (e.target.closest('.no-swipe') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            if (e.target.closest || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
                 isDragging = false;
                 gestureType = null;
                 return;
@@ -2151,3 +2151,4 @@
     </script>
 </body>
 </html>
+
