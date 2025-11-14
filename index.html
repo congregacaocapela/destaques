@@ -2,12 +2,6 @@
 <html lang="pt-br" class="">
 <head>
     <meta charset="UTF-8">
-    <!-- 
-      ====================================================================
-      MUDANÇA (SWIPE): Adicionado 'user-scalable=no' para previnir zoom 
-      acidental, o que melhora a experiência de swipe.
-      ==================================================================== 
-    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Estudo Pessoal</title>
 
@@ -66,10 +60,10 @@
         body {
             font-family: 'Inter', sans-serif;
             /* ====================================================================
-              MUDANÇA (SWIPE): Previne "overscroll" (puxar a página inteira)
+              MUDANÇA (ROLAGEM): 'overscroll-behavior-y' removido
+              para permitir rolagem vertical normal.
               ==================================================================== 
             */
-            overscroll-behavior-y: contain;
         }
         .bg-custom-blue {
             background-color: #3e5a8a;
@@ -173,11 +167,10 @@
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
         /* ====================================================================
-          NOVO (ALTURA DA ABA): Adiciona transição de altura ao viewport
+          MUDANÇA (ALTURA DA ABA): Removida transição de altura do viewport
           ==================================================================== 
         */
         #swipe-viewport {
-            transition: height 0.3s ease-in-out;
             position: relative;
         }
     </style>
@@ -230,16 +223,7 @@
             </div>
         </header>
 
-        <!-- 
-          Este container segura todo o conteúdo (incluindo a nav) e 
-          começa *abaixo* do header fixo (graças ao padding-top).
-        -->
         <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl" style="padding-top: 2rem;">
-            <!-- 
-              ====================================================================
-              MUDANÇA (SWIPE): Este 'div' agora é o container principal
-              ==================================================================== 
-            -->
             <div class="bg-white dark:bg-gray-800 shadow-md min-h-screen rounded-lg">
 
                 <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10 rounded-t-lg">
@@ -262,35 +246,18 @@
                     </div>
                 </nav>
 
-                <!-- 
-                  ====================================================================
-                  MUDANÇA (SWIPE): Viewport e Slider para as abas
-                  ==================================================================== 
-                -->
                 <div id="swipe-viewport" class="overflow-x-hidden">
                     <!-- 
                       ====================================================================
-                      MUDANÇA (ALTURA DA ABA): 'items-start' corrige o problema
-                      de todas as abas terem a altura da maior.
+                      MUDANÇA (ALTURA DA ABA): 'items-start' removido.
                       ==================================================================== 
                     -->
-                    <div id="swipe-slider" class="flex w-full items-start" style="transition: transform 0.3s ease-in-out;">
+                    <div id="swipe-slider" class="flex w-full" style="transition: transform 0.3s ease-in-out;">
                 
-                        <!-- 
-                          ====================================================================
-                          MUDANÇA (SWIPE): 'hidden' removido, 'w-full flex-shrink-0' adicionado
-                          ==================================================================== 
-                        -->
                         <div id="view-inicio" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 space-y-8">
-                           <!-- 
-                             ====================================================================
-                             MUDANÇA (Progresso): Seção de gráfico totalmente refeita
-                             ==================================================================== 
-                           -->
                            <section id="inicio-grafico">
                                <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
                                
-                               <!-- Progresso Público -->
                                <div id="progresso-publico" class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
                                    <h3 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-3">Progresso Público</h3>
                                    
@@ -318,7 +285,6 @@
                                    </div>
                                </div>
 
-                               <!-- Progresso Individual -->
                                <div id="progresso-individual" class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner mt-6">
                                    <h3 id="progresso-individual-title" class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-3">Progresso Individual</h3>
                                    
@@ -346,22 +312,14 @@
                                    </div>
                                </div>
                            </section>
-                           <!-- Fim da Seção de Progresso -->
                        
-                           <!-- Seção de Últimas Joias -->
                            <section id="inicio-joias">
-                               <!-- 
-                                 ====================================================================
-                                 MUDANÇA (Início): Título alterado de (3) para (1)
-                                 ==================================================================== 
-                               -->
                                <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Joia Adicionada (1)</h2>
                                <div id="container-ultimas-joias" class="space-y-4">
                                    <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
                                </div>
                            </section>
                        
-                           <!-- Seção de Últimas Pesquisas -->
                            <section id="inicio-pesquisas">
                                <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Pesquisa Adicionada (1)</h2>
                                <div id="container-ultimas-pesquisas" class="space-y-4">
@@ -370,40 +328,22 @@
                            </section>
                        </div>
 
-                        <!-- 
-                          ====================================================================
-                          MUDANÇA (SWIPE): 'hidden' removido, 'w-full flex-shrink-0' adicionado
-                          ==================================================================== 
-                        -->
                         <main id="view-livros" class="w-full flex-shrink-0">
                             <div class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
                                 <section id="antigo-testamento">
                                     <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
-                                    <!-- MUDANÇA: Removido 'no-swipe' -->
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
                                 </section>
                                 <section id="novo-testamento">
                                     <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS GREGAS CRISTÃS</h2>
-                                    <!-- MUDANÇA: Removido 'no-swipe' -->
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
                                 </section>
                             </div>
                         </main>
                         
-                        <!-- 
-                          ====================================================================
-                          MUDANÇA (SWIPE): 'hidden' removido, 'w-full flex-shrink-0' adicionado
-                          ==================================================================== 
-                        -->
                         <div id="view-pesquisas" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6">
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Pesquisas Salvas</h2>
-                            <!-- MUDANÇA: Removido 'no-swipe' -->
                             <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto"></div>
-                            <!-- 
-                              ====================================================================
-                              NOVO (Paginação): Botão "Mostrar Mais"
-                              ==================================================================== 
-                            -->
                             <div class="mt-6 text-center">
                                 <button id="btn-mostrar-mais-pesquisas" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">
                                     Mostrar Mais
@@ -411,20 +351,13 @@
                             </div>
                         </div>
                         
-                        <!-- 
-                          ====================================================================
-                          MUDANÇA (SWIPE): 'hidden' removido, 'w-full flex-shrink-0' adicionado
-                          ==================================================================== 
-                        -->
                         <div id="view-adicionar" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
                             <div class="w-full max-w-lg">
-                                <!-- Seletor Interno -->
                                 <div id="add-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
                                     <button id="add-type-joia" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Joia</button>
                                     <button id="add-type-pesquisa" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Pesquisa</button>
                                 </div>
                         
-                                <!-- Container do Formulário de Joia (Visível por padrão) -->
                                 <div id="form-container-joia">
                                     <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Joia</h2>
                                     <form id="form-destaque" class="space-y-4">
@@ -464,7 +397,6 @@
                                     </form>
                                 </div>
                         
-                                <!-- Container do Formulário de Pesquisa (Oculto por padrão) -->
                                 <div id="form-container-pesquisa" class="hidden">
                                     <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Pesquisa</h2>
                                     <form id="form-adicionar-pesquisa" class="space-y-4">
@@ -506,11 +438,6 @@
                             </div>
                         </div>
         
-                        <!-- 
-                          ====================================================================
-                          MUDANÇA (SWIPE): 'hidden' removido, 'w-full flex-shrink-0' adicionado
-                          ==================================================================== 
-                        -->
                         <div id="view-pesquisar" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
                              <div class="w-full max-w-2xl">
                                 <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Pesquisar</h2>
@@ -522,7 +449,6 @@
                                     <input type="search" id="input-pesquisa" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite uma palavra-chave...">
                                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Buscar</button>
                                 </form>
-                                <!-- MUDANÇA: Removido 'no-swipe' -->
                                 <div id="container-resultados" class="space-y-4">
                                     <!-- Resultados da pesquisa aparecerão aqui -->
                                 </div>
@@ -532,14 +458,8 @@
                     </div> <!-- Fim do #swipe-slider -->
                 </div> <!-- Fim do #swipe-viewport -->
                 
-                <!-- 
-                  ====================================================================
-                  MUDANÇA (SWIPE): Views de "Tela Cheia" (capítulos e conteúdo) 
-                  agora estão fora do slider.
-                  ==================================================================== 
-                -->
+                <!-- Views de "Tela Cheia" (capítulos e conteúdo) -->
 
-                <!-- Visualização dos Capítulos (Grid de números) -->
                 <div id="view-capitulos" class="hidden">
                      <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
                         <button id="btn-voltar-livros" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Livros</button>
@@ -555,12 +475,10 @@
                     </header>
                     <div class="px-4 sm:px-8 py-3 sm:py-6">
                         <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Capítulos</h3>
-                        <!-- MUDANÇA: Removido 'no-swipe' -->
                         <div id="grid-capitulos" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-2"></div>
                     </div>
                 </div>
 
-                <!-- Visualização do Conteúdo do Capítulo (com destaques) -->
                 <div id="view-conteudo" class="hidden">
                     <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
                         <button id="btn-voltar-capitulos" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Capítulos</button>
@@ -574,7 +492,6 @@
                             </button>
                         </div>
                     </header>
-                    <!-- MUDANÇA: Removido 'no-swipe' -->
                     <div id="destaques-container" class="px-4 sm:px-8 py-3 sm:py-6 space-y-4"></div>
                 </div>
 
@@ -687,9 +604,6 @@
         const allChapters = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
         let estadoAtual = { livro: null, capitulo: null };
 
-        // ====================================================================
-        // MUDANÇA (SWIPE): Definição de Views e Tabs atualizada
-        // ====================================================================
         const views = {
             inicio: document.getElementById('view-inicio'),
             livros: document.getElementById('view-livros'),
@@ -707,9 +621,6 @@
             pesquisas: document.getElementById('tab-pesquisas'),
         };
         
-        // ====================================================================
-        // MUDANÇA (SWIPE): Variáveis globais para o swipe
-        // ====================================================================
         let swipeViewport;
         let swipeSlider;
         let currentViewIndex = 0;
@@ -718,21 +629,14 @@
         let currentTranslate = 0;
         let viewportWidth = 0;
         let isDragging = false;
-        let gestureType = null; // 'swipe' or 'scroll'
+        let gestureType = null;
         
-        // ====================================================================
-        // MUDANÇA (CACHE): Conjunto para rastrear visualizações carregadas
-        // ====================================================================
         let loadedViews = new Set();
         
-        // ====================================================================
-        // NOVO (Paginação): Variáveis de paginação de pesquisas
-        // ====================================================================
         let allPesquisasCache = [];
         let pesquisasCurrentPage = 0;
         const PESQUISAS_PAGE_SIZE = 5;
 
-        // Ordem das abas para swipe (DEVE CORRESPONDER À ORDEM NO HTML)
         const tabOrder = [
             'inicio', 
             'livros', 
@@ -741,7 +645,6 @@
             'pesquisar'
         ];
         
-        // Mapeamento de IDs de tabs para nomes de abas
         const tabIdToName = {
             'tab-inicio': 'inicio',
             'tab-livros': 'livros',
@@ -828,11 +731,8 @@
                 
                 appContent.classList.add('hidden');
                 
-                // ====================================================================
-                // MUDANÇA (CACHE): Limpa o cache ao fazer logout
-                // ====================================================================
                 loadedViews.clear();
-                allPesquisasCache = []; // Limpa cache de paginação
+                allPesquisasCache = [];
                 pesquisasCurrentPage = 0;
             }
         });
@@ -953,29 +853,19 @@
             return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
 
-        // ====================================================================
-        // MUDANÇA (SWIPE): 'esconderTudo' agora só esconde views
-        // de tela cheia e mostra o viewport principal.
-        // ====================================================================
         function esconderTudo() { 
             views.capitulos.classList.add('hidden');
             views.conteudo.classList.add('hidden');
             if (swipeViewport) swipeViewport.classList.remove('hidden');
         }
 
-        // ====================================================================
-        // MUDANÇA (SWIPE): Nova função para mostrar views de tela cheia
-        // ====================================================================
         function showFullscreenView(viewElement) {
-            esconderTudo(); // Esconde outras views de tela cheia
-            if (swipeViewport) swipeViewport.classList.add('hidden'); // Esconde o slider
+            esconderTudo();
+            if (swipeViewport) swipeViewport.classList.add('hidden');
             viewElement.classList.remove('hidden');
             window.scrollTo(0, 0);
         }
         
-        // ====================================================================
-        // MUDANÇA (SWIPE): Novas funções para controlar o slider
-        // ====================================================================
         function updateActiveTab(index) {
             const activeAbaName = tabOrder[index];
             Object.entries(tabs).forEach(([name, tabEl]) => {
@@ -987,10 +877,12 @@
             });
         }
 
+        // ====================================================================
+        // MUDANÇA (ALTURA DA ABA): 'snapToView' não mexe mais com altura.
+        // ====================================================================
         function snapToView(index, smooth = true) {
             if (!swipeViewport || !swipeSlider) return;
             
-            // Valida o índice
             index = Math.max(0, Math.min(index, tabOrder.length - 1));
             
             currentViewIndex = index;
@@ -1001,21 +893,8 @@
             swipeSlider.style.transform = `translateX(${currentTranslate}px)`;
             
             updateActiveTab(index);
-
-            // ====================================================================
-            // NOVA LÓGICA DE AJUSTE DE ALTURA
-            // ====================================================================
-            try {
-                const activeView = swipeSlider.children[index];
-                if (activeView) {
-                    // Usar scrollHeight para obter a altura total real do conteúdo
-                    const newHeight = activeView.scrollHeight; 
-                    swipeViewport.style.height = `${newHeight}px`;
-                }
-            } catch (e) {
-                console.error("Erro ao ajustar altura da view:", e);
-            }
-            // ====================================================================
+            
+            // Lógica de altura removida
         }
 
         function popularSelectLivros() {
@@ -1066,16 +945,12 @@
                 selectCapitulo.disabled = true;
                 selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
                 
-                // ====================================================================
-                // MUDANÇA (CACHE): Invalida o cache de 'inicio' e 'livros'
-                // ====================================================================
                 loadedViews.delete('inicio');
-                loadedViews.delete('livros'); // Invalida 'livros' para atualizar o progresso
+                loadedViews.delete('livros');
                 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio(); // Await para garantir que a altura seja medida corretamente
-                    loadedViews.add('inicio'); // Readiciona, pois acabou de carregar
-                    snapToView(currentViewIndex, false); // Reajusta a altura
+                    await popularInicio();
+                    loadedViews.add('inicio');
                 }
 
             } catch (e) {
@@ -1106,7 +981,7 @@
                     autorId: auth.currentUser.uid,
                     titulo: formData.get('titulo'),
                     tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
-                    fonte: formData.get('fonte'), // NOVO CAMPO
+                    fonte: formData.get('fonte'),
                     textoBiblico: formData.get('textoBiblico'),
                     anotacoes: formData.get('anotacoes'),
                     visibility: visibility,
@@ -1122,17 +997,13 @@
                 document.querySelector('.visibility-btn-pesquisa[data-value="public"]').classList.add('active');
                 document.querySelector('.visibility-btn-pesquisa[data-value="private"]').classList.remove('active');
                 
-                // ====================================================================
-                // MUDANÇA (CACHE): Invalida o cache de 'inicio' e 'pesquisas'
-                // ====================================================================
                 loadedViews.delete('inicio');
                 loadedViews.delete('pesquisas');
-                allPesquisasCache = []; // LIMPAR CACHE de paginação
+                allPesquisasCache = [];
                 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio(); // Await para garantir que a altura seja medida corretamente
-                    loadedViews.add('inicio'); // Readiciona, pois acabou de carregar
-                    snapToView(currentViewIndex, false); // Reajusta a altura
+                    await popularInicio();
+                    loadedViews.add('inicio');
                 }
 
             } catch (e) {
@@ -1297,7 +1168,7 @@
             if (currentIndex < allBooks.length - 1) {
                 const livroSeguinte = allBooks[currentIndex + 1];
                 const capsSeguinte = allChapters[livroSeguinte];
-                btnSeguinte.onclick = () => mostrarCapitulos(livroAnterior, capsAnterior);
+                btnSeguinte.onclick = () => mostrarCapitulos(livroSeguinte, capsSeguinte);
                 btnSeguinte.disabled = false;
                 btnSeguinte.classList.remove('opacity-50', 'cursor-not-allowed');
             } else {
@@ -1360,40 +1231,31 @@
                 await deleteDoc(doc(db, collectionPath, docId));
                 showToast("Item removido.");
                 
-                // ====================================================================
-                // MUDANÇA (CACHE): Invalida o cache de 'inicio' e da aba relevante
-                // ====================================================================
                 loadedViews.delete('inicio');
                 
                 if (collectionPath.includes('destaques')) {
-                    loadedViews.delete('livros'); // Progresso dos livros mudou
+                    loadedViews.delete('livros');
                     if (document.getElementById('view-conteudo').classList.contains('hidden')) {
-                         // Se estiver na pesquisa, recarrega a pesquisa
                         if(swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
                             document.getElementById('form-pesquisa').requestSubmit();
                         }
                     } else {
-                        // Se estiver na view de conteúdo, recarrega o capítulo
                         await mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
                     }
                 } else if (collectionPath.includes('pesquisas')) {
                     loadedViews.delete('pesquisas');
-                    allPesquisasCache = []; // LIMPAR CACHE de paginação
-                    // Se estiver na view 'pesquisas', atualiza
+                    allPesquisasCache = [];
                     if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisas')) {
-                         await mostrarPesquisas(); // Recarregar
+                         await mostrarPesquisas();
                          loadedViews.add('pesquisas'); 
                     }
                 }
 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio(); // Recarregar
+                    await popularInicio();
                     loadedViews.add('inicio'); 
                 }
                 
-                // Reajusta a altura da aba atual
-                snapToView(currentViewIndex, false);
-
             } catch (error) {
                 console.error("Erro ao deletar item: ", error);
                 showToast("Falha ao remover o item.", false);
@@ -1737,11 +1599,6 @@
             } catch(e) {
                 console.error("Erro ao pesquisar: ", e);
                 container.innerHTML = `<p class="text-red-500">Ocorreu um erro ao realizar a pesquisa.</p>`;
-            } finally {
-                // ====================================================================
-                // MUDANÇA (ALTURA DA ABA): Reajusta a altura após a pesquisa
-                // ====================================================================
-                snapToView(currentViewIndex, false); // Reajusta altura sem animação
             }
         }
 
@@ -1751,7 +1608,7 @@
             try {
                 const constraints = [
                     orderBy("createdAt", "desc"),
-                    limit(1) // 1 joia
+                    limit(1)
                 ];
                 const joias = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
 
@@ -1776,7 +1633,7 @@
             try {
                 const constraints = [
                     orderBy("createdAt", "desc"),
-                    limit(1) // 1 pesquisa
+                    limit(1)
                 ];
                 const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath, constraints);
 
@@ -1835,7 +1692,6 @@
         }
 
         async function calcularProgressoTotal() {
-            // Elementos Públicos
             const progressBarPublicoLivros = document.getElementById('progress-bar-publico-livros');
             const progressTextPublicoLivros = document.getElementById('progress-text-publico-livros');
             const progressBarPublicoCapitulos = document.getElementById('progress-bar-publico-capitulos');
@@ -1843,7 +1699,6 @@
             const statsPublicoJoias = document.getElementById('stats-publico-joias');
             const statsPublicoPesquisas = document.getElementById('stats-publico-pesquisas');
 
-            // Elementos Individuais
             const individualTitle = document.getElementById('progresso-individual-title');
             const progressBarIndividualLivros = document.getElementById('progress-bar-individual-livros');
             const progressTextIndividualLivros = document.getElementById('progress-text-individual-livros');
@@ -1857,7 +1712,6 @@
                 return;
             }
             
-            // Setar estado de carregamento
             progressBarPublicoLivros.style.width = '0%';
             progressTextPublicoLivros.textContent = 'Calculando...';
             progressBarPublicoCapitulos.style.width = '0%';
@@ -1874,7 +1728,6 @@
             statsIndividualPesquisas.textContent = '...';
 
             try {
-                // 1. Fetch all 4 collections
                 const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath));
                 const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath));
                 const publicPesquisasQuery = query(collection(db, publicPesquisasCollectionPath));
@@ -1892,25 +1745,20 @@
                     getDocs(userPesquisasQuery) 
                 ]);
 
-                // 2. Process into arrays
                 const publicDestaques = publicDestaquesSnap.docs.map(doc => doc.data());
                 const userPrivateDestaques = userDestaquesSnap.docs.map(doc => doc.data());
                 const publicPesquisas = publicPesquisasSnap.docs.map(doc => doc.data());
                 const userPrivatePesquisas = userPesquisasSnap.docs.map(doc => doc.data());
 
-                // 3. Filter public for current user
                 const userPublicDestaques = publicDestaques.filter(d => d.autorId === currentUserId);
                 const userPublicPesquisas = publicPesquisas.filter(p => p.autorId === currentUserId);
 
-                // 4. Create combined "Individual" lists
                 const individualDestaques = [...userPrivateDestaques, ...userPublicDestaques];
                 const individualPesquisas = [...userPrivatePesquisas, ...userPublicPesquisas];
 
-                // 5. Calculate progress
                 const publicProgress = _calculateProgress(publicDestaques);
                 const individualProgress = _calculateProgress(individualDestaques);
 
-                // 6. Update DOM for "Público"
                 statsPublicoJoias.textContent = publicDestaques.length;
                 statsPublicoPesquisas.textContent = publicPesquisas.length;
                 
@@ -1919,7 +1767,6 @@
                 progressBarPublicoCapitulos.style.width = `${publicProgress.percentageCapitulos}%`;
                 progressTextPublicoCapitulos.textContent = `${publicProgress.percentageCapitulos.toFixed(1)}% (${publicProgress.capitulosConcluidosGlobal} de ${publicProgress.totalCapitulosGlobal} capítulos)`;
 
-                // 7. Update DOM for "Individual"
                 statsIndividualJoias.textContent = individualDestaques.length;
                 statsIndividualPesquisas.textContent = individualPesquisas.length;
 
@@ -1931,7 +1778,6 @@
 
             } catch(e) {
                 console.error("Erro ao calcular progresso: ", e);
-                // Set error text for all
                 progressTextPublicoLivros.textContent = 'Erro ao calcular.';
                 progressTextPublicoCapitulos.textContent = 'Erro ao calcular.';
                 progressTextIndividualLivros.textContent = 'Erro ao calcular.';
@@ -1946,7 +1792,6 @@
 
         async function popularInicio() {
             if (!currentUserId) return;
-            // Executar em paralelo
             await Promise.all([
                 buscarUltimasJoias(),
                 buscarUltimasPesquisas(),
@@ -1955,46 +1800,37 @@
         }
 
         // ====================================================================
-        // MUDANÇA (CACHE/ALTURA): 'mudarAba' atualizada com lógica de cache
-        // e carregamento síncrono ANTES do snap.
+        // MUDANÇA (CACHE/ALTURA): 'mudarAba' agora é async e não mexe com altura
         // ====================================================================
         async function mudarAba(abaAtiva) {
             const newIndex = tabOrder.indexOf(abaAtiva);
-            if (newIndex < 0) return; // Aba não encontrada (ex: voltar de capítulos)
+            if (newIndex < 0) return;
 
-            // É uma aba principal
-            esconderTudo(); // Garante que views de tela cheia estão escondidas
+            esconderTudo();
             
             const abaName = tabOrder[newIndex];
 
-            // Lógica de carregamento de conteúdo (com cache)
             if (!loadedViews.has(abaName)) {
                 console.log(`CACHE: Carregando '${abaName}'`);
-                // Usar 'await' para garantir que o conteúdo seja carregado
-                // ANTES de medir a altura
                 try {
                     if (abaName === 'inicio') {
                         await popularInicio();
                     } else if (abaName === 'livros') {
                         await popularLivros();
                     } else if (abaName === 'pesquisas') {
-                        await mostrarPesquisas(); // mostrarPesquisas agora é async
+                        await mostrarPesquisas();
                     }
-                    // 'adicionar' e 'pesquisar' não precisam de load
-                    
                     loadedViews.add(abaName);
                 } catch (e) {
                     console.error(`Falha ao carregar aba ${abaName}:`, e);
                 }
             }
             
-            // Resetar o seletor da aba 'adicionar' sempre que ela for mostrada
             if (abaName === 'adicionar') {
                 document.getElementById('add-type-joia').click();
             }
-
-            // Agora que o conteúdo está (potencialmente) carregado, faça o snap.
-            // snapToView cuidará da medição de altura.
+            
+            // Apenas faz o snap. A altura será automática.
             snapToView(newIndex); 
         }
         
@@ -2139,13 +1975,10 @@
                 showToast("Atualizado com sucesso!");
                 fecharFormularioEdicao();
 
-                // ====================================================================
-                // MUDANÇA (CACHE): Invalida o cache de 'inicio' e da aba relevante
-                // ====================================================================
                 loadedViews.delete('inicio');
                 
                 if (isDestaque) {
-                    loadedViews.delete('livros'); // Progresso dos livros pode ter mudado
+                    loadedViews.delete('livros');
                     if (!views.conteudo.classList.contains('hidden')) {
                         mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
                     } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
@@ -2153,9 +1986,9 @@
                     }
                 } else {
                     loadedViews.delete('pesquisas');
-                    allPesquisasCache = []; // LIMPAR CACHE de paginação
+                    allPesquisasCache = [];
                      if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisas')) {
-                        await mostrarPesquisas(); // Recarregar
+                        await mostrarPesquisas();
                         loadedViews.add('pesquisas'); 
                     } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
                          formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
@@ -2163,12 +1996,9 @@
                 }
                 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio(); // Recarregar
+                    await popularInicio();
                     loadedViews.add('inicio'); 
                 }
-
-                // Reajusta a altura da aba atual
-                snapToView(currentViewIndex, false);
 
             } catch (error) {
                 console.error("Erro ao salvar edição:", error);
@@ -2176,14 +2006,10 @@
             }
         }
         
-        // ====================================================================
-        // NOVO (Paginação): Função para renderizar a página atual de pesquisas
-        // ====================================================================
         function renderPesquisasPage() {
             const container = document.getElementById('container-pesquisas');
             const btnMostrarMais = document.getElementById('btn-mostrar-mais-pesquisas');
             
-            // Na primeira página (index 0), limpa o container.
             if (pesquisasCurrentPage === 0) {
                 container.innerHTML = '';
             }
@@ -2193,18 +2019,15 @@
             
             const pageItems = allPesquisasCache.slice(start, end);
             
-            // Se o cache estiver vazio na primeira página
             if (allPesquisasCache.length === 0 && start === 0) {
                 container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa salva ainda.</p>';
             }
 
-            // Adiciona os itens da página ao container
             pageItems.forEach(pesquisa => {
                 const card = criarCardPesquisa(pesquisa);
                 container.appendChild(card);
             });
 
-            // Gerencia a visibilidade do botão "Mostrar Mais"
             if (end < allPesquisasCache.length) {
                 btnMostrarMais.classList.remove('hidden');
             } else {
@@ -2212,53 +2035,42 @@
             }
         }
 
-        // ====================================================================
-        // MUDANÇA (Paginação): 'mostrarPesquisas' agora gerencia o cache e a paginação
-        // ====================================================================
-        async function mostrarPesquisas() { // Tornou-se async
+        async function mostrarPesquisas() {
             const container = document.getElementById('container-pesquisas');
             const btnMostrarMais = document.getElementById('btn-mostrar-mais-pesquisas');
             
-            // Só busca se o cache estiver vazio (ou seja, primeira carga ou invalidado)
             if (allPesquisasCache.length === 0) {
                 container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">A carregar pesquisas...</p>';
-                btnMostrarMais.classList.add('hidden'); // Esconde o botão durante a carga inicial
+                btnMostrarMais.classList.add('hidden');
                 try {
                     const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath);
                     
-                    // Ordena por data (mais recente primeiro)
                     pesquisas.sort((a, b) => {
                         const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
                         const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
                         return dateB - dateA;
                     });
                     
-                    allPesquisasCache = pesquisas; // Salva no cache
+                    allPesquisasCache = pesquisas;
                     
                 } catch (e) {
                     console.error("Erro ao buscar pesquisas: ", e);
                     container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar as pesquisas.</p>';
-                    return; // Sai em caso de erro
+                    return;
                 }
             }
             
-            // Reseta para a primeira página e renderiza
             pesquisasCurrentPage = 0;
             renderPesquisasPage();
         }
         
-        // ====================================================================
-        // MUDANÇA (SWIPE): Novas funções de swipe
-        // ====================================================================
         function handleTouchStart(e) {
-            // Ignora swipes apenas em 'no-swipe'
             if (e.target.closest('.no-swipe')) {
                 isDragging = false;
                 gestureType = null;
                 return;
             }
             
-            // Ignora se o swipe começar em inputs, textareas ou selects
             const targetTag = e.target.tagName;
             if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || targetTag === 'SELECT') {
                  isDragging = false;
@@ -2270,9 +2082,9 @@
             touchStartY = e.touches[0].clientY;
             viewportWidth = swipeViewport.offsetWidth;
             
-            swipeSlider.style.transition = 'none'; // Desabilita transição para arrastar
+            swipeSlider.style.transition = 'none';
             isDragging = true;
-            gestureType = null; // Reseta tipo de gesto
+            gestureType = null;
         }
 
         function handleTouchMove(e) {
@@ -2284,8 +2096,7 @@
             const diffY = currentY - touchStartY;
 
             if (gestureType === null) {
-                // Determina se é swipe ou scroll
-                if (Math.abs(diffX) > (Math.abs(diffY) * 1.5)) { // Exige mais movimento horizontal
+                if (Math.abs(diffX) > (Math.abs(diffY) * 1.5)) {
                     gestureType = 'swipe';
                 } else {
                     gestureType = 'scroll';
@@ -2293,57 +2104,49 @@
             }
 
             if (gestureType === 'swipe') {
-                e.preventDefault(); // Previne scroll vertical SOMENTE se for swipe
+                e.preventDefault();
                 
                 let newTranslate = currentTranslate + diffX;
                 
-                // Aplica o transform
                 swipeSlider.style.transform = `translateX(${newTranslate}px)`;
             }
-            // Se for 'scroll', não faz nada e deixa o navegador rolar
         }
 
-        async function handleTouchEnd(e) { // Tornou-se async
+        async function handleTouchEnd(e) {
             const oldIndex = currentViewIndex; 
 
             if (!isDragging || gestureType !== 'swipe') {
                 isDragging = false;
                 gestureType = null;
-                return; // Não foi um swipe válido
+                return;
             }
 
             isDragging = false;
             gestureType = null;
-            swipeSlider.style.transition = 'transform 0.3s ease-in-out'; // Reabilita transição
+            swipeSlider.style.transition = 'transform 0.3s ease-in-out';
 
             const finalX = e.changedTouches[0].clientX;
             const totalDiffX = finalX - touchStartX;
-            const threshold = viewportWidth / 4; // Limite para mudar de aba
+            const threshold = viewportWidth / 4;
 
             let newIndex = currentViewIndex;
 
             if (totalDiffX < -threshold) {
-                // Swipe para Esquerda (Avançar)
                 newIndex = Math.min(currentViewIndex + 1, tabOrder.length - 1);
             } else if (totalDiffX > threshold) {
-                // Swipe para Direita (Voltar)
                 newIndex = Math.max(currentViewIndex - 1, 0);
             }
             
-            // ====================================================================
-            // MUDANÇA (CACHE): Chama 'mudarAba' em vez de carregar aqui
-            // ====================================================================
             if (newIndex !== oldIndex) {
                 const newAbaName = tabOrder[newIndex];
-                await mudarAba(newAbaName); // mudarAba cuidará de tudo (agora é async)
+                await mudarAba(newAbaName);
             } else {
-                // Se não mudou (swipe fraco), apenas volta ao lugar
                 snapToView(oldIndex);
             }
         }
 
 
-        async function initializeMainApp(user) { // Tornou-se async
+        async function initializeMainApp(user) {
             const headerTitle = document.getElementById('header-title');
             
             swipeViewport = document.getElementById('swipe-viewport');
@@ -2375,16 +2178,11 @@
 
             popularSelectLivros();
             
-            // ====================================================================
-            // MUDANÇA (CACHE/ALTURA): Carrega a primeira aba, marca e define altura
-            // ====================================================================
-            await popularInicio(); // Espera o conteúdo carregar
+            await popularInicio();
             loadedViews.add('inicio');
-            snapToView(0, false); // Define a posição e a altura inicial
+            snapToView(0, false);
 
-            // Recalcular no resize
             window.addEventListener('resize', () => {
-                // Re-snap sem animação para re-medir largura e altura
                 snapToView(currentViewIndex, false); 
             });
 
@@ -2393,7 +2191,6 @@
             formAdicionarPesquisa.addEventListener('submit', salvarPesquisa);
             document.getElementById('form-edit').addEventListener('submit', salvarEdicao);
             
-            // Listeners das abas (Tabs) - agora chamam a função async
             headerTitle.addEventListener('click', () => mudarAba('inicio')); 
             tabs.inicio.addEventListener('click', (e) => { e.preventDefault(); mudarAba('inicio'); }); 
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
@@ -2401,7 +2198,6 @@
             tabs.pesquisar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisar'); });
             tabs.pesquisas.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisas'); });
             
-            // Listeners dos botões "Voltar"
             document.getElementById('btn-voltar-livros').addEventListener('click', () => mudarAba('livros'));
             document.getElementById('btn-voltar-capitulos').addEventListener('click', () => {
                 const livro = estadoAtual.livro;
@@ -2409,7 +2205,6 @@
                 mostrarCapitulos(livro, numCapitulos);
             });
             
-            // Listeners do seletor interno "+ ADD"
             const addTypeJoiaBtn = document.getElementById('add-type-joia');
             const addTypePesquisaBtn = document.getElementById('add-type-pesquisa');
             const formContainerJoia = document.getElementById('form-container-joia');
@@ -2420,7 +2215,6 @@
                 addTypePesquisaBtn.classList.remove('active');
                 formContainerJoia.classList.remove('hidden');
                 formContainerPesquisa.classList.add('hidden');
-                snapToView(currentViewIndex, false); // Reajusta altura
             });
 
             addTypePesquisaBtn.addEventListener('click', () => {
@@ -2428,19 +2222,13 @@
                 addTypeJoiaBtn.classList.remove('active');
                 formContainerPesquisa.classList.remove('hidden');
                 formContainerJoia.classList.add('hidden');
-                snapToView(currentViewIndex, false); // Reajusta altura
             });
             
-            // ====================================================================
-            // NOVO (Paginação): Listener para o botão "Mostrar Mais"
-            // ====================================================================
             document.getElementById('btn-mostrar-mais-pesquisas').addEventListener('click', () => {
-                pesquisasCurrentPage++; // Avança para a próxima página
-                renderPesquisasPage(); // Renderiza os novos itens
-                snapToView(currentViewIndex, false); // Reajusta altura
+                pesquisasCurrentPage++;
+                renderPesquisasPage();
             });
 
-            // Listeners dos Modais
             document.getElementById('cancel-password-btn').addEventListener('click', fecharModalSenha);
             document.getElementById('confirm-password-btn').addEventListener('click', confirmarSenha);
             passwordModal.addEventListener('click', (e) => {
@@ -2450,7 +2238,6 @@
                 if (e.target === editModal) fecharFormularioEdicao();
             });
 
-            // Listener do Formulário de Joia
             selectLivro.addEventListener('change', () => {
                 const nomeLivro = selectLivro.value;
                 const todosLivros = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
@@ -2473,7 +2260,6 @@
                 }
             });
 
-            // Listener do Seletor de Pesquisa
             const searchTypeJoias = document.getElementById('search-type-joias');
             const searchTypePesquisas = document.getElementById('search-type-pesquisas');
 
@@ -2487,7 +2273,6 @@
                 searchTypeJoias.classList.remove('active');
             });
             
-            // Listeners dos botões de Visibilidade
             const visButtonsDestaque = document.querySelectorAll('.visibility-btn-destaque');
             const hiddenInputDestaque = document.getElementById('input-visibility-destaque');
             visButtonsDestaque.forEach(button => {
@@ -2508,11 +2293,10 @@
                 });
             });
             
-            // Listeners de Swipe (Arraste)
             swipeViewport.addEventListener('touchstart', handleTouchStart, { passive: true });
-            swipeViewport.addEventListener('touchmove', handleTouchMove, { passive: false }); // 'passive: false' para permitir preventDefault()
+            swipeViewport.addEventListener('touchmove', handleTouchMove, { passive: false });
             swipeViewport.addEventListener('touchend', handleTouchEnd, { passive: true });
-            swipeViewport.addEventListener('touchcancel', handleTouchEnd, { passive: true }); // Garante que o estado resete se o swipe for cancelado
+            swipeViewport.addEventListener('touchcancel', handleTouchEnd, { passive: true });
         }
         
     </script>
