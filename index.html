@@ -268,24 +268,71 @@
                           ==================================================================== 
                         -->
                         <div id="view-inicio" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 space-y-8">
+                           <!-- 
+                             ====================================================================
+                             MUDANÇA (Progresso): Seção de gráfico totalmente refeita
+                             ==================================================================== 
+                           -->
                            <section id="inicio-grafico">
                                <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
-                               <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
-                                   <!-- Progresso dos Livros -->
-                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Conclusão total dos livros:</p>
-                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
-                                       <div id="progress-bar-total" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
-                                   </div>
-                                   <p id="progress-text-total" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                               
+                               <!-- Progresso Público -->
+                               <div id="progresso-publico" class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
+                                   <h3 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-3">Progresso Público</h3>
                                    
-                                   <!-- Progresso dos Capítulos (NOVO) -->
-                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Conclusão total dos capítulos:</p>
+                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Conclusão total dos livros (Público):</p>
                                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
-                                       <div id="progress-bar-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                                       <div id="progress-bar-publico-livros" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
                                    </div>
-                                   <p id="progress-text-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                                   <p id="progress-text-publico-livros" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                                   
+                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Conclusão total dos capítulos (Público):</p>
+                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                                       <div id="progress-bar-publico-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                                   </div>
+                                   <p id="progress-text-publico-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                                   
+                                   <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600/50 flex justify-around">
+                                       <div class="text-center">
+                                           <p class="text-sm text-gray-600 dark:text-gray-400">Joias Públicas</p>
+                                           <p id="stats-publico-joias" class="text-xl font-bold text-blue-600 dark:text-blue-400">0</p>
+                                       </div>
+                                       <div class="text-center">
+                                           <p class="text-sm text-gray-600 dark:text-gray-400">Pesquisas Públicas</p>
+                                           <p id="stats-publico-pesquisas" class="text-xl font-bold text-blue-600 dark:text-blue-400">0</p>
+                                       </div>
+                                   </div>
+                               </div>
+
+                               <!-- Progresso Individual -->
+                               <div id="progresso-individual" class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner mt-6">
+                                   <h3 id="progresso-individual-title" class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-3">Progresso Individual</h3>
+                                   
+                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meus livros concluídos:</p>
+                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                                       <div id="progress-bar-individual-livros" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                                   </div>
+                                   <p id="progress-text-individual-livros" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                                   
+                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Meus capítulos concluídos:</p>
+                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                                       <div id="progress-bar-individual-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                                   </div>
+                                   <p id="progress-text-individual-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                                   
+                                   <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600/50 flex justify-around">
+                                       <div class="text-center">
+                                           <p class="text-sm text-gray-600 dark:text-gray-400">Minhas Joias</p>
+                                           <p id="stats-individual-joias" class="text-xl font-bold text-green-600 dark:text-green-400">0</p>
+                                       </div>
+                                       <div class="text-center">
+                                           <p class="text-sm text-gray-600 dark:text-gray-400">Minhas Pesquisas</p>
+                                           <p id="stats-individual-pesquisas" class="text-xl font-bold text-green-600 dark:text-green-400">0</p>
+                                       </div>
+                                   </div>
                                </div>
                            </section>
+                           <!-- Fim da Seção de Progresso -->
                        
                            <!-- Seção de Últimas Joias -->
                            <section id="inicio-joias">
@@ -1073,9 +1120,24 @@
 
             const progressData = {};
             try {
-                const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
+                // ====================================================================
+                // MUDANÇA (Progresso): Logica de fetch atualizada para mostrar 
+                // o progresso individual na tela de livros.
+                // ====================================================================
+                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("autorId", "==", currentUserId));
+                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath));
+
+                const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
+                    getDocs(publicDestaquesQuery),
+                    getDocs(userDestaquesQuery)
+                ]);
+
+                const allUserDestaques = [
+                    ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
+                    ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
+                ];
                 
-                allDestaques.forEach((data) => {
+                allUserDestaques.forEach((data) => {
                     if (data.livro && data.capitulo) {
                         if (!progressData[data.livro]) {
                             progressData[data.livro] = new Set();
@@ -1177,9 +1239,23 @@
 
             const capitulosComDestaque = new Set();
             try {
-                const constraints = [where("livro", "==", nomeLivro)];
-                const destaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
-                destaques.forEach((data) => {
+                // ====================================================================
+                // MUDANÇA (Progresso): Busca apenas destaques do usuário para colorir
+                // ====================================================================
+                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("livro", "==", nomeLivro), where("autorId", "==", currentUserId));
+                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath), where("livro", "==", nomeLivro));
+
+                const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
+                    getDocs(publicDestaquesQuery),
+                    getDocs(userDestaquesQuery)
+                ]);
+
+                const allUserDestaques = [
+                    ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
+                    ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
+                ];
+
+                allUserDestaques.forEach((data) => {
                     capitulosComDestaque.add(data.capitulo);
                 });
             } catch (e) {
@@ -1500,11 +1576,24 @@
             container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando destaques...</p>';
 
             try {
-                const constraints = [
+                // ====================================================================
+                // MUDANÇA (Progresso): Mostra TODOS os destaques (públicos e privados do user)
+                // ====================================================================
+                const constraintsPublic = [
                     where("livro", "==", nomeLivro), 
                     where("capitulo", "==", numCapitulo)
                 ];
-                const destaquesDoCapitulo = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
+                const constraintsPrivate = [
+                    where("livro", "==", nomeLivro), 
+                    where("capitulo", "==", numCapitulo)
+                ];
+                
+                const destaquesDoCapitulo = await fetchDocs(
+                    publicDestaquesCollectionPath, 
+                    userDestaquesCollectionPath, 
+                    constraintsPublic // Nota: fetchDocs aplica constraints a ambas as queries
+                );
+
 
                 destaquesDoCapitulo.sort((a, b) => {
                     const firstNumA = parseInt(String(a.versiculo).split(/[,-]/)[0], 10);
@@ -1584,6 +1673,9 @@
                     orderBy("createdAt", "desc"),
                     limit(3) // 3 joias
                 ];
+                // ====================================================================
+                // MUDANÇA (Progresso): Mostra as últimas joias (públicas e privadas do user)
+                // ====================================================================
                 const joias = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
 
                 container.innerHTML = '';
@@ -1609,6 +1701,9 @@
                     orderBy("createdAt", "desc"),
                     limit(1) // 1 pesquisa
                 ];
+                // ====================================================================
+                // MUDANÇA (Progresso): Mostra as últimas pesquisas (públicas e privadas do user)
+                // ====================================================================
                 const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath, constraints);
 
                 container.innerHTML = '';
@@ -1625,66 +1720,161 @@
                 container.innerHTML = '<p class="text-red-500">Erro ao carregar pesquisas.</p>';
             }
         }
+        
+        // ====================================================================
+        // MUDANÇA (Progresso): Nova função helper para calcular progresso
+        // ====================================================================
+        function _calculateProgress(destaquesList) {
+            const progressData = {};
+            destaquesList.forEach((data) => {
+                 if (data.livro && data.capitulo) {
+                    if (!progressData[data.livro]) {
+                        progressData[data.livro] = new Set();
+                    }
+                    progressData[data.livro].add(data.capitulo);
+                }
+            });
 
-        async function calcularProgressoTotal() {
-            const progressBarTotal = document.getElementById('progress-bar-total');
-            const progressTextTotal = document.getElementById('progress-text-total');
-            const progressBarCapitulos = document.getElementById('progress-bar-capitulos');
-            const progressTextCapitulos = document.getElementById('progress-text-capitulos');
+            let totalLivros = 0;
+            let livrosCompletos = 0;
             
-            if (!progressBarTotal || !progressTextTotal || !progressBarCapitulos || !progressTextCapitulos) return;
-
-            progressBarTotal.style.width = '0%';
-            progressTextTotal.textContent = 'Calculando...';
-            progressBarCapitulos.style.width = '0%';
-            progressTextCapitulos.textContent = 'Calculando...';
-
-            try {
-                const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
-                
-                const progressData = {};
-                allDestaques.forEach((data) => {
-                     if (data.livro && data.capitulo) {
-                        if (!progressData[data.livro]) {
-                            progressData[data.livro] = new Set();
-                        }
-                        progressData[data.livro].add(data.capitulo);
+            Object.values(biblia).forEach(testamento => {
+                Object.entries(testamento).forEach(([livro, totalCaps]) => {
+                    totalLivros++;
+                    const capitulosFeitos = progressData[livro] ? progressData[livro].size : 0;
+                    if (capitulosFeitos === totalCaps) {
+                        livrosCompletos++;
                     }
                 });
+            });
 
-                let totalLivros = 0;
-                let livrosCompletos = 0;
+            const percentageLivros = totalLivros > 0 ? (livrosCompletos / totalLivros) * 100 : 0;
+            const totalCapitulosGlobal = Object.values(allChapters).reduce((acc, val) => acc + val, 0);
+            const capitulosConcluidosGlobal = Object.values(progressData).reduce((acc, capSet) => acc + capSet.size, 0);
+            const percentageCapitulos = totalCapitulosGlobal > 0 ? (capitulosConcluidosGlobal / totalCapitulosGlobal) * 100 : 0;
+            
+            return {
+                percentageLivros,
+                percentageCapitulos,
+                livrosCompletos,
+                totalLivros,
+                capitulosConcluidosGlobal,
+                totalCapitulosGlobal
+            };
+        }
+
+        // ====================================================================
+        // MUDANÇA (Progresso): Função 'calcularProgressoTotal' totalmente refeita
+        // ====================================================================
+        async function calcularProgressoTotal() {
+            // Elementos Públicos
+            const progressBarPublicoLivros = document.getElementById('progress-bar-publico-livros');
+            const progressTextPublicoLivros = document.getElementById('progress-text-publico-livros');
+            const progressBarPublicoCapitulos = document.getElementById('progress-bar-publico-capitulos');
+            const progressTextPublicoCapitulos = document.getElementById('progress-text-publico-capitulos');
+            const statsPublicoJoias = document.getElementById('stats-publico-joias');
+            const statsPublicoPesquisas = document.getElementById('stats-publico-pesquisas');
+
+            // Elementos Individuais
+            const individualTitle = document.getElementById('progresso-individual-title');
+            const progressBarIndividualLivros = document.getElementById('progress-bar-individual-livros');
+            const progressTextIndividualLivros = document.getElementById('progress-text-individual-livros');
+            const progressBarIndividualCapitulos = document.getElementById('progress-bar-individual-capitulos');
+            const progressTextIndividualCapitulos = document.getElementById('progress-text-individual-capitulos');
+            const statsIndividualJoias = document.getElementById('stats-individual-joias');
+            const statsIndividualPesquisas = document.getElementById('stats-individual-pesquisas');
+
+            if (!progressBarPublicoLivros) {
+                console.warn("Elementos de progresso não encontrados. A view 'Início' não está ativa?");
+                return;
+            }
+            
+            // Setar estado de carregamento
+            progressBarPublicoLivros.style.width = '0%';
+            progressTextPublicoLivros.textContent = 'Calculando...';
+            progressBarPublicoCapitulos.style.width = '0%';
+            progressTextPublicoCapitulos.textContent = 'Calculando...';
+            statsPublicoJoias.textContent = '...';
+            statsPublicoPesquisas.textContent = '...';
+            
+            individualTitle.textContent = `Progresso Individual (${getDisplayNameFromEmail(auth.currentUser.email)})`;
+            progressBarIndividualLivros.style.width = '0%';
+            progressTextIndividualLivros.textContent = 'Calculando...';
+            progressBarIndividualCapitulos.style.width = '0%';
+            progressTextIndividualCapitulos.textContent = 'Calculando...';
+            statsIndividualJoias.textContent = '...';
+            statsIndividualPesquisas.textContent = '...';
+
+            try {
+                // 1. Fetch all 4 collections
+                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath));
+                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath));
+                const publicPesquisasQuery = query(collection(db, publicPesquisasCollectionPath));
+                const userPesquisasQuery = query(collection(db, userPesquisasCollectionPath));
+
+                const [
+                    publicDestaquesSnap, 
+                    userDestaquesSnap, 
+                    publicPesquisasSnap, 
+                    userPesquisasSnap
+                ] = await Promise.all([ 
+                    getDocs(publicDestaquesQuery), 
+                    getDocs(userDestaquesQuery), 
+                    getDocs(publicPesquisasQuery), 
+                    getDocs(userPesquisasQuery) 
+                ]);
+
+                // 2. Process into arrays
+                const publicDestaques = publicDestaquesSnap.docs.map(doc => doc.data());
+                const userPrivateDestaques = userDestaquesSnap.docs.map(doc => doc.data());
+                const publicPesquisas = publicPesquisasSnap.docs.map(doc => doc.data());
+                const userPrivatePesquisas = userPesquisasSnap.docs.map(doc => doc.data());
+
+                // 3. Filter public for current user
+                const userPublicDestaques = publicDestaques.filter(d => d.autorId === currentUserId);
+                const userPublicPesquisas = publicPesquisas.filter(p => p.autorId === currentUserId);
+
+                // 4. Create combined "Individual" lists
+                const individualDestaques = [...userPrivateDestaques, ...userPublicDestaques];
+                const individualPesquisas = [...userPrivatePesquisas, ...userPublicPesquisas];
+
+                // 5. Calculate progress
+                const publicProgress = _calculateProgress(publicDestaques);
+                const individualProgress = _calculateProgress(individualDestaques);
+
+                // 6. Update DOM for "Público"
+                statsPublicoJoias.textContent = publicDestaques.length;
+                statsPublicoPesquisas.textContent = publicPesquisas.length;
                 
-                Object.values(biblia).forEach(testamento => {
-                    Object.entries(testamento).forEach(([livro, totalCaps]) => {
-                        totalLivros++;
-                        const capitulosFeitos = progressData[livro] ? progressData[livro].size : 0;
-                        if (capitulosFeitos === totalCaps) {
-                            livrosCompletos++;
-                        }
-                    });
-                });
+                progressBarPublicoLivros.style.width = `${publicProgress.percentageLivros}%`;
+                progressTextPublicoLivros.textContent = `${publicProgress.percentageLivros.toFixed(1)}% (${publicProgress.livrosCompletos} de ${publicProgress.totalLivros} livros)`;
+                progressBarPublicoCapitulos.style.width = `${publicProgress.percentageCapitulos}%`;
+                progressTextPublicoCapitulos.textContent = `${publicProgress.percentageCapitulos.toFixed(1)}% (${publicProgress.capitulosConcluidosGlobal} de ${publicProgress.totalCapitulosGlobal} capítulos)`;
 
-                // Cálculo de Livros
-                const percentageLivros = totalLivros > 0 ? (livrosCompletos / totalLivros) * 100 : 0;
-                progressBarTotal.style.width = `${percentageLivros}%`;
-                progressTextTotal.textContent = `${percentageLivros.toFixed(1)}% (${livrosCompletos} de ${totalLivros} livros)`;
+                // 7. Update DOM for "Individual"
+                statsIndividualJoias.textContent = individualDestaques.length;
+                statsIndividualPesquisas.textContent = individualPesquisas.length;
 
-                // Cálculo de Capítulos
-                const totalCapitulosGlobal = Object.values(allChapters).reduce((acc, val) => acc + val, 0);
-                const capitulosConcluidosGlobal = Object.values(progressData).reduce((acc, capSet) => acc + capSet.size, 0);
-                const percentageCapitulos = totalCapitulosGlobal > 0 ? (capitulosConcluidosGlobal / totalCapitulosGlobal) * 100 : 0;
-                
-                progressBarCapitulos.style.width = `${percentageCapitulos}%`;
-                progressTextCapitulos.textContent = `${percentageCapitulos.toFixed(1)}% (${capitulosConcluidosGlobal} de ${totalCapitulosGlobal} capítulos)`;
+                progressBarIndividualLivros.style.width = `${individualProgress.percentageLivros}%`;
+                progressTextIndividualLivros.textContent = `${individualProgress.percentageLivros.toFixed(1)}% (${individualProgress.livrosCompletos} de ${individualProgress.totalLivros} livros)`;
+                progressBarIndividualCapitulos.style.width = `${individualProgress.percentageCapitulos}%`;
+                progressTextIndividualCapitulos.textContent = `${individualProgress.percentageCapitulos.toFixed(1)}% (${individualProgress.capitulosConcluidosGlobal} de ${individualProgress.totalCapitulosGlobal} capítulos)`;
 
 
             } catch(e) {
                 console.error("Erro ao calcular progresso: ", e);
-                progressTextTotal.textContent = 'Erro ao calcular.';
-                progressTextCapitulos.textContent = 'Erro ao calcular.';
+                // Set error text for all
+                progressTextPublicoLivros.textContent = 'Erro ao calcular.';
+                progressTextPublicoCapitulos.textContent = 'Erro ao calcular.';
+                progressTextIndividualLivros.textContent = 'Erro ao calcular.';
+                progressTextIndividualCapitulos.textContent = 'Erro ao calcular.';
+                statsPublicoJoias.textContent = 'X';
+                statsPublicoPesquisas.textContent = 'X';
+                statsIndividualJoias.textContent = 'X';
+                statsIndividualPesquisas.textContent = 'X';
             }
         }
+
 
         async function popularInicio() {
             if (!currentUserId) return;
@@ -1886,6 +2076,9 @@
             const container = document.getElementById('container-pesquisas');
             container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">A carregar pesquisas...</p>';
             try {
+                // ====================================================================
+                // MUDANÇA (Progresso): Mostra todas as pesquisas (públicas e privadas do user)
+                // ====================================================================
                 const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath);
 
                 container.innerHTML = '';
@@ -1913,9 +2106,6 @@
         // MUDANÇA (SWIPE): Novas funções de swipe
         // ====================================================================
         function handleTouchStart(e) {
-            // ====================================================================
-            // CORREÇÃO (PROBLEMA 2): Remove a checagem de INPUT, TEXTAREA, SELECT
-            // ====================================================================
             // Ignora swipes apenas em 'no-swipe'
             if (e.target.closest('.no-swipe')) {
                 isDragging = false;
@@ -1927,7 +2117,6 @@
             touchStartY = e.touches[0].clientY;
             viewportWidth = swipeViewport.offsetWidth;
             
-            // 'currentTranslate' é pego do estado atual
             swipeSlider.style.transition = 'none'; // Desabilita transição para arrastar
             isDragging = true;
             gestureType = null; // Reseta tipo de gesto
@@ -1962,9 +2151,6 @@
         }
 
         function handleTouchEnd(e) {
-            // ====================================================================
-            // CORREÇÃO (PROBLEMA 1): Armazena o índice *antes* de mudar
-            // ====================================================================
             const oldIndex = currentViewIndex; 
 
             if (!isDragging || gestureType !== 'swipe') {
@@ -1994,9 +2180,6 @@
             // Encaixa na view (nova ou atual)
             snapToView(newIndex); // Isso vai atualizar o currentViewIndex
             
-            // ====================================================================
-            // CORREÇÃO (PROBLEMA 1): Compara com o oldIndex e carrega o conteúdo
-            // ====================================================================
             if (newIndex !== oldIndex) {
                 const newAba = tabOrder[newIndex];
                 if (newAba === 'inicio') popularInicio();
