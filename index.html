@@ -172,6 +172,14 @@
           30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
+        /* ====================================================================
+          NOVO (ALTURA DA ABA): Adiciona transição de altura ao viewport
+          ==================================================================== 
+        */
+        #swipe-viewport {
+            transition: height 0.3s ease-in-out;
+            position: relative;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -259,11 +267,11 @@
                   MUDANÇA (SWIPE): Viewport e Slider para as abas
                   ==================================================================== 
                 -->
-                <div id="swipe-viewport" class="overflow-x-hidden relative">
+                <div id="swipe-viewport" class="overflow-x-hidden">
                     <!-- 
                       ====================================================================
-                      MUDANÇA (LAYOUT): Adicionado 'items-start' para corrigir o 
-                      problema da altura das abas.
+                      MUDANÇA (ALTURA DA ABA): 'items-start' corrige o problema
+                      de todas as abas terem a altura da maior.
                       ==================================================================== 
                     -->
                     <div id="swipe-slider" class="flex w-full items-start" style="transition: transform 0.3s ease-in-out;">
@@ -391,6 +399,16 @@
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Pesquisas Salvas</h2>
                             <!-- MUDANÇA: Removido 'no-swipe' -->
                             <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto"></div>
+                            <!-- 
+                              ====================================================================
+                              NOVO (Paginação): Botão "Mostrar Mais"
+                              ==================================================================== 
+                            -->
+                            <div class="mt-6 text-center">
+                                <button id="btn-mostrar-mais-pesquisas" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">
+                                    Mostrar Mais
+                                </button>
+                            </div>
                         </div>
                         
                         <!-- 
@@ -707,6 +725,13 @@
         // ====================================================================
         let loadedViews = new Set();
         
+        // ====================================================================
+        // NOVO (Paginação): Variáveis de paginação de pesquisas
+        // ====================================================================
+        let allPesquisasCache = [];
+        let pesquisasCurrentPage = 0;
+        const PESQUISAS_PAGE_SIZE = 5;
+
         // Ordem das abas para swipe (DEVE CORRESPONDER À ORDEM NO HTML)
         const tabOrder = [
             'inicio', 
@@ -807,6 +832,8 @@
                 // MUDANÇA (CACHE): Limpa o cache ao fazer logout
                 // ====================================================================
                 loadedViews.clear();
+                allPesquisasCache = []; // Limpa cache de paginação
+                pesquisasCurrentPage = 0;
             }
         });
 
@@ -974,6 +1001,21 @@
             swipeSlider.style.transform = `translateX(${currentTranslate}px)`;
             
             updateActiveTab(index);
+
+            // ====================================================================
+            // NOVA LÓGICA DE AJUSTE DE ALTURA
+            // ====================================================================
+            try {
+                const activeView = swipeSlider.children[index];
+                if (activeView) {
+                    // Usar scrollHeight para obter a altura total real do conteúdo
+                    const newHeight = activeView.scrollHeight; 
+                    swipeViewport.style.height = `${newHeight}px`;
+                }
+            } catch (e) {
+                console.error("Erro ao ajustar altura da view:", e);
+            }
+            // ====================================================================
         }
 
         function popularSelectLivros() {
@@ -1031,8 +1073,9 @@
                 loadedViews.delete('livros'); // Invalida 'livros' para atualizar o progresso
                 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    popularInicio();
+                    await popularInicio(); // Await para garantir que a altura seja medida corretamente
                     loadedViews.add('inicio'); // Readiciona, pois acabou de carregar
+                    snapToView(currentViewIndex, false); // Reajusta a altura
                 }
 
             } catch (e) {
@@ -1084,10 +1127,12 @@
                 // ====================================================================
                 loadedViews.delete('inicio');
                 loadedViews.delete('pesquisas');
+                allPesquisasCache = []; // LIMPAR CACHE de paginação
                 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    popularInicio();
+                    await popularInicio(); // Await para garantir que a altura seja medida corretamente
                     loadedViews.add('inicio'); // Readiciona, pois acabou de carregar
+                    snapToView(currentViewIndex, false); // Reajusta a altura
                 }
 
             } catch (e) {
@@ -1252,7 +1297,7 @@
             if (currentIndex < allBooks.length - 1) {
                 const livroSeguinte = allBooks[currentIndex + 1];
                 const capsSeguinte = allChapters[livroSeguinte];
-                btnSeguinte.onclick = () => mostrarCapitulos(livroSeguinte, capsSeguinte);
+                btnSeguinte.onclick = () => mostrarCapitulos(livroAnterior, capsAnterior);
                 btnSeguinte.disabled = false;
                 btnSeguinte.classList.remove('opacity-50', 'cursor-not-allowed');
             } else {
@@ -1333,17 +1378,21 @@
                     }
                 } else if (collectionPath.includes('pesquisas')) {
                     loadedViews.delete('pesquisas');
+                    allPesquisasCache = []; // LIMPAR CACHE de paginação
                     // Se estiver na view 'pesquisas', atualiza
                     if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisas')) {
-                         mostrarPesquisas();
-                         loadedViews.add('pesquisas'); // Recarregou, então adiciona de volta
+                         await mostrarPesquisas(); // Recarregar
+                         loadedViews.add('pesquisas'); 
                     }
                 }
 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    popularInicio();
-                    loadedViews.add('inicio'); // Recarregou, então adiciona de volta
+                    await popularInicio(); // Recarregar
+                    loadedViews.add('inicio'); 
                 }
+                
+                // Reajusta a altura da aba atual
+                snapToView(currentViewIndex, false);
 
             } catch (error) {
                 console.error("Erro ao deletar item: ", error);
@@ -1688,6 +1737,11 @@
             } catch(e) {
                 console.error("Erro ao pesquisar: ", e);
                 container.innerHTML = `<p class="text-red-500">Ocorreu um erro ao realizar a pesquisa.</p>`;
+            } finally {
+                // ====================================================================
+                // MUDANÇA (ALTURA DA ABA): Reajusta a altura após a pesquisa
+                // ====================================================================
+                snapToView(currentViewIndex, false); // Reajusta altura sem animação
             }
         }
 
@@ -1892,47 +1946,56 @@
 
         async function popularInicio() {
             if (!currentUserId) return;
-            buscarUltimasJoias();
-            buscarUltimasPesquisas();
-            calcularProgressoTotal();
+            // Executar em paralelo
+            await Promise.all([
+                buscarUltimasJoias(),
+                buscarUltimasPesquisas(),
+                calcularProgressoTotal()
+            ]);
         }
 
         // ====================================================================
-        // MUDANÇA (CACHE): 'mudarAba' atualizada com lógica de cache
+        // MUDANÇA (CACHE/ALTURA): 'mudarAba' atualizada com lógica de cache
+        // e carregamento síncrono ANTES do snap.
         // ====================================================================
-        function mudarAba(abaAtiva) {
+        async function mudarAba(abaAtiva) {
             const newIndex = tabOrder.indexOf(abaAtiva);
+            if (newIndex < 0) return; // Aba não encontrada (ex: voltar de capítulos)
 
-            if (newIndex > -1) {
-                // É uma aba principal
-                esconderTudo(); // Garante que views de tela cheia estão escondidas
-                snapToView(newIndex); // Encaixa o slider na view correta
-                
-                // Lógica específica de carregamento de conteúdo (com cache)
-                if (abaAtiva === 'inicio') {
-                    if (!loadedViews.has('inicio')) {
-                        console.log("CACHE: Carregando 'inicio'");
-                        popularInicio();
-                        loadedViews.add('inicio');
+            // É uma aba principal
+            esconderTudo(); // Garante que views de tela cheia estão escondidas
+            
+            const abaName = tabOrder[newIndex];
+
+            // Lógica de carregamento de conteúdo (com cache)
+            if (!loadedViews.has(abaName)) {
+                console.log(`CACHE: Carregando '${abaName}'`);
+                // Usar 'await' para garantir que o conteúdo seja carregado
+                // ANTES de medir a altura
+                try {
+                    if (abaName === 'inicio') {
+                        await popularInicio();
+                    } else if (abaName === 'livros') {
+                        await popularLivros();
+                    } else if (abaName === 'pesquisas') {
+                        await mostrarPesquisas(); // mostrarPesquisas agora é async
                     }
-                } else if (abaAtiva === 'livros') {
-                    if (!loadedViews.has('livros')) {
-                        console.log("CACHE: Carregando 'livros'");
-                        popularLivros();
-                        loadedViews.add('livros');
-                    }
-                } else if (abaAtiva === 'pesquisas') {
-                    if (!loadedViews.has('pesquisas')) {
-                        console.log("CACHE: Carregando 'pesquisas'");
-                        mostrarPesquisas();
-                        loadedViews.add('pesquisas');
-                    }
-                } else if (abaAtiva === 'adicionar') {
-                    // 'adicionar' não carrega dados, apenas reseta o seletor
-                    document.getElementById('add-type-joia').click();
+                    // 'adicionar' e 'pesquisar' não precisam de load
+                    
+                    loadedViews.add(abaName);
+                } catch (e) {
+                    console.error(`Falha ao carregar aba ${abaName}:`, e);
                 }
-                // 'pesquisar' não carrega dados ao ser exibida
-            } 
+            }
+            
+            // Resetar o seletor da aba 'adicionar' sempre que ela for mostrada
+            if (abaName === 'adicionar') {
+                document.getElementById('add-type-joia').click();
+            }
+
+            // Agora que o conteúdo está (potencialmente) carregado, faça o snap.
+            // snapToView cuidará da medição de altura.
+            snapToView(newIndex); 
         }
         
         function iniciarAcao(type, docId, path) {
@@ -2090,18 +2153,22 @@
                     }
                 } else {
                     loadedViews.delete('pesquisas');
+                    allPesquisasCache = []; // LIMPAR CACHE de paginação
                      if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisas')) {
-                        mostrarPesquisas();
-                        loadedViews.add('pesquisas'); // Recarregou
+                        await mostrarPesquisas(); // Recarregar
+                        loadedViews.add('pesquisas'); 
                     } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
                          formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
                 }
                 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    popularInicio();
-                    loadedViews.add('inicio'); // Recarregou
+                    await popularInicio(); // Recarregar
+                    loadedViews.add('inicio'); 
                 }
+
+                // Reajusta a altura da aba atual
+                snapToView(currentViewIndex, false);
 
             } catch (error) {
                 console.error("Erro ao salvar edição:", error);
@@ -2109,31 +2176,75 @@
             }
         }
         
-        async function mostrarPesquisas() {
+        // ====================================================================
+        // NOVO (Paginação): Função para renderizar a página atual de pesquisas
+        // ====================================================================
+        function renderPesquisasPage() {
             const container = document.getElementById('container-pesquisas');
-            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">A carregar pesquisas...</p>';
-            try {
-                const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath);
-
+            const btnMostrarMais = document.getElementById('btn-mostrar-mais-pesquisas');
+            
+            // Na primeira página (index 0), limpa o container.
+            if (pesquisasCurrentPage === 0) {
                 container.innerHTML = '';
-                if (pesquisas.length > 0) {
+            }
+
+            const start = pesquisasCurrentPage * PESQUISAS_PAGE_SIZE;
+            const end = start + PESQUISAS_PAGE_SIZE;
+            
+            const pageItems = allPesquisasCache.slice(start, end);
+            
+            // Se o cache estiver vazio na primeira página
+            if (allPesquisasCache.length === 0 && start === 0) {
+                container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa salva ainda.</p>';
+            }
+
+            // Adiciona os itens da página ao container
+            pageItems.forEach(pesquisa => {
+                const card = criarCardPesquisa(pesquisa);
+                container.appendChild(card);
+            });
+
+            // Gerencia a visibilidade do botão "Mostrar Mais"
+            if (end < allPesquisasCache.length) {
+                btnMostrarMais.classList.remove('hidden');
+            } else {
+                btnMostrarMais.classList.add('hidden');
+            }
+        }
+
+        // ====================================================================
+        // MUDANÇA (Paginação): 'mostrarPesquisas' agora gerencia o cache e a paginação
+        // ====================================================================
+        async function mostrarPesquisas() { // Tornou-se async
+            const container = document.getElementById('container-pesquisas');
+            const btnMostrarMais = document.getElementById('btn-mostrar-mais-pesquisas');
+            
+            // Só busca se o cache estiver vazio (ou seja, primeira carga ou invalidado)
+            if (allPesquisasCache.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">A carregar pesquisas...</p>';
+                btnMostrarMais.classList.add('hidden'); // Esconde o botão durante a carga inicial
+                try {
+                    const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath);
+                    
+                    // Ordena por data (mais recente primeiro)
                     pesquisas.sort((a, b) => {
                         const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
                         const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
                         return dateB - dateA;
                     });
                     
-                    pesquisas.forEach(pesquisa => {
-                        const card = criarCardPesquisa(pesquisa);
-                        container.appendChild(card);
-                    });
-                } else {
-                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa salva ainda.</p>';
+                    allPesquisasCache = pesquisas; // Salva no cache
+                    
+                } catch (e) {
+                    console.error("Erro ao buscar pesquisas: ", e);
+                    container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar as pesquisas.</p>';
+                    return; // Sai em caso de erro
                 }
-            } catch (e) {
-                console.error("Erro ao buscar pesquisas: ", e);
-                container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar as pesquisas.</p>';
             }
+            
+            // Reseta para a primeira página e renderiza
+            pesquisasCurrentPage = 0;
+            renderPesquisasPage();
         }
         
         // ====================================================================
@@ -2143,6 +2254,14 @@
             // Ignora swipes apenas em 'no-swipe'
             if (e.target.closest('.no-swipe')) {
                 isDragging = false;
+                gestureType = null;
+                return;
+            }
+            
+            // Ignora se o swipe começar em inputs, textareas ou selects
+            const targetTag = e.target.tagName;
+            if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || targetTag === 'SELECT') {
+                 isDragging = false;
                 gestureType = null;
                 return;
             }
@@ -2184,7 +2303,7 @@
             // Se for 'scroll', não faz nada e deixa o navegador rolar
         }
 
-        function handleTouchEnd(e) {
+        async function handleTouchEnd(e) { // Tornou-se async
             const oldIndex = currentViewIndex; 
 
             if (!isDragging || gestureType !== 'swipe') {
@@ -2216,7 +2335,7 @@
             // ====================================================================
             if (newIndex !== oldIndex) {
                 const newAbaName = tabOrder[newIndex];
-                mudarAba(newAbaName); // mudarAba cuidará de tudo
+                await mudarAba(newAbaName); // mudarAba cuidará de tudo (agora é async)
             } else {
                 // Se não mudou (swipe fraco), apenas volta ao lugar
                 snapToView(oldIndex);
@@ -2224,7 +2343,7 @@
         }
 
 
-        function initializeMainApp(user) {
+        async function initializeMainApp(user) { // Tornou-se async
             const headerTitle = document.getElementById('header-title');
             
             swipeViewport = document.getElementById('swipe-viewport');
@@ -2257,18 +2376,24 @@
             popularSelectLivros();
             
             // ====================================================================
-            // MUDANÇA (CACHE): Carrega a primeira aba e marca como carregada
+            // MUDANÇA (CACHE/ALTURA): Carrega a primeira aba, marca e define altura
             // ====================================================================
-            popularInicio(); 
+            await popularInicio(); // Espera o conteúdo carregar
             loadedViews.add('inicio');
-            snapToView(0, false);
+            snapToView(0, false); // Define a posição e a altura inicial
+
+            // Recalcular no resize
+            window.addEventListener('resize', () => {
+                // Re-snap sem animação para re-medir largura e altura
+                snapToView(currentViewIndex, false); 
+            });
 
             formDestaque.addEventListener('submit', salvarDestaque);
             formPesquisa.addEventListener('submit', realizarPesquisa);
             formAdicionarPesquisa.addEventListener('submit', salvarPesquisa);
             document.getElementById('form-edit').addEventListener('submit', salvarEdicao);
             
-            // Listeners das abas (Tabs)
+            // Listeners das abas (Tabs) - agora chamam a função async
             headerTitle.addEventListener('click', () => mudarAba('inicio')); 
             tabs.inicio.addEventListener('click', (e) => { e.preventDefault(); mudarAba('inicio'); }); 
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
@@ -2295,6 +2420,7 @@
                 addTypePesquisaBtn.classList.remove('active');
                 formContainerJoia.classList.remove('hidden');
                 formContainerPesquisa.classList.add('hidden');
+                snapToView(currentViewIndex, false); // Reajusta altura
             });
 
             addTypePesquisaBtn.addEventListener('click', () => {
@@ -2302,8 +2428,18 @@
                 addTypeJoiaBtn.classList.remove('active');
                 formContainerPesquisa.classList.remove('hidden');
                 formContainerJoia.classList.add('hidden');
+                snapToView(currentViewIndex, false); // Reajusta altura
             });
             
+            // ====================================================================
+            // NOVO (Paginação): Listener para o botão "Mostrar Mais"
+            // ====================================================================
+            document.getElementById('btn-mostrar-mais-pesquisas').addEventListener('click', () => {
+                pesquisasCurrentPage++; // Avança para a próxima página
+                renderPesquisasPage(); // Renderiza os novos itens
+                snapToView(currentViewIndex, false); // Reajusta altura
+            });
+
             // Listeners dos Modais
             document.getElementById('cancel-password-btn').addEventListener('click', fecharModalSenha);
             document.getElementById('confirm-password-btn').addEventListener('click', confirmarSenha);
