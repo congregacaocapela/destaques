@@ -161,8 +161,13 @@
           30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
+        /* ====================================================================
+          MUDANÇA (ALTURA): Adicionada transição de altura ao viewport.
+          ==================================================================== 
+        */
         #swipe-viewport {
             position: relative;
+            transition: height 0.3s ease-in-out;
         }
     </style>
 </head>
@@ -238,11 +243,6 @@
                 </nav>
 
                 <div id="swipe-viewport" class="overflow-x-hidden">
-                    <!-- 
-                      ====================================================================
-                      MUDANÇA (ALTURA DA ABA): Adicionado 'items-start'
-                      ==================================================================== 
-                    -->
                     <div id="swipe-slider" class="flex w-full items-start" style="transition: transform 0.3s ease-in-out;">
                 
                         <div id="view-inicio" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 space-y-8">
@@ -883,6 +883,22 @@
             updateActiveTab(index);
         }
 
+        // ====================================================================
+        // NOVA FUNÇÃO (ALTURA): Ajusta a altura do viewport para a aba ativa
+        // ====================================================================
+        function adjustViewportHeight(index, smooth = true) {
+            if (!swipeViewport || !swipeSlider) return;
+            
+            const activeView = swipeSlider.children[index];
+            if (activeView) {
+                const viewHeight = activeView.scrollHeight;
+                swipeViewport.style.transition = smooth ? 'height 0.3s ease-in-out' : 'none';
+                if (viewHeight > 0) { // Só define a altura se for mensurável
+                    swipeViewport.style.height = `${viewHeight}px`;
+                }
+            }
+        }
+
         function popularSelectLivros() {
             selectLivro.innerHTML = '<option value="" disabled selected>Selecione um livro</option>';
             const todosLivros = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
@@ -939,6 +955,13 @@
                     loadedViews.add('inicio');
                 }
 
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura da aba "ADD" após salvar
+                // ====================================================================
+                if (currentViewIndex === tabOrder.indexOf('adicionar')) {
+                    setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
+                }
+
             } catch (e) {
                 console.error("Erro ao adicionar documento: ", e);
                 showToast("Falha ao salvar a joia.", false);
@@ -990,6 +1013,13 @@
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
                     await popularInicio();
                     loadedViews.add('inicio');
+                }
+
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura da aba "ADD" após salvar
+                // ====================================================================
+                if (currentViewIndex === tabOrder.indexOf('adicionar')) {
+                    setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
                 }
 
             } catch (e) {
@@ -1241,6 +1271,11 @@
                     await popularInicio();
                     loadedViews.add('inicio'); 
                 }
+
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura após deletar
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
                 
             } catch (error) {
                 console.error("Erro ao deletar item: ", error);
@@ -1581,10 +1616,16 @@
                 } else {
                     container.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Nenhum resultado encontrado para "${document.getElementById('input-pesquisa').value}".</p>`;
                 }
+                
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura após a pesquisa
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
 
             } catch(e) {
                 console.error("Erro ao pesquisar: ", e);
                 container.innerHTML = `<p class="text-red-500">Ocorreu um erro ao realizar a pesquisa.</p>`;
+                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
             }
         }
 
@@ -1814,6 +1855,15 @@
             }
             
             snapToView(newIndex); 
+            
+            // ====================================================================
+            // MUDANÇA (ALTURA): Chama o ajuste de altura após mudar de aba
+            // ====================================================================
+            // Adiciona um pequeno delay para permitir a renderização do DOM
+            // antes de calcular a nova altura.
+            setTimeout(() => {
+                adjustViewportHeight(newIndex);
+            }, 50);
         }
         
         function iniciarAcao(type, docId, path) {
@@ -1981,6 +2031,11 @@
                     await popularInicio();
                     loadedViews.add('inicio'); 
                 }
+                
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura após editar
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
 
             } catch (error) {
                 console.error("Erro ao salvar edição:", error);
@@ -2112,32 +2167,7 @@
             const threshold = viewportWidth / 4;
             
             // ====================================================================
-            // INÍCIO DA LÓGICA DE SWIPE INTERNO (ABA "ADD")
-            // ====================================================================
-            if (currentViewIndex === tabOrder.indexOf('adicionar')) {
-                const addFormJoia = document.getElementById('form-container-joia');
-                const addTypeJoiaBtn = document.getElementById('add-type-joia');
-                const addTypePesquisaBtn = document.getElementById('add-type-pesquisa');
-                const isJoiaVisible = !addFormJoia.classList.contains('hidden');
-                
-                const internalThreshold = 50; // Menor threshold para swipe interno
-
-                if (totalDiffX < -internalThreshold && isJoiaVisible) {
-                    // Swipe Esquerda: Mudar de Joia para Pesquisa
-                    addTypePesquisaBtn.click();
-                    snapToView(currentViewIndex); // Permanece na aba 'adicionar'
-                    return; // Interrompe a execução
-                } else if (totalDiffX > internalThreshold && !isJoiaVisible) {
-                    // Swipe Direita: Mudar de Pesquisa para Joia
-                    addTypeJoiaBtn.click();
-                    snapToView(currentViewIndex); // Permanece na aba 'adicionar'
-                    return; // Interrompe a execução
-                }
-                // Se o swipe não acionou uma mudança interna (ex: swipe esq. na aba pesquisa),
-                // a lógica de swipe principal abaixo será executada.
-            }
-            // ====================================================================
-            // FIM DA LÓGICA DE SWIPE INTERNO
+            // MUDANÇA (SWIPE): Lógica de swipe interno foi REMOVIDA.
             // ====================================================================
 
             let newIndex = currentViewIndex;
@@ -2153,6 +2183,10 @@
                 await mudarAba(newAbaName);
             } else {
                 snapToView(oldIndex);
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura no snap-back
+                // ====================================================================
+                adjustViewportHeight(oldIndex);
             }
         }
 
@@ -2192,9 +2226,17 @@
             await popularInicio();
             loadedViews.add('inicio');
             snapToView(0, false);
-
+            // ====================================================================
+            // MUDANÇA (ALTURA): Define a altura inicial do viewport
+            // ====================================================================
+            adjustViewportHeight(0, false); 
+            
             window.addEventListener('resize', () => {
                 snapToView(currentViewIndex, false); 
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura no resize
+                // ====================================================================
+                adjustViewportHeight(currentViewIndex, false);
             });
 
             formDestaque.addEventListener('submit', salvarDestaque);
@@ -2226,6 +2268,10 @@
                 addTypePesquisaBtn.classList.remove('active');
                 formContainerJoia.classList.remove('hidden');
                 formContainerPesquisa.classList.add('hidden');
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura ao trocar de formulário
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex), 50);
             });
 
             addTypePesquisaBtn.addEventListener('click', () => {
@@ -2233,11 +2279,19 @@
                 addTypeJoiaBtn.classList.remove('active');
                 formContainerPesquisa.classList.remove('hidden');
                 formContainerJoia.classList.add('hidden');
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura ao trocar de formulário
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex), 50);
             });
             
             document.getElementById('btn-mostrar-mais-pesquisas').addEventListener('click', () => {
                 pesquisasCurrentPage++;
                 renderPesquisasPage();
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura ao mostrar mais pesquisas
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex), 50);
             });
 
             document.getElementById('cancel-password-btn').addEventListener('click', fecharModalSenha);
@@ -2277,11 +2331,19 @@
             searchTypeJoias.addEventListener('click', () => {
                 searchTypeJoias.classList.add('active');
                 searchTypePesquisas.classList.remove('active');
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura ao trocar tipo de busca
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
             });
 
             searchTypePesquisas.addEventListener('click', () => {
                 searchTypePesquisas.classList.add('active');
                 searchTypeJoias.classList.remove('active');
+                // ====================================================================
+                // MUDANÇA (ALTURA): Reajusta a altura ao trocar tipo de busca
+                // ====================================================================
+                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
             });
             
             const visButtonsDestaque = document.querySelectorAll('.visibility-btn-destaque');
