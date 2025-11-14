@@ -2,6 +2,7 @@
 <html lang="pt-br" class="">
 <head>
     <meta charset="UTF-8">
+    <!-- ATUALIZAÇÃO: Impedir zoom acidental, melhora o swipe -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Estudo Pessoal</title>
 
@@ -59,6 +60,8 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            /* Previne "overscroll" (puxar a página inteira) */
+            overscroll-behavior-y: contain;
         }
         .bg-custom-blue {
             background-color: #3e5a8a;
@@ -161,14 +164,36 @@
           30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-        /* ====================================================================
-          MUDANÇA (ALTURA): Adicionada transição de altura ao viewport.
-          ==================================================================== 
-        */
-        #swipe-viewport {
-            position: relative;
-            transition: height 0.3s ease-in-out;
+
+        /* ATUALIZAÇÃO: Estilo para scroll em "Mostrar Mais" */
+        .anotacoes-content {
+            max-height: 200px; /* Altura máxima definida */
+            overflow-y: auto; /* Scroll vertical */
+            scrollbar-width: thin;
+            scrollbar-color: #9ca3af #f1f5f9;
+            padding-right: 8px; /* Espaço para a barra de scroll */
         }
+        .anotacoes-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .anotacoes-content::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .anotacoes-content::-webkit-scrollbar-thumb {
+            background-color: #9ca3af;
+            border-radius: 4px;
+        }
+        .dark .anotacoes-content {
+            scrollbar-color: #4b5563 #1f2937;
+        }
+        .dark .anotacoes-content::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        .dark .anotacoes-content::-webkit-scrollbar-thumb {
+            background-color: #4b5563;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -219,10 +244,21 @@
             </div>
         </header>
 
+        <!-- 
+          Este container segura todo o conteúdo (incluindo a nav) e 
+          começa *abaixo* do header fixo (graças ao padding-top).
+        -->
         <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl" style="padding-top: 2rem;">
+            <!-- 
+              ====================================================================
+              ATUALIZAÇÃO: Container principal. As views NÃO estão mais 
+              em um slider horizontal.
+              ==================================================================== 
+            -->
             <div class="bg-white dark:bg-gray-800 shadow-md min-h-screen rounded-lg">
 
                 <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10 rounded-t-lg">
+                    <!-- O 'no-swipe' aqui é importante para rolar as abas sem ativar o swipe global -->
                     <div class="px-4 py-3 flex items-center space-x-5 overflow-x-auto whitespace-nowrap no-scrollbar no-swipe">
                         <a href="#" id="tab-inicio" class="text-sm font-semibold pb-3 tab-active flex-shrink-0 flex items-center">
                             ● INICIO
@@ -235,6 +271,7 @@
                             <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
                             PESQUISAS
                         </a>
+                        <!-- ATUALIZAÇÃO: Aba "+ ADD" unificada -->
                         <a href="#" id="tab-adicionar" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">+ ADD</a>
                         <a href="#" id="tab-pesquisar" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
@@ -242,215 +279,185 @@
                     </div>
                 </nav>
 
-                <div id="swipe-viewport" class="overflow-x-hidden">
-                    <div id="swipe-slider" class="flex w-full items-start" style="transition: transform 0.3s ease-in-out;">
-                
-                        <div id="view-inicio" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 space-y-8">
-                           <section id="inicio-grafico">
-                               <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
-                               
-                               <div id="progresso-publico" class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
-                                   <h3 class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-3">Progresso Público</h3>
-                                   
-                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Conclusão total dos livros (Público):</p>
-                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
-                                       <div id="progress-bar-publico-livros" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
-                                   </div>
-                                   <p id="progress-text-publico-livros" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
-                                   
-                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Conclusão total dos capítulos (Público):</p>
-                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
-                                       <div id="progress-bar-publico-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
-                                   </div>
-                                   <p id="progress-text-publico-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
-                                   
-                                   <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600/50 flex justify-around">
-                                       <div class="text-center">
-                                           <p class="text-sm text-gray-600 dark:text-gray-400">Joias Públicas</p>
-                                           <p id="stats-publico-joias" class="text-xl font-bold text-blue-600 dark:text-blue-400">0</p>
-                                       </div>
-                                       <div class="text-center">
-                                           <p class="text-sm text-gray-600 dark:text-gray-400">Pesquisas Públicas</p>
-                                           <p id="stats-publico-pesquisas" class="text-xl font-bold text-blue-600 dark:text-blue-400">0</p>
-                                       </div>
-                                   </div>
-                               </div>
-
-                               <div id="progresso-individual" class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner mt-6">
-                                   <h3 id="progresso-individual-title" class="text-md font-semibold text-gray-700 dark:text-gray-300 mb-3">Progresso Individual</h3>
-                                   
-                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meus livros concluídos:</p>
-                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
-                                       <div id="progress-bar-individual-livros" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
-                                   </div>
-                                   <p id="progress-text-individual-livros" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
-                                   
-                                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Meus capítulos concluídos:</p>
-                                   <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
-                                       <div id="progress-bar-individual-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
-                                   </div>
-                                   <p id="progress-text-individual-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
-                                   
-                                   <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600/50 flex justify-around">
-                                       <div class="text-center">
-                                           <p class="text-sm text-gray-600 dark:text-gray-400">Minhas Joias</p>
-                                           <p id="stats-individual-joias" class="text-xl font-bold text-green-600 dark:text-green-400">0</p>
-                                       </div>
-                                       <div class="text-center">
-                                           <p class="text-sm text-gray-600 dark:text-gray-400">Minhas Pesquisas</p>
-                                           <p id="stats-individual-pesquisas" class="text-xl font-bold text-green-600 dark:text-green-400">0</p>
-                                       </div>
-                                   </div>
-                               </div>
-                           </section>
-                       
-                           <section id="inicio-joias">
-                               <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Joia Adicionada (1)</h2>
-                               <div id="container-ultimas-joias" class="space-y-4">
-                                   <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
-                               </div>
-                           </section>
-                       
-                           <section id="inicio-pesquisas">
-                               <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Pesquisa Adicionada (1)</h2>
-                               <div id="container-ultimas-pesquisas" class="space-y-4">
-                                   <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
-                               </div>
-                           </section>
+                <!-- 
+                  ====================================================================
+                  ATUALIZAÇÃO: As views agora são individuais e usam 'hidden'.
+                  O #swipe-viewport e #swipe-slider foram removidos.
+                  ==================================================================== 
+                -->
+                <div id="view-inicio" class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
+                   <section id="inicio-grafico">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
+                       <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
+                           <!-- Progresso dos Livros -->
+                           <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Conclusão total dos livros:</p>
+                           <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                               <div id="progress-bar-total" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                           </div>
+                           <p id="progress-text-total" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
+                           
+                           <!-- Progresso dos Capítulos (NOVO) -->
+                           <p class="text-sm text-gray-600 dark:text-gray-400 mb-2 mt-4">Conclusão total dos capítulos:</p>
+                           <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4 mb-2 overflow-hidden">
+                               <div id="progress-bar-capitulos" class="bg-green-600 h-4 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                           </div>
+                           <p id="progress-text-capitulos" class="text-sm font-medium text-gray-700 dark:text-gray-300 text-right">0%</p>
                        </div>
+                   </section>
+               
+                   <!-- Seção de Últimas Joias -->
+                   <section id="inicio-joias">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Últimas Joias Adicionadas (3)</h2>
+                       <div id="container-ultimas-joias" class="space-y-4">
+                           <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+                       </div>
+                   </section>
+               
+                   <!-- Seção de Últimas Pesquisas -->
+                   <section id="inicio-pesquisas">
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Pesquisa Adicionada (1)</h2>
+                       <div id="container-ultimas-pesquisas" class="space-y-4">
+                           <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+                       </div>
+                   </section>
+               </div>
 
-                        <main id="view-livros" class="w-full flex-shrink-0">
-                            <div class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
-                                <section id="antigo-testamento">
-                                    <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
-                                </section>
-                                <section id="novo-testamento">
-                                    <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS GREGAS CRISTÃS</h2>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
-                                </section>
-                            </div>
-                        </main>
-                        
-                        <div id="view-pesquisas" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6">
-                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Pesquisas Salvas</h2>
-                            <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto"></div>
-                            <div class="mt-6 text-center">
-                                <button id="btn-mostrar-mais-pesquisas" class="hidden bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">
-                                    Mostrar Mais
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div id="view-adicionar" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
-                            <div class="w-full max-w-lg">
-                                <div id="add-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
-                                    <button id="add-type-joia" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Joia</button>
-                                    <button id="add-type-pesquisa" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Pesquisa</button>
-                                </div>
-                        
-                                <div id="form-container-joia">
-                                    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Joia</h2>
-                                    <form id="form-destaque" class="space-y-4">
-                                         <fieldset>
-                                            <div>
-                                                <label for="select-livro" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Livro</label>
-                                                <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
-                                            </div>
-                                            <div class="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label for="select-capitulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Capítulo</label>
-                                                    <select id="select-capitulo" name="capitulo" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required disabled>
-                                                        <option value="">Selecione o livro</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label for="input-versiculo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Versículo(s)</label>
-                                                    <input type="text" id="input-versiculo" name="versiculo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 5 ou 5,6 ou 5-7" required>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label for="textarea-destaque" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Joia</label>
-                                                <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
-                                                <input type="hidden" id="input-visibility-destaque" name="visibility" value="public">
-                                                <div id="visibility-selector-destaque" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
-                                                    <button type="button" data-value="public" class="visibility-btn-destaque search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
-                                                    <button type="button" data-value="private" class="visibility-btn-destaque search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Joia</button>
-                                            </div>
-                                        </fieldset>
-                                    </form>
-                                </div>
-                        
-                                <div id="form-container-pesquisa" class="hidden">
-                                    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Pesquisa</h2>
-                                    <form id="form-adicionar-pesquisa" class="space-y-4">
-                                         <fieldset>
-                                            <div>
-                                                <label for="input-pesquisa-titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
-                                                <input type="text" id="input-pesquisa-titulo" name="titulo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                            </div>
-                                            <div>
-                                                <label for="input-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (separadas por vírgula)</label>
-                                                <input type="text" id="input-pesquisa-tags" name="tags" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: estudo, oração">
-                                            </div>
-                                            <div>
-                                                <label for="input-pesquisa-fonte" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fonte (Link)</label>
-                                                <input type="url" id="input-pesquisa-fonte" name="fonte" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="https://...">
-                                            </div>
-                                             <div>
-                                                <label for="textarea-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico (Opcional)</label>
-                                                <textarea id="textarea-pesquisa-texto-biblico" name="textoBiblico" rows="1" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                                            </div>
-                                            <div>
-                                                <label for="textarea-pesquisa-anotacoes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anotações</label>
-                                                <textarea id="textarea-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
-                                                <input type="hidden" id="input-visibility-pesquisa" name="visibility" value="public">
-                                                <div id="visibility-selector-pesquisa" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
-                                                    <button type="button" data-value="public" class="visibility-btn-pesquisa search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
-                                                    <button type="button" data-value="private" class="visibility-btn-pesquisa search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Pesquisa</button>
-                                            </div>
-                                        </fieldset>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-        
-                        <div id="view-pesquisar" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
-                             <div class="w-full max-w-2xl">
-                                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Pesquisar</h2>
-                                <div id="search-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
-                                    <button id="search-type-joias" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Joias</button>
-                                    <button id="search-type-pesquisas" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Pesquisas</button>
-                                </div>
-                                <form id="form-pesquisa" class="flex gap-2 mb-8">
-                                    <input type="search" id="input-pesquisa" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite uma palavra-chave...">
-                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Buscar</button>
-                                </form>
-                                <div id="container-resultados" class="space-y-4">
-                                    <!-- Resultados da pesquisa aparecerão aqui -->
-                                </div>
-                            </div>
-                        </div>
-
-                    </div> <!-- Fim do #swipe-slider -->
-                </div> <!-- Fim do #swipe-viewport -->
+                <!-- Visualização dos Livros (agora 'hidden') -->
+                <main id="view-livros" class="hidden">
+                    <div class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
+                        <section id="antigo-testamento">
+                            <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
+                        </section>
+                        <section id="novo-testamento">
+                            <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS GREGAS CRISTÃS</h2>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
+                        </section>
+                    </div>
+                </main>
                 
-                <!-- Views de "Tela Cheia" (capítulos e conteúdo) -->
+                <!-- Visualização de Pesquisas -->
+                <div id="view-pesquisas" class="hidden px-4 sm:px-8 py-3 sm:py-6">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Pesquisas Salvas</h2>
+                    <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto"></div>
+                </div>
+                
+                <!-- Visualização de Adicionar (Unificada) -->
+                <div id="view-adicionar" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
+                    <div class="w-full max-w-lg">
+                        <!-- Seletor Interno -->
+                        <div id="add-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
+                            <button id="add-type-joia" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Joia</button>
+                            <button id="add-type-pesquisa" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Pesquisa</button>
+                        </div>
+                
+                        <!-- Container do Formulário de Joia (Visível por padrão) -->
+                        <div id="form-container-joia">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Joia</h2>
+                            <form id="form-destaque" class="space-y-4">
+                                 <fieldset>
+                                    <div>
+                                        <label for="select-livro" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Livro</label>
+                                        <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="select-capitulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Capítulo</label>
+                                            <select id="select-capitulo" name="capitulo" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required disabled>
+                                                <option value="">Selecione o livro</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="input-versiculo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Versículo(s)</label>
+                                            <input type="text" id="input-versiculo" name="versiculo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 5 ou 5,6 ou 5-7" required>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="textarea-destaque" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Joia</label>
+                                        <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
+                                        <input type="hidden" id="input-visibility-destaque" name="visibility" value="public">
+                                        <div id="visibility-selector-destaque" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
+                                            <button type="button" data-value="public" class="visibility-btn-destaque search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
+                                            <button type="button" data-value="private" class="visibility-btn-destaque search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Joia</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                
+                        <!-- Container do Formulário de Pesquisa (Oculto por padrão) -->
+                        <div id="form-container-pesquisa" class="hidden">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Pesquisa</h2>
+                            <form id="form-adicionar-pesquisa" class="space-y-4">
+                                 <fieldset>
+                                    <div>
+                                        <label for="input-pesquisa-titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
+                                        <input type="text" id="input-pesquisa-titulo" name="titulo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    </div>
+                                    <div>
+                                        <label for="input-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (separadas por vírgula)</label>
+                                        <input type="text" id="input-pesquisa-tags" name="tags" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: estudo, oração">
+                                    </div>
+                                    <div>
+                                        <label for="input-pesquisa-fonte" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fonte (Link)</label>
+                                        <input type="url" id="input-pesquisa-fonte" name="fonte" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="https://...">
+                                    </div>
+                                     <div>
+                                        <label for="textarea-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico (Opcional)</label>
+                                        <textarea id="textarea-pesquisa-texto-biblico" name="textoBiblico" rows="1" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="textarea-pesquisa-anotacoes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anotações</label>
+                                        <textarea id="textarea-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
+                                        <input type="hidden" id="input-visibility-pesquisa" name="visibility" value="public">
+                                        <div id="visibility-selector-pesquisa" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
+                                            <button type="button" data-value="public" class="visibility-btn-pesquisa search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
+                                            <button type="button" data-value="private" class="visibility-btn-pesquisa search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Pesquisa</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Visualização de Pesquisar -->
+                <div id="view-pesquisar" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
+                     <div class="w-full max-w-2xl">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Pesquisar</h2>
+                        <div id="search-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
+                            <button id="search-type-joias" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Joias</button>
+                            <button id="search-type-pesquisas" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Pesquisas</button>
+                        </div>
+                        <form id="form-pesquisa" class="flex gap-2 mb-8">
+                            <input type="search" id="input-pesquisa" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite uma palavra-chave...">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Buscar</button>
+                        </form>
+                        <div id="container-resultados" class="space-y-4">
+                            <!-- Resultados da pesquisa aparecerão aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 
+                  ====================================================================
+                  FIM DAS VIEWS PRINCIPAIS
+                  ==================================================================== 
+                -->
+
+                <!-- Visualização dos Capítulos (Grid de números) -->
                 <div id="view-capitulos" class="hidden">
                      <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
                         <button id="btn-voltar-livros" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Livros</button>
@@ -470,6 +477,7 @@
                     </div>
                 </div>
 
+                <!-- Visualização do Conteúdo do Capítulo (com destaques) -->
                 <div id="view-conteudo" class="hidden">
                     <header class="px-4 sm:px-6 py-3 sm:py-4 border-b dark:border-gray-700">
                         <button id="btn-voltar-capitulos" class="text-blue-600 dark:text-blue-400 hover:underline text-sm mb-6">&larr; Voltar para Capítulos</button>
@@ -483,7 +491,7 @@
                             </button>
                         </div>
                     </header>
-                    <div id="destaques-container" class="px-4 sm:px-8 py-3 sm:py-6 space-y-4"></div>
+                    <div id="destaques-container" class="px-4 sm:px-8 py-3 sm:py-6 space-y-4 no-swipe"></div>
                 </div>
 
             </div>
@@ -595,59 +603,30 @@
         const allChapters = {...biblia["Antigo Testamento"], ...biblia["Novo Testamento"]};
         let estadoAtual = { livro: null, capitulo: null };
 
+        // ATUALIZAÇÃO: 'views' e 'tabs' simplificados para a nova estrutura
         const views = {
             inicio: document.getElementById('view-inicio'),
             livros: document.getElementById('view-livros'),
-            adicionar: document.getElementById('view-adicionar'),
-            pesquisar: document.getElementById('view-pesquisar'),
             pesquisas: document.getElementById('view-pesquisas'),
-            capitulos: document.getElementById('view-capitulos'),
-            conteudo: document.getElementById('view-conteudo'),
+            adicionar: document.getElementById('view-adicionar'), // Container unificado
+            pesquisar: document.getElementById('view-pesquisar'),
+            capitulos: document.getElementById('view-capitulos'), // View de "tela cheia"
+            conteudo: document.getElementById('view-conteudo'), // View de "tela cheia"
         };
         const tabs = {
             inicio: document.getElementById('tab-inicio'),
             livros: document.getElementById('tab-livros'),
-            adicionar: document.getElementById('tab-adicionar'),
-            pesquisar: document.getElementById('tab-pesquisar'),
             pesquisas: document.getElementById('tab-pesquisas'),
+            adicionar: document.getElementById('tab-adicionar'), // Tab unificada
+            pesquisar: document.getElementById('tab-pesquisar'),
         };
         
-        let swipeViewport;
-        let swipeSlider;
-        let currentViewIndex = 0;
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let currentTranslate = 0;
-        let viewportWidth = 0;
-        let isDragging = false;
-        let gestureType = null;
+        // Ordem das abas para swipe global
+        const tabOrder = ['inicio', 'livros', 'pesquisas', 'adicionar', 'pesquisar'];
         
-        let loadedViews = new Set();
-        
-        let allPesquisasCache = [];
-        let pesquisasCurrentPage = 0;
-        const PESQUISAS_PAGE_SIZE = 5;
-
-        const tabOrder = [
-            'inicio', 
-            'livros', 
-            'pesquisas', 
-            'adicionar', 
-            'pesquisar'
-        ];
-        
-        const tabIdToName = {
-            'tab-inicio': 'inicio',
-            'tab-livros': 'livros',
-            'tab-pesquisas': 'pesquisas',
-            'tab-adicionar': 'adicionar',
-            'tab-pesquisar': 'pesquisar'
-        };
-
-
         const formDestaque = document.getElementById('form-destaque');
-        const formPesquisa = document.getElementById('form-pesquisa');
         const formAdicionarPesquisa = document.getElementById('form-adicionar-pesquisa');
+        const formPesquisa = document.getElementById('form-pesquisa');
         const selectLivro = document.getElementById('select-livro');
         const selectCapitulo = document.getElementById('select-capitulo');
         const passwordModal = document.getElementById('password-modal');
@@ -721,10 +700,6 @@
                 setTimeout(() => loginScreen.classList.remove('opacity-0'), 10);
                 
                 appContent.classList.add('hidden');
-                
-                loadedViews.clear();
-                allPesquisasCache = [];
-                pesquisasCurrentPage = 0;
             }
         });
 
@@ -844,60 +819,8 @@
             return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
 
-        function esconderTudo() { 
-            views.capitulos.classList.add('hidden');
-            views.conteudo.classList.add('hidden');
-            if (swipeViewport) swipeViewport.classList.remove('hidden');
-        }
-
-        function showFullscreenView(viewElement) {
-            esconderTudo();
-            if (swipeViewport) swipeViewport.classList.add('hidden');
-            viewElement.classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-        
-        function updateActiveTab(index) {
-            const activeAbaName = tabOrder[index];
-            Object.entries(tabs).forEach(([name, tabEl]) => {
-                if (name === activeAbaName) {
-                    tabEl.classList.replace('tab-inactive', 'tab-active');
-                } else {
-                    tabEl.classList.replace('tab-active', 'tab-inactive');
-                }
-            });
-        }
-
-        function snapToView(index, smooth = true) {
-            if (!swipeViewport || !swipeSlider) return;
-            
-            index = Math.max(0, Math.min(index, tabOrder.length - 1));
-            
-            currentViewIndex = index;
-            viewportWidth = swipeViewport.offsetWidth;
-            currentTranslate = -(index * viewportWidth);
-            
-            swipeSlider.style.transition = smooth ? 'transform 0.3s ease-in-out' : 'none';
-            swipeSlider.style.transform = `translateX(${currentTranslate}px)`;
-            
-            updateActiveTab(index);
-        }
-
-        // ====================================================================
-        // NOVA FUNÇÃO (ALTURA): Ajusta a altura do viewport para a aba ativa
-        // ====================================================================
-        function adjustViewportHeight(index, smooth = true) {
-            if (!swipeViewport || !swipeSlider) return;
-            
-            const activeView = swipeSlider.children[index];
-            if (activeView) {
-                const viewHeight = activeView.scrollHeight;
-                swipeViewport.style.transition = smooth ? 'height 0.3s ease-in-out' : 'none';
-                if (viewHeight > 0) { // Só define a altura se for mensurável
-                    swipeViewport.style.height = `${viewHeight}px`;
-                }
-            }
-        }
+        // ATUALIZAÇÃO: esconde todas as views
+        function esconderTudo() { Object.values(views).forEach(view => view.classList.add('hidden')); }
 
         function popularSelectLivros() {
             selectLivro.innerHTML = '<option value="" disabled selected>Selecione um livro</option>';
@@ -946,20 +869,10 @@
                 
                 selectCapitulo.disabled = true;
                 selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
+                popularLivros();
                 
-                loadedViews.delete('inicio');
-                loadedViews.delete('livros');
-                
-                if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio();
-                    loadedViews.add('inicio');
-                }
-
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura da aba "ADD" após salvar
-                // ====================================================================
-                if (currentViewIndex === tabOrder.indexOf('adicionar')) {
-                    setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
                 }
 
             } catch (e) {
@@ -1006,20 +919,8 @@
                 document.querySelector('.visibility-btn-pesquisa[data-value="public"]').classList.add('active');
                 document.querySelector('.visibility-btn-pesquisa[data-value="private"]').classList.remove('active');
                 
-                loadedViews.delete('inicio');
-                loadedViews.delete('pesquisas');
-                allPesquisasCache = [];
-                
-                if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio();
-                    loadedViews.add('inicio');
-                }
-
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura da aba "ADD" após salvar
-                // ====================================================================
-                if (currentViewIndex === tabOrder.indexOf('adicionar')) {
-                    setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
                 }
 
             } catch (e) {
@@ -1086,20 +987,9 @@
 
             const progressData = {};
             try {
-                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("autorId", "==", currentUserId));
-                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath));
-
-                const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
-                    getDocs(publicDestaquesQuery),
-                    getDocs(userDestaquesQuery)
-                ]);
-
-                const allUserDestaques = [
-                    ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
-                    ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
-                ];
+                const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
                 
-                allUserDestaques.forEach((data) => {
+                allDestaques.forEach((data) => {
                     if (data.livro && data.capitulo) {
                         if (!progressData[data.livro]) {
                             progressData[data.livro] = new Set();
@@ -1161,8 +1051,9 @@
 
         async function mostrarCapitulos(nomeLivro, numCapitulos) {
             estadoAtual.livro = nomeLivro;
-            showFullscreenView(views.capitulos);
-            
+            esconderTudo();
+            views.capitulos.classList.remove('hidden');
+            window.scrollTo(0, 0);
             document.getElementById('titulo-livro-capitulos').textContent = `O Livro de ${nomeLivro}`;
             
             const btnAnterior = document.getElementById('btn-livro-anterior');
@@ -1198,20 +1089,9 @@
 
             const capitulosComDestaque = new Set();
             try {
-                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("livro", "==", nomeLivro), where("autorId", "==", currentUserId));
-                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath), where("livro", "==", nomeLivro));
-
-                const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
-                    getDocs(publicDestaquesQuery),
-                    getDocs(userDestaquesQuery)
-                ]);
-
-                const allUserDestaques = [
-                    ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
-                    ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
-                ];
-
-                allUserDestaques.forEach((data) => {
+                const constraints = [where("livro", "==", nomeLivro)];
+                const destaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
+                destaques.forEach((data) => {
                     capitulosComDestaque.add(data.capitulo);
                 });
             } catch (e) {
@@ -1247,36 +1127,26 @@
                 await deleteDoc(doc(db, collectionPath, docId));
                 showToast("Item removido.");
                 
-                loadedViews.delete('inicio');
-                
                 if (collectionPath.includes('destaques')) {
-                    loadedViews.delete('livros');
                     if (document.getElementById('view-conteudo').classList.contains('hidden')) {
-                        if(swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
-                            document.getElementById('form-pesquisa').requestSubmit();
-                        }
+                        document.getElementById('form-pesquisa').requestSubmit();
                     } else {
                         await mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
                     }
+                    popularLivros();
                 } else if (collectionPath.includes('pesquisas')) {
-                    loadedViews.delete('pesquisas');
-                    allPesquisasCache = [];
-                    if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisas')) {
-                         await mostrarPesquisas();
-                         loadedViews.add('pesquisas'); 
+                    // ATUALIZAÇÃO: Atualiza a view correta
+                    if (!views.pesquisas.classList.contains('hidden')) {
+                        mostrarPesquisas();
+                    } else if (!views.pesquisar.classList.contains('hidden')) {
+                        formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
                 }
 
-                if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio();
-                    loadedViews.add('inicio'); 
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
                 }
 
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura após deletar
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
-                
             } catch (error) {
                 console.error("Erro ao deletar item: ", error);
                 showToast("Falha ao remover o item.", false);
@@ -1291,8 +1161,8 @@
             const card = document.createElement('div');
             card.className = 'relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50';
             
-            const isSearchView = (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar'));
-            const isInicioView = (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio'));
+            const isSearchView = !document.getElementById('view-pesquisar').classList.contains('hidden');
+            const isInicioView = !document.getElementById('view-inicio').classList.contains('hidden');
             
             const referencia = (isSearchView || isInicioView) ? `<p class="font-semibold text-gray-600 dark:text-gray-300 text-sm mb-2">${livro} ${capitulo}</p>` : ``;
 
@@ -1409,6 +1279,7 @@
                 ? `<blockquote class="border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-4 bg-gray-50 dark:bg-gray-700/50 rounded-r-lg"><p class="italic text-gray-700 dark:text-gray-300 whitespace-pre-wrap">${textoBiblico}</p></blockquote>`
                 : '';
             
+            // ATUALIZAÇÃO: Lógica de "Mostrar Mais" com Scroll
             const anotacoesId = `anotacoes-${id}`;
             const toggleBtnId = `toggle-btn-${id}`;
             let anotacoesHTML = '';
@@ -1470,6 +1341,7 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">Pesquisa de: ${autorNome} ${visibilityIconHTML}</p>
             `;
 
+            // ATUALIZAÇÃO: Nova lógica de "Mostrar Mais"
             if (anotacoes && anotacoes.length > MAX_LENGTH) {
                 const toggleBtn = card.querySelector(`#${toggleBtnId}`);
                 const anotacoesP = card.querySelector(`#${anotacoesId}`);
@@ -1480,9 +1352,11 @@
                     if (isTruncated) {
                         anotacoesP.textContent = anotacoes.substring(0, MAX_LENGTH) + '...';
                         toggleBtn.textContent = 'Mostrar tudo';
+                        anotacoesP.classList.remove('anotacoes-content'); // Remove a classe de scroll
                     } else {
                         anotacoesP.textContent = anotacoes;
                         toggleBtn.textContent = 'Mostrar menos';
+                        anotacoesP.classList.add('anotacoes-content'); // Adiciona a classe de scroll
                     }
                 });
             }
@@ -1509,8 +1383,9 @@
         async function mostrarConteudo(nomeLivro, numCapitulo) {
             estadoAtual.livro = nomeLivro;
             estadoAtual.capitulo = numCapitulo;
-            showFullscreenView(views.conteudo);
-            
+            esconderTudo();
+            views.conteudo.classList.remove('hidden');
+            window.scrollTo(0, 0);
             document.getElementById('titulo-conteudo').textContent = `${nomeLivro} ${numCapitulo}`;
             
             const btnAnterior = document.getElementById('btn-capitulo-anterior');
@@ -1541,17 +1416,11 @@
             container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando destaques...</p>';
 
             try {
-                const constraintsPublic = [
+                const constraints = [
                     where("livro", "==", nomeLivro), 
                     where("capitulo", "==", numCapitulo)
                 ];
-                
-                const destaquesDoCapitulo = await fetchDocs(
-                    publicDestaquesCollectionPath, 
-                    userDestaquesCollectionPath, 
-                    constraintsPublic
-                );
-
+                const destaquesDoCapitulo = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
 
                 destaquesDoCapitulo.sort((a, b) => {
                     const firstNumA = parseInt(String(a.versiculo).split(/[,-]/)[0], 10);
@@ -1616,16 +1485,10 @@
                 } else {
                     container.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Nenhum resultado encontrado para "${document.getElementById('input-pesquisa').value}".</p>`;
                 }
-                
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura após a pesquisa
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
 
             } catch(e) {
                 console.error("Erro ao pesquisar: ", e);
                 container.innerHTML = `<p class="text-red-500">Ocorreu um erro ao realizar a pesquisa.</p>`;
-                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
             }
         }
 
@@ -1635,7 +1498,7 @@
             try {
                 const constraints = [
                     orderBy("createdAt", "desc"),
-                    limit(1)
+                    limit(3) // 3 joias
                 ];
                 const joias = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath, constraints);
 
@@ -1660,7 +1523,7 @@
             try {
                 const constraints = [
                     orderBy("createdAt", "desc"),
-                    limit(1)
+                    limit(1) // 1 pesquisa
                 ];
                 const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath, constraints);
 
@@ -1678,192 +1541,125 @@
                 container.innerHTML = '<p class="text-red-500">Erro ao carregar pesquisas.</p>';
             }
         }
-        
-        function _calculateProgress(destaquesList) {
-            const progressData = {};
-            destaquesList.forEach((data) => {
-                 if (data.livro && data.capitulo) {
-                    if (!progressData[data.livro]) {
-                        progressData[data.livro] = new Set();
-                    }
-                    progressData[data.livro].add(data.capitulo);
-                }
-            });
-
-            let totalLivros = 0;
-            let livrosCompletos = 0;
-            
-            Object.values(biblia).forEach(testamento => {
-                Object.entries(testamento).forEach(([livro, totalCaps]) => {
-                    totalLivros++;
-                    const capitulosFeitos = progressData[livro] ? progressData[livro].size : 0;
-                    if (capitulosFeitos === totalCaps) {
-                        livrosCompletos++;
-                    }
-                });
-            });
-
-            const percentageLivros = totalLivros > 0 ? (livrosCompletos / totalLivros) * 100 : 0;
-            const totalCapitulosGlobal = Object.values(allChapters).reduce((acc, val) => acc + val, 0);
-            const capitulosConcluidosGlobal = Object.values(progressData).reduce((acc, capSet) => acc + capSet.size, 0);
-            const percentageCapitulos = totalCapitulosGlobal > 0 ? (capitulosConcluidosGlobal / totalCapitulosGlobal) * 100 : 0;
-            
-            return {
-                percentageLivros,
-                percentageCapitulos,
-                livrosCompletos,
-                totalLivros,
-                capitulosConcluidosGlobal,
-                totalCapitulosGlobal
-            };
-        }
 
         async function calcularProgressoTotal() {
-            const progressBarPublicoLivros = document.getElementById('progress-bar-publico-livros');
-            const progressTextPublicoLivros = document.getElementById('progress-text-publico-livros');
-            const progressBarPublicoCapitulos = document.getElementById('progress-bar-publico-capitulos');
-            const progressTextPublicoCapitulos = document.getElementById('progress-text-publico-capitulos');
-            const statsPublicoJoias = document.getElementById('stats-publico-joias');
-            const statsPublicoPesquisas = document.getElementById('stats-publico-pesquisas');
-
-            const individualTitle = document.getElementById('progresso-individual-title');
-            const progressBarIndividualLivros = document.getElementById('progress-bar-individual-livros');
-            const progressTextIndividualLivros = document.getElementById('progress-text-individual-livros');
-            const progressBarIndividualCapitulos = document.getElementById('progress-bar-individual-capitulos');
-            const progressTextIndividualCapitulos = document.getElementById('progress-text-individual-capitulos');
-            const statsIndividualJoias = document.getElementById('stats-individual-joias');
-            const statsIndividualPesquisas = document.getElementById('stats-individual-pesquisas');
-
-            if (!progressBarPublicoLivros) {
-                console.warn("Elementos de progresso não encontrados. A view 'Início' não está ativa?");
-                return;
-            }
+            const progressBarTotal = document.getElementById('progress-bar-total');
+            const progressTextTotal = document.getElementById('progress-text-total');
+            const progressBarCapitulos = document.getElementById('progress-bar-capitulos');
+            const progressTextCapitulos = document.getElementById('progress-text-capitulos');
             
-            progressBarPublicoLivros.style.width = '0%';
-            progressTextPublicoLivros.textContent = 'Calculando...';
-            progressBarPublicoCapitulos.style.width = '0%';
-            progressTextPublicoCapitulos.textContent = 'Calculando...';
-            statsPublicoJoias.textContent = '...';
-            statsPublicoPesquisas.textContent = '...';
-            
-            individualTitle.textContent = `Progresso Individual (${getDisplayNameFromEmail(auth.currentUser.email)})`;
-            progressBarIndividualLivros.style.width = '0%';
-            progressTextIndividualLivros.textContent = 'Calculando...';
-            progressBarIndividualCapitulos.style.width = '0%';
-            progressTextIndividualCapitulos.textContent = 'Calculando...';
-            statsIndividualJoias.textContent = '...';
-            statsIndividualPesquisas.textContent = '...';
+            if (!progressBarTotal || !progressTextTotal || !progressBarCapitulos || !progressTextCapitulos) return;
+
+            progressBarTotal.style.width = '0%';
+            progressTextTotal.textContent = 'Calculando...';
+            progressBarCapitulos.style.width = '0%';
+            progressTextCapitulos.textContent = 'Calculando...';
 
             try {
-                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath));
-                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath));
-                const publicPesquisasQuery = query(collection(db, publicPesquisasCollectionPath));
-                const userPesquisasQuery = query(collection(db, userPesquisasCollectionPath));
-
-                const [
-                    publicDestaquesSnap, 
-                    userDestaquesSnap, 
-                    publicPesquisasSnap, 
-                    userPesquisasSnap
-                ] = await Promise.all([ 
-                    getDocs(publicDestaquesQuery), 
-                    getDocs(userDestaquesQuery), 
-                    getDocs(publicPesquisasQuery), 
-                    getDocs(userPesquisasQuery) 
-                ]);
-
-                const publicDestaques = publicDestaquesSnap.docs.map(doc => doc.data());
-                const userPrivateDestaques = userDestaquesSnap.docs.map(doc => doc.data());
-                const publicPesquisas = publicPesquisasSnap.docs.map(doc => doc.data());
-                const userPrivatePesquisas = userPesquisasSnap.docs.map(doc => doc.data());
-
-                const userPublicDestaques = publicDestaques.filter(d => d.autorId === currentUserId);
-                const userPublicPesquisas = publicPesquisas.filter(p => p.autorId === currentUserId);
-
-                const individualDestaques = [...userPrivateDestaques, ...userPublicDestaques];
-                const individualPesquisas = [...userPrivatePesquisas, ...userPublicPesquisas];
-
-                const publicProgress = _calculateProgress(publicDestaques);
-                const individualProgress = _calculateProgress(individualDestaques);
-
-                statsPublicoJoias.textContent = publicDestaques.length;
-                statsPublicoPesquisas.textContent = publicPesquisas.length;
+                const allDestaques = await fetchDocs(publicDestaquesCollectionPath, userDestaquesCollectionPath);
                 
-                progressBarPublicoLivros.style.width = `${publicProgress.percentageLivros}%`;
-                progressTextPublicoLivros.textContent = `${publicProgress.percentageLivros.toFixed(1)}% (${publicProgress.livrosCompletos} de ${publicProgress.totalLivros} livros)`;
-                progressBarPublicoCapitulos.style.width = `${publicProgress.percentageCapitulos}%`;
-                progressTextPublicoCapitulos.textContent = `${publicProgress.percentageCapitulos.toFixed(1)}% (${publicProgress.capitulosConcluidosGlobal} de ${publicProgress.totalCapitulosGlobal} capítulos)`;
+                const progressData = {};
+                allDestaques.forEach((data) => {
+                     if (data.livro && data.capitulo) {
+                        if (!progressData[data.livro]) {
+                            progressData[data.livro] = new Set();
+                        }
+                        progressData[data.livro].add(data.capitulo);
+                    }
+                });
 
-                statsIndividualJoias.textContent = individualDestaques.length;
-                statsIndividualPesquisas.textContent = individualPesquisas.length;
+                let totalLivros = 0;
+                let livrosCompletos = 0;
+                
+                Object.values(biblia).forEach(testamento => {
+                    Object.entries(testamento).forEach(([livro, totalCaps]) => {
+                        totalLivros++;
+                        const capitulosFeitos = progressData[livro] ? progressData[livro].size : 0;
+                        if (capitulosFeitos === totalCaps) {
+                            livrosCompletos++;
+                        }
+                    });
+                });
 
-                progressBarIndividualLivros.style.width = `${individualProgress.percentageLivros}%`;
-                progressTextIndividualLivros.textContent = `${individualProgress.percentageLivros.toFixed(1)}% (${individualProgress.livrosCompletos} de ${individualProgress.totalLivros} livros)`;
-                progressBarIndividualCapitulos.style.width = `${individualProgress.percentageCapitulos}%`;
-                progressTextIndividualCapitulos.textContent = `${individualProgress.percentageCapitulos.toFixed(1)}% (${individualProgress.capitulosConcluidosGlobal} de ${individualProgress.totalCapitulosGlobal} capítulos)`;
+                // Cálculo de Livros
+                const percentageLivros = totalLivros > 0 ? (livrosCompletos / totalLivros) * 100 : 0;
+                progressBarTotal.style.width = `${percentageLivros}%`;
+                progressTextTotal.textContent = `${percentageLivros.toFixed(1)}% (${livrosCompletos} de ${totalLivros} livros)`;
+
+                // Cálculo de Capítulos
+                const totalCapitulosGlobal = Object.values(allChapters).reduce((acc, val) => acc + val, 0);
+                const capitulosConcluidosGlobal = Object.values(progressData).reduce((acc, capSet) => acc + capSet.size, 0);
+                const percentageCapitulos = totalCapitulosGlobal > 0 ? (capitulosConcluidosGlobal / totalCapitulosGlobal) * 100 : 0;
+                
+                progressBarCapitulos.style.width = `${percentageCapitulos}%`;
+                progressTextCapitulos.textContent = `${percentageCapitulos.toFixed(1)}% (${capitulosConcluidosGlobal} de ${totalCapitulosGlobal} capítulos)`;
 
 
             } catch(e) {
                 console.error("Erro ao calcular progresso: ", e);
-                progressTextPublicoLivros.textContent = 'Erro ao calcular.';
-                progressTextPublicoCapitulos.textContent = 'Erro ao calcular.';
-                progressTextIndividualLivros.textContent = 'Erro ao calcular.';
-                progressTextIndividualCapitulos.textContent = 'Erro ao calcular.';
-                statsPublicoJoias.textContent = 'X';
-                statsPublicoPesquisas.textContent = 'X';
-                statsIndividualJoias.textContent = 'X';
-                statsIndividualPesquisas.textContent = 'X';
+                progressTextTotal.textContent = 'Erro ao calcular.';
+                progressTextCapitulos.textContent = 'Erro ao calcular.';
             }
         }
-
 
         async function popularInicio() {
             if (!currentUserId) return;
-            await Promise.all([
-                buscarUltimasJoias(),
-                buscarUltimasPesquisas(),
-                calcularProgressoTotal()
-            ]);
+            buscarUltimasJoias();
+            buscarUltimasPesquisas();
+            calcularProgressoTotal();
         }
 
-        async function mudarAba(abaAtiva) {
-            const newIndex = tabOrder.indexOf(abaAtiva);
-            if (newIndex < 0) return;
+        // ATUALIZAÇÃO: Nova função para mostrar o formulário de Add
+        function mostrarFormularioAdd(tipo) {
+            const formJoia = document.getElementById('form-container-joia');
+            const formPesquisa = document.getElementById('form-container-pesquisa');
+            const btnJoia = document.getElementById('add-type-joia');
+            const btnPesquisa = document.getElementById('add-type-pesquisa');
 
-            esconderTudo();
+            if (tipo === 'pesquisa') {
+                formJoia.classList.add('hidden');
+                formPesquisa.classList.remove('hidden');
+                btnJoia.classList.remove('active');
+                btnPesquisa.classList.add('active');
+            } else {
+                formJoia.classList.remove('hidden');
+                formPesquisa.classList.add('hidden');
+                btnJoia.classList.add('active');
+                btnPesquisa.classList.remove('active');
+            }
+        }
+
+        // ATUALIZAÇÃO: `mudarAba` restaurada para a lógica de 'hidden'
+        function mudarAba(abaAtiva) {
+            esconderTudo(); // Esconde todas as views (incluindo 'capitulos' e 'conteudo')
+            Object.values(tabs).forEach(tab => tab.classList.replace('tab-active', 'tab-inactive'));
             
-            const abaName = tabOrder[newIndex];
-
-            if (!loadedViews.has(abaName)) {
-                console.log(`CACHE: Carregando '${abaName}'`);
-                try {
-                    if (abaName === 'inicio') {
-                        await popularInicio();
-                    } else if (abaName === 'livros') {
-                        await popularLivros();
-                    } else if (abaName === 'pesquisas') {
-                        await mostrarPesquisas();
-                    }
-                    loadedViews.add(abaName);
-                } catch (e) {
-                    console.error(`Falha ao carregar aba ${abaName}:`, e);
-                }
+            let viewName = abaAtiva; // 'inicio', 'livros', 'pesquisas', 'adicionar', 'pesquisar'
+            
+            // Ativa a view
+            if (views[viewName]) {
+                views[viewName].classList.remove('hidden');
             }
             
-            if (abaName === 'adicionar') {
-                document.getElementById('add-type-joia').click();
+            // Ativa a tab
+            if (tabs[viewName]) {
+                tabs[viewName].classList.replace('tab-inactive', 'tab-active');
             }
-            
-            snapToView(newIndex); 
-            
-            // ====================================================================
-            // MUDANÇA (ALTURA): Chama o ajuste de altura após mudar de aba
-            // ====================================================================
-            // Adiciona um pequeno delay para permitir a renderização do DOM
-            // antes de calcular a nova altura.
-            setTimeout(() => {
-                adjustViewportHeight(newIndex);
-            }, 50);
+
+            // Carrega o conteúdo da view
+            if (viewName === 'inicio') {
+                popularInicio();
+            } else if (viewName === 'livros') {
+                popularLivros();
+            } else if (viewName === 'pesquisas') {
+                mostrarPesquisas();
+            } else if (viewName === 'adicionar') {
+                // Apenas garante que o formulário de joia seja o padrão
+                mostrarFormularioAdd('joia');
+            } else if (viewName === 'pesquisar') {
+                // Limpa pesquisas anteriores ao abrir
+                document.getElementById('container-resultados').innerHTML = '';
+            }
         }
         
         function iniciarAcao(type, docId, path) {
@@ -2007,35 +1803,23 @@
                 showToast("Atualizado com sucesso!");
                 fecharFormularioEdicao();
 
-                loadedViews.delete('inicio');
-                
                 if (isDestaque) {
-                    loadedViews.delete('livros');
                     if (!views.conteudo.classList.contains('hidden')) {
                         mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
-                    } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
+                    } else if (!views.pesquisar.classList.contains('hidden')) {
                         formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
                 } else {
-                    loadedViews.delete('pesquisas');
-                    allPesquisasCache = [];
-                     if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisas')) {
-                        await mostrarPesquisas();
-                        loadedViews.add('pesquisas'); 
-                    } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
+                     if (!views.pesquisas.classList.contains('hidden')) {
+                        mostrarPesquisas();
+                    } else if (!views.pesquisar.classList.contains('hidden')) {
                          formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
                 }
                 
-                if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
-                    await popularInicio();
-                    loadedViews.add('inicio'); 
+                if (!views.inicio.classList.contains('hidden')) {
+                    popularInicio();
                 }
-                
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura após editar
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
 
             } catch (error) {
                 console.error("Erro ao salvar edição:", error);
@@ -2043,160 +1827,36 @@
             }
         }
         
-        function renderPesquisasPage() {
-            const container = document.getElementById('container-pesquisas');
-            const btnMostrarMais = document.getElementById('btn-mostrar-mais-pesquisas');
-            
-            if (pesquisasCurrentPage === 0) {
-                container.innerHTML = '';
-            }
-
-            const start = pesquisasCurrentPage * PESQUISAS_PAGE_SIZE;
-            const end = start + PESQUISAS_PAGE_SIZE;
-            
-            const pageItems = allPesquisasCache.slice(start, end);
-            
-            if (allPesquisasCache.length === 0 && start === 0) {
-                container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa salva ainda.</p>';
-            }
-
-            pageItems.forEach(pesquisa => {
-                const card = criarCardPesquisa(pesquisa);
-                container.appendChild(card);
-            });
-
-            if (end < allPesquisasCache.length) {
-                btnMostrarMais.classList.remove('hidden');
-            } else {
-                btnMostrarMais.classList.add('hidden');
-            }
-        }
-
         async function mostrarPesquisas() {
             const container = document.getElementById('container-pesquisas');
-            const btnMostrarMais = document.getElementById('btn-mostrar-mais-pesquisas');
-            
-            if (allPesquisasCache.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">A carregar pesquisas...</p>';
-                btnMostrarMais.classList.add('hidden');
-                try {
-                    const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath);
-                    
+            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">A carregar pesquisas...</p>';
+            try {
+                const pesquisas = await fetchDocs(publicPesquisasCollectionPath, userPesquisasCollectionPath);
+
+                container.innerHTML = '';
+                if (pesquisas.length > 0) {
                     pesquisas.sort((a, b) => {
                         const dateA = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate() : new Date(0);
                         const dateB = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate() : new Date(0);
                         return dateB - dateA;
                     });
                     
-                    allPesquisasCache = pesquisas;
-                    
-                } catch (e) {
-                    console.error("Erro ao buscar pesquisas: ", e);
-                    container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar as pesquisas.</p>';
-                    return;
+                    pesquisas.forEach(pesquisa => {
+                        const card = criarCardPesquisa(pesquisa);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma pesquisa salva ainda.</p>';
                 }
+            } catch (e) {
+                console.error("Erro ao buscar pesquisas: ", e);
+                container.innerHTML = '<p class="text-red-500">Ocorreu um erro ao carregar as pesquisas.</p>';
             }
-            
-            pesquisasCurrentPage = 0;
-            renderPesquisasPage();
         }
         
-        function handleTouchStart(e) {
-            if (e.target.closest('.no-swipe')) {
-                isDragging = false;
-                gestureType = null;
-                return;
-            }
-            
-            const targetTag = e.target.tagName;
-            if (targetTag === 'INPUT' || targetTag === 'TEXTAREA' || targetTag === 'SELECT') {
-                 isDragging = false;
-                gestureType = null;
-                return;
-            }
-
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            viewportWidth = swipeViewport.offsetWidth;
-            
-            swipeSlider.style.transition = 'none';
-            isDragging = true;
-            gestureType = null;
-        }
-
-        function handleTouchMove(e) {
-            if (!isDragging) return;
-
-            const currentX = e.touches[0].clientX;
-            const currentY = e.touches[0].clientY;
-            const diffX = currentX - touchStartX;
-            const diffY = currentY - touchStartY;
-
-            if (gestureType === null) {
-                if (Math.abs(diffX) > (Math.abs(diffY) * 1.5)) {
-                    gestureType = 'swipe';
-                } else {
-                    gestureType = 'scroll';
-                }
-            }
-
-            if (gestureType === 'swipe') {
-                e.preventDefault();
-                
-                let newTranslate = currentTranslate + diffX;
-                
-                swipeSlider.style.transform = `translateX(${newTranslate}px)`;
-            }
-        }
-
-        async function handleTouchEnd(e) {
-            const oldIndex = currentViewIndex; 
-
-            if (!isDragging || gestureType !== 'swipe') {
-                isDragging = false;
-                gestureType = null;
-                return;
-            }
-
-            isDragging = false;
-            gestureType = null;
-            swipeSlider.style.transition = 'transform 0.3s ease-in-out';
-
-            const finalX = e.changedTouches[0].clientX;
-            const totalDiffX = finalX - touchStartX;
-            const threshold = viewportWidth / 4;
-            
-            // ====================================================================
-            // MUDANÇA (SWIPE): Lógica de swipe interno foi REMOVIDA.
-            // ====================================================================
-
-            let newIndex = currentViewIndex;
-
-            if (totalDiffX < -threshold) {
-                newIndex = Math.min(currentViewIndex + 1, tabOrder.length - 1);
-            } else if (totalDiffX > threshold) {
-                newIndex = Math.max(currentViewIndex - 1, 0);
-            }
-            
-            if (newIndex !== oldIndex) {
-                const newAbaName = tabOrder[newIndex];
-                await mudarAba(newAbaName);
-            } else {
-                snapToView(oldIndex);
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura no snap-back
-                // ====================================================================
-                adjustViewportHeight(oldIndex);
-            }
-        }
-
-
-        async function initializeMainApp(user) {
+        function initializeMainApp(user) {
             const headerTitle = document.getElementById('header-title');
             
-            swipeViewport = document.getElementById('swipe-viewport');
-            swipeSlider = document.getElementById('swipe-slider');
-
             const profileButton = document.getElementById('profile-button');
             const profileMenu = document.getElementById('profile-menu');
             const logoutButton = document.getElementById('profile-menu-logout');
@@ -2222,34 +1882,20 @@
             });
 
             popularSelectLivros();
-            
-            await popularInicio();
-            loadedViews.add('inicio');
-            snapToView(0, false);
-            // ====================================================================
-            // MUDANÇA (ALTURA): Define a altura inicial do viewport
-            // ====================================================================
-            adjustViewportHeight(0, false); 
-            
-            window.addEventListener('resize', () => {
-                snapToView(currentViewIndex, false); 
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura no resize
-                // ====================================================================
-                adjustViewportHeight(currentViewIndex, false);
-            });
+            popularInicio(); // Carrega a aba inicial
 
             formDestaque.addEventListener('submit', salvarDestaque);
             formPesquisa.addEventListener('submit', realizarPesquisa);
             formAdicionarPesquisa.addEventListener('submit', salvarPesquisa);
             document.getElementById('form-edit').addEventListener('submit', salvarEdicao);
             
+            // ATUALIZAÇÃO: Event listeners dos cliques nas abas
             headerTitle.addEventListener('click', () => mudarAba('inicio')); 
             tabs.inicio.addEventListener('click', (e) => { e.preventDefault(); mudarAba('inicio'); }); 
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
+            tabs.pesquisas.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisas'); });
             tabs.adicionar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionar'); });
             tabs.pesquisar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisar'); });
-            tabs.pesquisas.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisas'); });
             
             document.getElementById('btn-voltar-livros').addEventListener('click', () => mudarAba('livros'));
             document.getElementById('btn-voltar-capitulos').addEventListener('click', () => {
@@ -2258,42 +1904,6 @@
                 mostrarCapitulos(livro, numCapitulos);
             });
             
-            const addTypeJoiaBtn = document.getElementById('add-type-joia');
-            const addTypePesquisaBtn = document.getElementById('add-type-pesquisa');
-            const formContainerJoia = document.getElementById('form-container-joia');
-            const formContainerPesquisa = document.getElementById('form-container-pesquisa');
-
-            addTypeJoiaBtn.addEventListener('click', () => {
-                addTypeJoiaBtn.classList.add('active');
-                addTypePesquisaBtn.classList.remove('active');
-                formContainerJoia.classList.remove('hidden');
-                formContainerPesquisa.classList.add('hidden');
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura ao trocar de formulário
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex), 50);
-            });
-
-            addTypePesquisaBtn.addEventListener('click', () => {
-                addTypePesquisaBtn.classList.add('active');
-                addTypeJoiaBtn.classList.remove('active');
-                formContainerPesquisa.classList.remove('hidden');
-                formContainerJoia.classList.add('hidden');
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura ao trocar de formulário
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex), 50);
-            });
-            
-            document.getElementById('btn-mostrar-mais-pesquisas').addEventListener('click', () => {
-                pesquisasCurrentPage++;
-                renderPesquisasPage();
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura ao mostrar mais pesquisas
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex), 50);
-            });
-
             document.getElementById('cancel-password-btn').addEventListener('click', fecharModalSenha);
             document.getElementById('confirm-password-btn').addEventListener('click', confirmarSenha);
             passwordModal.addEventListener('click', (e) => {
@@ -2325,27 +1935,21 @@
                 }
             });
 
+            // Seletor de tipo de pesquisa (Joias/Pesquisas)
             const searchTypeJoias = document.getElementById('search-type-joias');
             const searchTypePesquisas = document.getElementById('search-type-pesquisas');
 
             searchTypeJoias.addEventListener('click', () => {
                 searchTypeJoias.classList.add('active');
                 searchTypePesquisas.classList.remove('active');
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura ao trocar tipo de busca
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
             });
 
             searchTypePesquisas.addEventListener('click', () => {
                 searchTypePesquisas.classList.add('active');
                 searchTypeJoias.classList.remove('active');
-                // ====================================================================
-                // MUDANÇA (ALTURA): Reajusta a altura ao trocar tipo de busca
-                // ====================================================================
-                setTimeout(() => adjustViewportHeight(currentViewIndex, false), 50);
             });
             
+            // Seletor de visibilidade (Form Destaque)
             const visButtonsDestaque = document.querySelectorAll('.visibility-btn-destaque');
             const hiddenInputDestaque = document.getElementById('input-visibility-destaque');
             visButtonsDestaque.forEach(button => {
@@ -2356,6 +1960,7 @@
                 });
             });
 
+            // Seletor de visibilidade (Form Pesquisa)
             const visButtonsPesquisa = document.querySelectorAll('.visibility-btn-pesquisa');
             const hiddenInputPesquisa = document.getElementById('input-visibility-pesquisa');
             visButtonsPesquisa.forEach(button => {
@@ -2365,11 +1970,134 @@
                     hiddenInputPesquisa.value = button.dataset.value;
                 });
             });
+
+            // ATUALIZAÇÃO: Seletor interno da aba "+ ADD"
+            document.getElementById('add-type-joia').addEventListener('click', () => mostrarFormularioAdd('joia'));
+            document.getElementById('add-type-pesquisa').addEventListener('click', () => mostrarFormularioAdd('pesquisa'));
             
-            swipeViewport.addEventListener('touchstart', handleTouchStart, { passive: true });
-            swipeViewport.addEventListener('touchmove', handleTouchMove, { passive: false });
-            swipeViewport.addEventListener('touchend', handleTouchEnd, { passive: true });
-            swipeViewport.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+            // ====================================================================
+            // INÍCIO DA LÓGICA DE SWIPE (GLOBAL)
+            // ====================================================================
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchEndX = 0;
+            let touchEndY = 0;
+
+            appContent.addEventListener('touchstart', (e) => {
+                // Ignora swipes em elementos com 'no-swipe' ou inputs, ou se estiver nas views de "tela cheia"
+                if (e.target.closest('.no-swipe') || 
+                    e.target.tagName === 'INPUT' || 
+                    e.target.tagName === 'TEXTAREA' || 
+                    e.target.tagName === 'SELECT' ||
+                    !views.capitulos.classList.contains('hidden') ||
+                    !views.conteudo.classList.contains('hidden')
+                   ) {
+                    touchStartX = 0;
+                    touchStartY = 0;
+                    return;
+                }
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+            }, { passive: true });
+
+            appContent.addEventListener('touchend', (e) => {
+                if (touchStartX === 0) return; // Não iniciou um swipe válido
+
+                // Verifica de novo, pois o target pode ser diferente
+                if (e.target.closest('.no-swipe') ||
+                    !views.capitulos.classList.contains('hidden') ||
+                    !views.conteudo.classList.contains('hidden')
+                   ) {
+                    touchStartX = 0;
+                    touchStartY = 0;
+                    return;
+                }
+                
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                
+                handleSwipeGesture();
+                
+                touchStartX = 0;
+                touchStartY = 0;
+            }, { passive: true });
+
+            function handleSwipeGesture() {
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+                const threshold = 75; // Mínimo de pixels
+
+                // Verifica se foi um swipe mais horizontal do que vertical
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > threshold) {
+                    
+                    const activeTabEl = document.querySelector('.tab-active');
+                    if (!activeTabEl) return;
+                    
+                    // Mapeia ID da tab para o nome da aba (ex: 'tab-inicio' -> 'inicio')
+                    const activeTabName = activeTabEl.id.split('tab-')[1]; 
+                    if (!activeTabName) return;
+
+                    const currentIndex = tabOrder.indexOf(activeTabName);
+                    if (currentIndex === -1) return;
+
+                    let newIndex;
+                    if (diffX > 0) {
+                        // Swipe para a Direita (voltar)
+                        newIndex = (currentIndex - 1 + tabOrder.length) % tabOrder.length;
+                    } else {
+                        // Swipe para a Esquerda (avançar)
+                        newIndex = (currentIndex + 1) % tabOrder.length;
+                    }
+                    // Chama a função 'mudarAba' que agora carrega o conteúdo
+                    mudarAba(tabOrder[newIndex]);
+                }
+            }
+            // ====================================================================
+            // FIM DA LÓGICA DE SWIPE (GLOBAL)
+            // ====================================================================
+
+
+            // ====================================================================
+            // INÍCIO DA LÓGICA DE SWIPE (LOCAL DA ABA "+ ADD")
+            // ====================================================================
+            let localTouchStartX = 0;
+            const addView = views.adicionar;
+
+            addView.addEventListener('touchstart', (e) => {
+                // Ignora se o swipe começar em um seletor (para não bugar)
+                if (e.target.closest('.no-swipe')) {
+                    localTouchStartX = 0;
+                    return;
+                }
+                localTouchStartX = e.changedTouches[0].screenX;
+                // Impede o swipe global de ser acionado
+                e.stopPropagation(); 
+            }, { passive: true });
+
+            addView.addEventListener('touchend', (e) => {
+                if (localTouchStartX === 0) return;
+                
+                let localTouchEndX = e.changedTouches[0].screenX;
+                const diffX = localTouchEndX - localTouchStartX;
+                const threshold = 50;
+
+                if (Math.abs(diffX) > threshold) {
+                    if (diffX > 0) {
+                        // Swipe para a Direita (Mostrar Joia)
+                        mostrarFormularioAdd('joia');
+                    } else {
+                        // Swipe para a Esquerda (Mostrar Pesquisa)
+                        mostrarFormularioAdd('pesquisa');
+                    }
+                }
+                
+                localTouchStartX = 0;
+                // Impede o swipe global de ser acionado
+                e.stopPropagation();
+            }, { passive: true });
+            // ====================================================================
+            // FIM DA LÓGICA DE SWIPE (LOCAL)
+            // ====================================================================
         }
         
     </script>
