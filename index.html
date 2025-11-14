@@ -313,11 +313,13 @@
                             <div class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
                                 <section id="antigo-testamento">
                                     <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 no-swipe"></div>
+                                    <!-- MUDANÇA: Removido 'no-swipe' -->
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
                                 </section>
                                 <section id="novo-testamento">
                                     <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS GREGAS CRISTÃS</h2>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 no-swipe"></div>
+                                    <!-- MUDANÇA: Removido 'no-swipe' -->
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-300 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"></div>
                                 </section>
                             </div>
                         </main>
@@ -329,7 +331,8 @@
                         -->
                         <div id="view-pesquisas" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6">
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Pesquisas Salvas</h2>
-                            <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto no-swipe"></div>
+                            <!-- MUDANÇA: Removido 'no-swipe' -->
+                            <div id="container-pesquisas" class="space-y-4 max-w-4xl mx-auto"></div>
                         </div>
                         
                         <!-- 
@@ -443,7 +446,8 @@
                                     <input type="search" id="input-pesquisa" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Digite uma palavra-chave...">
                                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Buscar</button>
                                 </form>
-                                <div id="container-resultados" class="space-y-4 no-swipe">
+                                <!-- MUDANÇA: Removido 'no-swipe' -->
+                                <div id="container-resultados" class="space-y-4">
                                     <!-- Resultados da pesquisa aparecerão aqui -->
                                 </div>
                             </div>
@@ -475,7 +479,8 @@
                     </header>
                     <div class="px-4 sm:px-8 py-3 sm:py-6">
                         <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-4">Capítulos</h3>
-                        <div id="grid-capitulos" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-2 no-swipe"></div>
+                        <!-- MUDANÇA: Removido 'no-swipe' -->
+                        <div id="grid-capitulos" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-12 gap-2"></div>
                     </div>
                 </div>
 
@@ -493,7 +498,8 @@
                             </button>
                         </div>
                     </header>
-                    <div id="destaques-container" class="px-4 sm:px-8 py-3 sm:py-6 space-y-4 no-swipe"></div>
+                    <!-- MUDANÇA: Removido 'no-swipe' -->
+                    <div id="destaques-container" class="px-4 sm:px-8 py-3 sm:py-6 space-y-4"></div>
                 </div>
 
             </div>
@@ -1908,7 +1914,7 @@
         // ====================================================================
         function handleTouchStart(e) {
             // Ignora swipes em 'no-swipe' ou formulários
-            if (e.target.closest || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            if (e.target.closest('.no-swipe') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
                 isDragging = false;
                 gestureType = null;
                 return;
@@ -2151,4 +2157,3 @@
     </script>
 </body>
 </html>
-
