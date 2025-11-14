@@ -236,8 +236,8 @@
                             <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.25l-7.5 7.5 7.5 7.5 7.5-7.5-7.5-7.5z"></path></svg>
                             PESQUISAS
                         </a>
-                        <a href="#" id="tab-adicionar-destaque" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">ADD. JOIA</a>
-                        <a href="#" id="tab-adicionar-pesquisa" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">ADD. PESQUISA</a>
+                        <!-- ABAS "ADD" SUBSTITUÍDAS -->
+                        <a href="#" id="tab-adicionar" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">+ ADD</a>
                         <a href="#" id="tab-pesquisar" class="text-sm font-semibold pb-3 tab-inactive flex-shrink-0">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
                         </a>
@@ -251,7 +251,7 @@
                 -->
                 <div id="view-inicio" class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
                    <section id="inicio-grafico">
-                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso</h2>
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Progresso da Leitura</h2>
                        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg shadow-inner">
                            <!-- Progresso dos Livros -->
                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Conclusão total dos livros:</p>
@@ -271,7 +271,7 @@
                
                    <!-- Seção de Últimas Joias -->
                    <section id="inicio-joias">
-                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Últimas 3 Joias Adicionadas</h2>
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Últimas Joias Adicionadas (3)</h2>
                        <div id="container-ultimas-joias" class="space-y-4">
                            <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
                        </div>
@@ -279,7 +279,7 @@
                
                    <!-- Seção de Últimas Pesquisas -->
                    <section id="inicio-pesquisas">
-                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Pesquisa Adicionada</h2>
+                       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Última Pesquisa Adicionada (1)</h2>
                        <div id="container-ultimas-pesquisas" class="space-y-4">
                            <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
                        </div>
@@ -317,47 +317,96 @@
                 
                 <!-- 
                   ====================================================================
-                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  NOVA VIEW COMBINADA "+ ADD"
                   ==================================================================== 
                 -->
-                <div id="view-adicionar-destaque" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
+                <div id="view-adicionar" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
                     <div class="w-full max-w-lg">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Joia</h2>
-                        <form id="form-destaque" class="space-y-4">
-                            <fieldset>
-                                <div>
-                                    <label for="select-livro" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Livro</label>
-                                    <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
+                        <!-- Seletor Interno -->
+                        <div id="add-type-selector" class="flex justify-center mb-4 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
+                            <button id="add-type-joia" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Joia</button>
+                            <button id="add-type-pesquisa" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Pesquisa</button>
+                        </div>
+                
+                        <!-- Container do Formulário de Joia (Visível por padrão) -->
+                        <div id="form-container-joia">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Joia</h2>
+                            <form id="form-destaque" class="space-y-4">
+                                 <fieldset>
                                     <div>
-                                        <label for="select-capitulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Capítulo</label>
-                                        <select id="select-capitulo" name="capitulo" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required disabled>
-                                            <option value="">Selecione o livro</option>
-                                        </select>
+                                        <label for="select-livro" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Livro</label>
+                                        <select id="select-livro" name="livro" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required></select>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="select-capitulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Capítulo</label>
+                                            <select id="select-capitulo" name="capitulo" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" required disabled>
+                                                <option value="">Selecione o livro</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="input-versiculo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Versículo(s)</label>
+                                            <input type="text" id="input-versiculo" name="versiculo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 5 ou 5,6 ou 5-7" required>
+                                        </div>
                                     </div>
                                     <div>
-                                        <label for="input-versiculo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Versículo(s)</label>
-                                        <input type="text" id="input-versiculo" name="versiculo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: 5 ou 5,6 ou 5-7" required>
+                                        <label for="textarea-destaque" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Joia</label>
+                                        <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
                                     </div>
-                                </div>
-                                <div>
-                                    <label for="textarea-destaque" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Joia</label>
-                                    <textarea id="textarea-destaque" name="destaque" rows="4" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
-                                    <input type="hidden" id="input-visibility-destaque" name="visibility" value="public">
-                                    <div id="visibility-selector-destaque" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
-                                        <button type="button" data-value="public" class="visibility-btn-destaque search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
-                                        <button type="button" data-value="private" class="visibility-btn-destaque search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
+                                        <input type="hidden" id="input-visibility-destaque" name="visibility" value="public">
+                                        <div id="visibility-selector-destaque" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
+                                            <button type="button" data-value="public" class="visibility-btn-destaque search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
+                                            <button type="button" data-value="private" class="visibility-btn-destaque search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Joia</button>
-                                </div>
-                            </fieldset>
-                        </form>
+                                    <div>
+                                        <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Joia</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                
+                        <!-- Container do Formulário de Pesquisa (Oculto por padrão) -->
+                        <div id="form-container-pesquisa" class="hidden">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Pesquisa</h2>
+                            <form id="form-adicionar-pesquisa" class="space-y-4">
+                                 <fieldset>
+                                    <div>
+                                        <label for="input-pesquisa-titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
+                                        <input type="text" id="input-pesquisa-titulo" name="titulo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    </div>
+                                    <div>
+                                        <label for="input-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (separadas por vírgula)</label>
+                                        <input type="text" id="input-pesquisa-tags" name="tags" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: estudo, oração">
+                                    </div>
+                                    <div>
+                                        <label for="input-pesquisa-fonte" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fonte (Link)</label>
+                                        <input type="url" id="input-pesquisa-fonte" name="fonte" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="https://...">
+                                    </div>
+                                     <div>
+                                        <label for="textarea-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico (Opcional)</label>
+                                        <textarea id="textarea-pesquisa-texto-biblico" name="textoBiblico" rows="1" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="textarea-pesquisa-anotacoes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anotações</label>
+                                        <textarea id="textarea-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
+                                        <input type="hidden" id="input-visibility-pesquisa" name="visibility" value="public">
+                                        <div id="visibility-selector-pesquisa" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
+                                            <button type="button" data-value="public" class="visibility-btn-pesquisa search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
+                                            <button type="button" data-value="private" class="visibility-btn-pesquisa search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Pesquisa</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
@@ -468,45 +517,9 @@
                 
                 <!-- 
                   ====================================================================
-                  ALTERAÇÃO (PADDING): "p-4 sm:p-8" mudou para "px-4 sm:px-8 py-3 sm:py-6"
+                  VIEW ADICIONAR PESQUISA (REMOVIDA)
                   ==================================================================== 
                 -->
-                <div id="view-adicionar-pesquisa" class="hidden px-4 sm:px-8 py-3 sm:py-6 flex flex-col items-center">
-                    <div class="w-full max-w-lg">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Adicionar Pesquisa</h2>
-                        <form id="form-adicionar-pesquisa" class="space-y-4">
-                            <fieldset>
-                                <div>
-                                    <label for="input-pesquisa-titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
-                                    <input type="text" id="input-pesquisa-titulo" name="titulo" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                </div>
-                                <div>
-                                    <label for="input-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags (separadas por vírgula)</label>
-                                    <input type="text" id="input-pesquisa-tags" name="tags" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: estudo, oração">
-                                </div>
-                                 <div>
-                                    <label for="textarea-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico (Opcional)</label>
-                                    <textarea id="textarea-pesquisa-texto-biblico" name="textoBiblico" rows="1" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                                </div>
-                                <div>
-                                    <label for="textarea-pesquisa-anotacoes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Anotações</label>
-                                    <textarea id="textarea-pesquisa-anotacoes" name="anotacoes" rows="8" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidade</label>
-                                    <input type="hidden" id="input-visibility-pesquisa" name="visibility" value="public">
-                                    <div id="visibility-selector-pesquisa" class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto">
-                                        <button type="button" data-value="public" class="visibility-btn-pesquisa search-type-btn active w-1/2 py-1 rounded-md text-sm">Público</button>
-                                        <button type="button" data-value="private" class="visibility-btn-pesquisa search-type-btn w-1/2 py-1 rounded-md text-sm">Privado</button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <button type="submit" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors">Salvar Pesquisa</button>
-                                </div>
-                            </fieldset>
-                        </form>
-                    </div>
-                </div>
 
             </div>
             <footer class="text-center py-4">
@@ -620,20 +633,18 @@
         const views = {
             inicio: document.getElementById('view-inicio'),
             livros: document.getElementById('view-livros'),
-            adicionarDestaque: document.getElementById('view-adicionar-destaque'),
+            adicionar: document.getElementById('view-adicionar'), // Alterado
             pesquisar: document.getElementById('view-pesquisar'),
             pesquisas: document.getElementById('view-pesquisas'),
-            adicionarPesquisa: document.getElementById('view-adicionar-pesquisa'),
             capitulos: document.getElementById('view-capitulos'),
             conteudo: document.getElementById('view-conteudo'),
         };
         const tabs = {
             inicio: document.getElementById('tab-inicio'),
             livros: document.getElementById('tab-livros'),
-            adicionarDestaque: document.getElementById('tab-adicionar-destaque'),
+            adicionar: document.getElementById('tab-adicionar'), // Alterado
             pesquisar: document.getElementById('tab-pesquisar'),
             pesquisas: document.getElementById('tab-pesquisas'),
-            adicionarPesquisa: document.getElementById('tab-adicionar-pesquisa'),
         };
         const formDestaque = document.getElementById('form-destaque');
         const formPesquisa = document.getElementById('form-pesquisa');
@@ -913,6 +924,7 @@
                     autorId: auth.currentUser.uid,
                     titulo: formData.get('titulo'),
                     tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+                    fonte: formData.get('fonte'), // NOVO CAMPO
                     textoBiblico: formData.get('textoBiblico'),
                     anotacoes: formData.get('anotacoes'),
                     visibility: visibility,
@@ -1260,7 +1272,7 @@
         }
 
         function criarCardPesquisa(pesquisa) {
-            const { id, titulo, tags, textoBiblico, anotacoes, autorEmail, autorId, visibility, path } = pesquisa;
+            const { id, titulo, tags, textoBiblico, anotacoes, autorEmail, autorId, visibility, path, fonte } = pesquisa;
             const autorNome = getDisplayNameFromEmail(autorEmail);
             const isOwner = autorId === currentUserId;
 
@@ -1269,6 +1281,15 @@
 
             const tagsHTML = tags && tags.length > 0
                 ? `<div class="flex flex-wrap gap-2 mb-3">${tags.map(tag => `<span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}</div>`
+                : '';
+            
+            // NOVO HTML PARA FONTE
+            const fonteHTML = fonte
+                ? `<div class="mb-3">
+                     <a href="${fonte}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 dark:text-blue-400 hover:underline break-all">
+                         Fonte: ${fonte}
+                     </a>
+                   </div>`
                 : '';
 
             const textoBiblicoHTML = textoBiblico
@@ -1330,6 +1351,7 @@
                     </div>
                 </div>
                 ${tagsHTML}
+                ${fonteHTML} <!-- ADICIONADO O HTML DA FONTE -->
                 ${textoBiblicoHTML}
                 ${anotacoesHTML}
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">Pesquisa de: ${autorNome} ${visibilityIconHTML}</p>
@@ -1354,6 +1376,9 @@
             
             card.querySelector('.copy-btn').addEventListener('click', () => {
                 let textoParaCopiar = `${pesquisa.titulo}\n\n`;
+                if (pesquisa.fonte) { // ADICIONADO AO COPIAR
+                    textoParaCopiar += `Fonte:\n${pesquisa.fonte}\n\n`;
+                }
                 if (pesquisa.textoBiblico) {
                     textoParaCopiar += `Texto Bíblico:\n${pesquisa.textoBiblico}\n\n`;
                 }
@@ -1609,9 +1634,16 @@
                 views.livros.classList.remove('hidden');
                 tabs.livros.classList.replace('tab-inactive', 'tab-active');
                 popularLivros();
-            } else if (abaAtiva === 'adicionarDestaque') {
-                views.adicionarDestaque.classList.remove('hidden');
-                tabs.adicionarDestaque.classList.replace('tab-inactive', 'tab-active');
+            } else if (abaAtiva === 'adicionar') { // MODIFICADO
+                views.adicionar.classList.remove('hidden');
+                tabs.adicionar.classList.replace('tab-inactive', 'tab-active');
+                
+                // Reseta para a view padrão (Joia)
+                document.getElementById('add-type-joia').classList.add('active');
+                document.getElementById('add-type-pesquisa').classList.remove('active');
+                document.getElementById('form-container-joia').classList.remove('hidden');
+                document.getElementById('form-container-pesquisa').classList.add('hidden');
+                
             } else if (abaAtiva === 'pesquisar') {
                 views.pesquisar.classList.remove('hidden');
                 tabs.pesquisar.classList.replace('tab-inactive', 'tab-active');
@@ -1619,9 +1651,6 @@
                 views.pesquisas.classList.remove('hidden');
                 tabs.pesquisas.classList.replace('tab-inactive', 'tab-active');
                 mostrarPesquisas();
-            } else if (abaAtiva === 'adicionarPesquisa') {
-                views.adicionarPesquisa.classList.remove('hidden');
-                tabs.adicionarPesquisa.classList.replace('tab-inactive', 'tab-active');
             }
         }
         
@@ -1650,7 +1679,7 @@
                     abrirFormularioEdicao(docId, path);
                 }
             } else {
-                passwordError.classList.remove('hidden');
+                passwordError.classList.add('hidden');
             }
         }
         
@@ -1698,6 +1727,11 @@
                         <div>
                             <label for="edit-pesquisa-tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
                             <input type="text" id="edit-pesquisa-tags" name="tags" value="${(data.tags || []).join(', ')}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <!-- CAMPO DE FONTE NA EDIÇÃO -->
+                        <div>
+                            <label for="edit-pesquisa-fonte" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fonte (Link)</label>
+                            <input type="url" id="edit-pesquisa-fonte" name="fonte" value="${data.fonte || ''}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="https://...">
                         </div>
                         <div>
                             <label for="edit-pesquisa-texto-biblico" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Texto Bíblico</label>
@@ -1750,6 +1784,7 @@
                 updatedData = {
                     titulo: formData.get('titulo'),
                     tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+                    fonte: formData.get('fonte'), // CAMPO DE FONTE NA EDIÇÃO
                     textoBiblico: formData.get('textoBiblico'),
                     anotacoes: formData.get('anotacoes')
                 };
@@ -1850,10 +1885,9 @@
             headerTitle.addEventListener('click', () => mudarAba('inicio')); 
             tabs.inicio.addEventListener('click', (e) => { e.preventDefault(); mudarAba('inicio'); }); 
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
-            tabs.adicionarDestaque.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionarDestaque'); });
+            tabs.adicionar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionar'); }); // Alterado
             tabs.pesquisar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisar'); });
             tabs.pesquisas.addEventListener('click', (e) => { e.preventDefault(); mudarAba('pesquisas'); });
-            tabs.adicionarPesquisa.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionarPesquisa'); });
             
             document.getElementById('btn-voltar-livros').addEventListener('click', () => mudarAba('livros'));
             document.getElementById('btn-voltar-capitulos').addEventListener('click', () => {
@@ -1861,6 +1895,27 @@
                 const numCapitulos = biblia["Antigo Testamento"][livro] || biblia["Novo Testamento"][livro];
                 mostrarCapitulos(livro, numCapitulos);
             });
+            
+            // --- NOVOS LISTENERS PARA O SELETOR DE ADICIONAR ---
+            const addTypeJoiaBtn = document.getElementById('add-type-joia');
+            const addTypePesquisaBtn = document.getElementById('add-type-pesquisa');
+            const formContainerJoia = document.getElementById('form-container-joia');
+            const formContainerPesquisa = document.getElementById('form-container-pesquisa');
+
+            addTypeJoiaBtn.addEventListener('click', () => {
+                addTypeJoiaBtn.classList.add('active');
+                addTypePesquisaBtn.classList.remove('active');
+                formContainerJoia.classList.remove('hidden');
+                formContainerPesquisa.classList.add('hidden');
+            });
+
+            addTypePesquisaBtn.addEventListener('click', () => {
+                addTypePesquisaBtn.classList.add('active');
+                addTypeJoiaBtn.classList.remove('active');
+                formContainerPesquisa.classList.remove('hidden');
+                formContainerJoia.classList.add('hidden');
+            });
+            // --- FIM DOS NOVOS LISTENERS ---
             
             document.getElementById('cancel-password-btn').addEventListener('click', fecharModalSenha);
             document.getElementById('confirm-password-btn').addEventListener('click', confirmarSenha);
@@ -1939,8 +1994,7 @@
                 'inicio', 
                 'livros', 
                 'pesquisas', 
-                'adicionarDestaque', 
-                'adicionarPesquisa', 
+                'adicionar', 
                 'pesquisar'
             ];
             
@@ -1949,8 +2003,7 @@
                 'tab-inicio': 'inicio',
                 'tab-livros': 'livros',
                 'tab-pesquisas': 'pesquisas',
-                'tab-adicionar-destaque': 'adicionarDestaque',
-                'tab-adicionar-pesquisa': 'adicionarPesquisa',
+                'tab-adicionar': 'adicionar',
                 'tab-pesquisar': 'pesquisar'
             };
 
@@ -2018,5 +2071,4 @@
         
     </script>
 </body>
-
 </html>
