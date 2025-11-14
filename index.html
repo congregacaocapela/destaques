@@ -59,11 +59,6 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            /* ====================================================================
-              MUDANÇA (ROLAGEM): 'overscroll-behavior-y' removido
-              para permitir rolagem vertical normal.
-              ==================================================================== 
-            */
         }
         .bg-custom-blue {
             background-color: #3e5a8a;
@@ -166,10 +161,6 @@
           30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
           40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-        /* ====================================================================
-          MUDANÇA (ALTURA DA ABA): Removida transição de altura do viewport
-          ==================================================================== 
-        */
         #swipe-viewport {
             position: relative;
         }
@@ -249,10 +240,10 @@
                 <div id="swipe-viewport" class="overflow-x-hidden">
                     <!-- 
                       ====================================================================
-                      MUDANÇA (ALTURA DA ABA): 'items-start' removido.
+                      MUDANÇA (ALTURA DA ABA): Adicionado 'items-start'
                       ==================================================================== 
                     -->
-                    <div id="swipe-slider" class="flex w-full" style="transition: transform 0.3s ease-in-out;">
+                    <div id="swipe-slider" class="flex w-full items-start" style="transition: transform 0.3s ease-in-out;">
                 
                         <div id="view-inicio" class="w-full flex-shrink-0 px-4 sm:px-8 py-3 sm:py-6 space-y-8">
                            <section id="inicio-grafico">
@@ -877,9 +868,6 @@
             });
         }
 
-        // ====================================================================
-        // MUDANÇA (ALTURA DA ABA): 'snapToView' não mexe mais com altura.
-        // ====================================================================
         function snapToView(index, smooth = true) {
             if (!swipeViewport || !swipeSlider) return;
             
@@ -893,8 +881,6 @@
             swipeSlider.style.transform = `translateX(${currentTranslate}px)`;
             
             updateActiveTab(index);
-            
-            // Lógica de altura removida
         }
 
         function popularSelectLivros() {
@@ -1799,9 +1785,6 @@
             ]);
         }
 
-        // ====================================================================
-        // MUDANÇA (CACHE/ALTURA): 'mudarAba' agora é async e não mexe com altura
-        // ====================================================================
         async function mudarAba(abaAtiva) {
             const newIndex = tabOrder.indexOf(abaAtiva);
             if (newIndex < 0) return;
@@ -1830,7 +1813,6 @@
                 document.getElementById('add-type-joia').click();
             }
             
-            // Apenas faz o snap. A altura será automática.
             snapToView(newIndex); 
         }
         
@@ -2128,6 +2110,35 @@
             const finalX = e.changedTouches[0].clientX;
             const totalDiffX = finalX - touchStartX;
             const threshold = viewportWidth / 4;
+            
+            // ====================================================================
+            // INÍCIO DA LÓGICA DE SWIPE INTERNO (ABA "ADD")
+            // ====================================================================
+            if (currentViewIndex === tabOrder.indexOf('adicionar')) {
+                const addFormJoia = document.getElementById('form-container-joia');
+                const addTypeJoiaBtn = document.getElementById('add-type-joia');
+                const addTypePesquisaBtn = document.getElementById('add-type-pesquisa');
+                const isJoiaVisible = !addFormJoia.classList.contains('hidden');
+                
+                const internalThreshold = 50; // Menor threshold para swipe interno
+
+                if (totalDiffX < -internalThreshold && isJoiaVisible) {
+                    // Swipe Esquerda: Mudar de Joia para Pesquisa
+                    addTypePesquisaBtn.click();
+                    snapToView(currentViewIndex); // Permanece na aba 'adicionar'
+                    return; // Interrompe a execução
+                } else if (totalDiffX > internalThreshold && !isJoiaVisible) {
+                    // Swipe Direita: Mudar de Pesquisa para Joia
+                    addTypeJoiaBtn.click();
+                    snapToView(currentViewIndex); // Permanece na aba 'adicionar'
+                    return; // Interrompe a execução
+                }
+                // Se o swipe não acionou uma mudança interna (ex: swipe esq. na aba pesquisa),
+                // a lógica de swipe principal abaixo será executada.
+            }
+            // ====================================================================
+            // FIM DA LÓGICA DE SWIPE INTERNO
+            // ====================================================================
 
             let newIndex = currentViewIndex;
 
