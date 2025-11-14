@@ -957,7 +957,7 @@
                 selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
                 popularLivros();
                 
-                if (!views.inicio.classList.contains('hidden')) {
+                if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
                     popularInicio();
                 }
 
@@ -1005,7 +1005,7 @@
                 document.querySelector('.visibility-btn-pesquisa[data-value="public"]').classList.add('active');
                 document.querySelector('.visibility-btn-pesquisa[data-value="private"]').classList.remove('active');
                 
-                if (!views.inicio.classList.contains('hidden')) {
+                if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
                     popularInicio();
                 }
 
@@ -1247,7 +1247,7 @@
             const card = document.createElement('div');
             card.className = 'relative border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700/50';
             
-            const isSearchView = !document.getElementById('view-pesquisar').classList.contains('hidden');
+            const isSearchView = (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar'));
             const isInicioView = (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio'));
             
             const referencia = (isSearchView || isInicioView) ? `<p class="font-semibold text-gray-600 dark:text-gray-300 text-sm mb-2">${livro} ${capitulo}</p>` : ``;
@@ -1861,13 +1861,13 @@
                 if (isDestaque) {
                     if (!views.conteudo.classList.contains('hidden')) {
                         mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
-                    } else if (!views.pesquisar.classList.contains('hidden')) {
+                    } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
                         formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
                 } else {
                      if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisas')) {
                         mostrarPesquisas();
-                    } else if (!views.pesquisar.classList.contains('hidden')) {
+                    } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
                          formPesquisa.dispatchEvent(new Event('submit', { cancelable: true }));
                     }
                 }
@@ -1913,8 +1913,11 @@
         // MUDANÇA (SWIPE): Novas funções de swipe
         // ====================================================================
         function handleTouchStart(e) {
-            // Ignora swipes em 'no-swipe' ou formulários
-            if (e.target.closest('.no-swipe') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            // ====================================================================
+            // CORREÇÃO (PROBLEMA 2): Remove a checagem de INPUT, TEXTAREA, SELECT
+            // ====================================================================
+            // Ignora swipes apenas em 'no-swipe'
+            if (e.target.closest('.no-swipe')) {
                 isDragging = false;
                 gestureType = null;
                 return;
@@ -1940,7 +1943,7 @@
 
             if (gestureType === null) {
                 // Determina se é swipe ou scroll
-                if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > (Math.abs(diffY) * 1.5)) { // Exige mais movimento horizontal
                     gestureType = 'swipe';
                 } else {
                     gestureType = 'scroll';
@@ -1959,6 +1962,11 @@
         }
 
         function handleTouchEnd(e) {
+            // ====================================================================
+            // CORREÇÃO (PROBLEMA 1): Armazena o índice *antes* de mudar
+            // ====================================================================
+            const oldIndex = currentViewIndex; 
+
             if (!isDragging || gestureType !== 'swipe') {
                 isDragging = false;
                 gestureType = null;
@@ -1984,14 +1992,20 @@
             }
             
             // Encaixa na view (nova ou atual)
-            snapToView(newIndex);
+            snapToView(newIndex); // Isso vai atualizar o currentViewIndex
             
-            // Carrega conteúdo se a aba mudou
-            if (newIndex !== currentViewIndex) {
+            // ====================================================================
+            // CORREÇÃO (PROBLEMA 1): Compara com o oldIndex e carrega o conteúdo
+            // ====================================================================
+            if (newIndex !== oldIndex) {
                 const newAba = tabOrder[newIndex];
                 if (newAba === 'inicio') popularInicio();
                 if (newAba === 'livros') popularLivros();
                 if (newAba === 'pesquisas') mostrarPesquisas();
+                if (newAba === 'adicionar') {
+                    // Reseta o formulário para "Joia" por padrão
+                    document.getElementById('add-type-joia').click();
+                }
             }
         }
 
