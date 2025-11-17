@@ -371,6 +371,18 @@
                         -->
                         <main id="view-livros" class="w-full flex-shrink-0 min-h-[75vh]">
                             <div class="px-4 sm:px-8 py-3 sm:py-6 space-y-8">
+                                
+                                <!-- 
+                                  ====================================================================
+                                  NOVO: Seletor de Visualização (Individual/Público)
+                                  ==================================================================== 
+                                -->
+                                <div id="livros-view-selector" class="flex justify-center mb-6 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs mx-auto no-swipe">
+                                    <button id="livros-view-individual" class="search-type-btn active w-1/2 py-1 rounded-md text-sm">Individual</button>
+                                    <button id="livros-view-publico" class="search-type-btn w-1/2 py-1 rounded-md text-sm">Público</button>
+                                </div>
+                                <!-- FIM DO NOVO SELETOR -->
+
                                 <section id="antigo-testamento">
                                     <h2 class="text-sm font-semibold tracking-wider text-gray-600 dark:text-gray-400 mb-4">ESCRITURAS HEBRAICO-ARAMAICAS</h2>
                                     <!-- MUDANÇA: Removido 'no-swipe' -->
@@ -662,6 +674,11 @@
         let userDestaquesCollectionPath = null;
         let userPesquisasCollectionPath = null;
         let currentUserId = null; // ID do usuário logado
+        
+        // ====================================================================
+        // NOVO: Estado para a visualização da aba de livros (joias)
+        // ====================================================================
+        let currentLivrosView = 'individual'; 
 
         // MUDANÇA (PESQUISAS): Variáveis para paginação
         let todasPesquisas = [];
@@ -1041,10 +1058,11 @@
                 selectCapitulo.innerHTML = '<option value="">Selecione o livro</option>';
                 
                 // ====================================================================
-                // MUDANÇA (CACHE): Invalida o cache de 'inicio' e 'livros'
+                // MUDANÇA (CACHE): Invalida o cache de 'inicio' e ambos os caches de 'livros'
                 // ====================================================================
                 loadedViews.delete('inicio');
-                loadedViews.delete('livros'); // Invalida 'livros' para atualizar o progresso
+                loadedViews.delete('livros-individual');
+                loadedViews.delete('livros-publico');
                 
                 if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('inicio')) {
                     popularInicio();
@@ -1160,28 +1178,39 @@
         }
 
 
+        // ====================================================================
+        // MUDANÇA (Progresso Livros): Função atualizada para usar 'currentLivrosView'
+        // ====================================================================
         async function popularLivros() {
             if (!currentUserId) return; 
 
             const containerAntigo = document.querySelector('#antigo-testamento .grid');
             const containerNovo = document.querySelector('#novo-testamento .grid');
-            containerAntigo.innerHTML = '<p class="text-gray-500 dark:text-gray-400 col-span-full">Carregando livros...</p>';
+            containerAntigo.innerHTML = `<p class="text-gray-500 dark:text-gray-400 col-span-full">Carregando livros (${currentLivrosView})...</p>`;
             containerNovo.innerHTML = '';
 
             const progressData = {};
+            let allUserDestaques = [];
+
             try {
-                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("autorId", "==", currentUserId));
-                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath));
+                if (currentLivrosView === 'individual') {
+                    const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("autorId", "==", currentUserId));
+                    const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath));
 
-                const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
-                    getDocs(publicDestaquesQuery),
-                    getDocs(userDestaquesQuery)
-                ]);
+                    const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
+                        getDocs(publicDestaquesQuery),
+                        getDocs(userDestaquesQuery)
+                    ]);
 
-                const allUserDestaques = [
-                    ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
-                    ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
-                ];
+                    allUserDestaques = [
+                        ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
+                        ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
+                    ];
+                } else { // 'publico'
+                    const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath));
+                    const publicDestaquesSnap = await getDocs(publicDestaquesQuery);
+                    allUserDestaques = publicDestaquesSnap.docs.map(doc => doc.data());
+                }
                 
                 allUserDestaques.forEach((data) => {
                     if (data.livro && data.capitulo) {
@@ -1282,22 +1311,32 @@
 
             const capitulosComDestaque = new Set();
             try {
-                const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("livro", "==", nomeLivro), where("autorId", "==", currentUserId));
-                const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath), where("livro", "==", nomeLivro));
-
-                const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
-                    getDocs(publicDestaquesQuery),
-                    getDocs(userDestaquesQuery)
-                ]);
-
-                const allUserDestaques = [
-                    ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
-                    ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
-                ];
-
+                // ====================================================================
+                // MUDANÇA (Progresso Livros): A lógica aqui deve refletir 'currentLivrosView'
+                // para a cor dos botões de capítulo.
+                // ====================================================================
+                let allUserDestaques = [];
+                if (currentLivrosView === 'individual') {
+                     const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("livro", "==", nomeLivro), where("autorId", "==", currentUserId));
+                     const userDestaquesQuery = query(collection(db, userDestaquesCollectionPath), where("livro", "==", nomeLivro));
+                     const [publicUserDestaquesSnap, userPrivateDestaquesSnap] = await Promise.all([
+                        getDocs(publicDestaquesQuery),
+                        getDocs(userDestaquesQuery)
+                     ]);
+                     allUserDestaques = [
+                        ...publicUserDestaquesSnap.docs.map(doc => doc.data()),
+                        ...userPrivateDestaquesSnap.docs.map(doc => doc.data())
+                    ];
+                } else { // 'publico'
+                    const publicDestaquesQuery = query(collection(db, publicDestaquesCollectionPath), where("livro", "==", nomeLivro));
+                    const publicDestaquesSnap = await getDocs(publicDestaquesQuery);
+                    allUserDestaques = publicDestaquesSnap.docs.map(doc => doc.data());
+                }
+                
                 allUserDestaques.forEach((data) => {
                     capitulosComDestaque.add(data.capitulo);
                 });
+
             } catch (e) {
                 console.error("Erro ao verificar destaques: ", e);
                 showToast("Erro ao verificar destaques.", false);
@@ -1337,7 +1376,12 @@
                 loadedViews.delete('inicio');
                 
                 if (collectionPath.includes('destaques')) {
-                    loadedViews.delete('livros'); // Progresso dos livros mudou
+                    // ====================================================================
+                    // MUDANÇA (CACHE): Invalida ambos os caches de 'livros'
+                    // ====================================================================
+                    loadedViews.delete('livros-individual');
+                    loadedViews.delete('livros-publico');
+                    
                     if (document.getElementById('view-conteudo').classList.contains('hidden')) {
                          // Se estiver na pesquisa, recarrega a pesquisa
                         if(swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
@@ -1625,6 +1669,15 @@
             container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando destaques...</p>';
 
             try {
+                // ====================================================================
+                // MUDANÇA (Progresso Livros): A busca de conteúdo deve sempre mostrar TUDO
+                // (público e privado) para o capítulo, independente do seletor da
+                // aba 'livros'. O seletor 'currentLivrosView' SÓ afeta a
+                // visualização de progresso (grid de livros e grid de capítulos).
+                // A lógica original de 'mostrarConteudo' está correta e busca
+                // todos os destaques (públicos de todos + privados do usuário)
+                // para aquele capítulo específico.
+                // ====================================================================
                 const constraintsPublic = [
                     where("livro", "==", nomeLivro), 
                     where("capitulo", "==", numCapitulo)
@@ -1932,10 +1985,14 @@
                         loadedViews.add('inicio');
                     }
                 } else if (abaAtiva === 'livros') {
-                    if (!loadedViews.has('livros')) {
-                        console.log("CACHE: Carregando 'livros'");
-                        popularLivros();
-                        loadedViews.add('livros');
+                    // ====================================================================
+                    // MUDANÇA (CACHE): Lógica de cache baseada em 'currentLivrosView'
+                    // ====================================================================
+                    let cacheKey = `livros-${currentLivrosView}`;
+                    if (!loadedViews.has(cacheKey)) {
+                        console.log(`CACHE: Carregando '${cacheKey}'`);
+                        popularLivros(); // popularLivros() já usa currentLivrosView
+                        loadedViews.add(cacheKey);
                     }
                 } else if (abaAtiva === 'pesquisas') {
                     if (!loadedViews.has('pesquisas')) {
@@ -2099,7 +2156,12 @@
                 loadedViews.delete('inicio');
                 
                 if (isDestaque) {
-                    loadedViews.delete('livros'); // Progresso dos livros pode ter mudado
+                    // ====================================================================
+                    // MUDANÇA (CACHE): Invalida ambos os caches de 'livros'
+                    // ====================================================================
+                    loadedViews.delete('livros-individual');
+                    loadedViews.delete('livros-publico');
+                    
                     if (!views.conteudo.classList.contains('hidden')) {
                         mostrarConteudo(estadoAtual.livro, estadoAtual.capitulo);
                     } else if (swipeViewport.classList.contains('hidden') === false && currentViewIndex === tabOrder.indexOf('pesquisar')) {
@@ -2407,6 +2469,44 @@
             searchTypePesquisas.addEventListener('click', () => {
                 searchTypePesquisas.classList.add('active');
                 searchTypeJoias.classList.remove('active');
+            });
+
+            // ====================================================================
+            // NOVO: Listener do Seletor de Visualização de Livros (Joias)
+            // ====================================================================
+            const livrosViewIndividualBtn = document.getElementById('livros-view-individual');
+            const livrosViewPublicoBtn = document.getElementById('livros-view-publico');
+
+            livrosViewIndividualBtn.addEventListener('click', () => {
+                if (currentLivrosView === 'individual') return; // Já está ativo
+                livrosViewIndividualBtn.classList.add('active');
+                livrosViewPublicoBtn.classList.remove('active');
+                currentLivrosView = 'individual';
+                
+                let cacheKey = 'livros-individual';
+                if (!loadedViews.has(cacheKey)) {
+                    console.log(`CACHE: Carregando '${cacheKey}'`);
+                    popularLivros(); // Recarrega os livros com a nova visualização
+                    loadedViews.add(cacheKey);
+                } else {
+                    popularLivros(); // Força recarregamento mesmo se cacheado (ou podemos confiar no cache)
+                }
+            });
+
+            livrosViewPublicoBtn.addEventListener('click', () => {
+                if (currentLivrosView === 'publico') return; // Já está ativo
+                livrosViewPublicoBtn.classList.add('active');
+                livrosViewIndividualBtn.classList.remove('active');
+                currentLivrosView = 'publico';
+
+                let cacheKey = 'livros-publico';
+                if (!loadedViews.has(cacheKey)) {
+                    console.log(`CACHE: Carregando '${cacheKey}'`);
+                    popularLivros(); // Recarrega os livros com a nova visualização
+                    loadedViews.add(cacheKey);
+                } else {
+                    popularLivros(); 
+                }
             });
             
             // Listeners dos botões de Visibilidade
