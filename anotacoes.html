@@ -84,6 +84,34 @@
         .z-dropdown {
             z-index: 60;
         }
+
+        /* Estilos para a notificação (Toast) */
+        .toast {
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        /* Modal Transitions */
+        .modal-overlay {
+            transition: opacity 0.2s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            transition: transform 0.2s ease-in-out;
+            transform: scale(0.95);
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -223,26 +251,37 @@
                                     <div id="detail-note" class="whitespace-pre-wrap text-gray-600 dark:text-gray-300 text-base leading-relaxed bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[200px]"></div>
                                 </div>
                                 
-                                <!-- Metadados -->
-                                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                                <!-- Metadados e Botões de Ação -->
+                                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
                                         <p id="detail-date" class="text-xs text-gray-400 italic">Salvo em: --</p>
                                         <p id="detail-author" class="text-xs text-gray-400 italic mt-1"></p>
                                     </div>
-                                    <button id="btn-delete-discurso" class="text-red-500 hover:text-red-600 text-sm font-medium flex items-center hidden">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        Excluir
-                                    </button>
+                                    
+                                    <!-- Botões de Ação (Só aparecem para o dono) -->
+                                    <div id="action-buttons-container" class="flex space-x-3 hidden w-full sm:w-auto">
+                                        <button id="btn-edit-discurso" class="flex-1 sm:flex-none justify-center bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 text-sm font-medium py-2 px-4 rounded-lg flex items-center transition-colors">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            Editar
+                                        </button>
+                                        <button id="btn-delete-discurso" class="flex-1 sm:flex-none justify-center bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-sm font-medium py-2 px-4 rounded-lg flex items-center transition-colors">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            Excluir
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- VIEW: ADICIONAR (Formulário) -->
+                    <!-- VIEW: ADICIONAR / EDITAR (Formulário) -->
                     <div id="view-adicionar" class="hidden space-y-6 max-w-2xl mx-auto">
-                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Novo Discurso</h2>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Preencha os dados abaixo para salvar uma nova anotação.</p>
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4 flex justify-between items-center">
+                            <div>
+                                <h2 id="form-title" class="text-2xl font-bold text-gray-800 dark:text-gray-100">Novo Discurso</h2>
+                                <p id="form-subtitle" class="text-gray-500 dark:text-gray-400 text-sm mt-1">Preencha os dados abaixo para salvar uma nova anotação.</p>
+                            </div>
+                            <button id="btn-cancel-edit" class="hidden text-sm text-blue-600 dark:text-blue-400 hover:underline">Cancelar Edição</button>
                         </div>
                         
                         <form id="form-discurso" class="space-y-5">
@@ -255,6 +294,8 @@
                                     <option value="Congresso">Congresso</option>
                                     <option value="Especiais">Especiais</option>
                                     <option value="Familia de Betel">Família de Betel</option>
+                                    <option value="Servo Ministerial">Servo Ministerial</option>
+                                    <option value="5 ou 10min">5 ou 10min</option>
                                     <option value="Publicos">Públicos</option>
                                     <option value="Extras">Extras</option>
                                     <option value="Necessidades Locais">Necessidades Locais</option>
@@ -291,7 +332,7 @@
                             </div>
 
                             <div class="pt-4">
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow transition-colors flex justify-center items-center">
+                                <button type="submit" id="btn-submit-form" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow transition-colors flex justify-center items-center">
                                     <span>Salvar Anotação</span>
                                 </button>
                             </div>
@@ -328,13 +369,32 @@
             <svg id="theme-toggle-sun" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zm7.536 2.464a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414z"></path></svg>
             <svg id="theme-toggle-moon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
         </button>
+
+        <!-- Container para as notificações (Toasts) -->
+        <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <div id="modal-confirm-delete" class="fixed inset-0 bg-gray-900 bg-opacity-70 z-[70] flex items-center justify-center p-4 modal-overlay hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-sm modal-content p-6 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                    <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Excluir Discurso?</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Esta ação não pode ser desfeita. Tem certeza que deseja continuar?</p>
+                <div class="flex justify-center space-x-3">
+                    <button id="btn-cancel-delete" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 font-medium text-sm transition-colors">Cancelar</button>
+                    <button id="btn-confirm-delete" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm transition-colors">Sim, Excluir</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Configuração Firebase
         const firebaseConfig = {
@@ -350,28 +410,53 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = firebaseConfig.appId;
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // Variáveis de Estado
         let currentUser = null;
         let publicDiscursos = [];
         let privateDiscursos = [];
         let allDiscursos = [];
-        let currentView = 'discursos'; // 'discursos', 'adicionar', 'pesquisar'
-        let subView = 'folders'; // 'folders', 'list', 'detail' (apenas para a tab discursos)
+        let currentView = 'discursos';
+        let subView = 'folders';
         let selectedType = null;
         let selectedDiscurso = null;
+        
+        // Variáveis de Edição/Exclusão
+        let editingId = null;
+        let editingOriginalVisibility = null;
+        let deleteTarget = null; // { id, path }
 
         const TIPOS_DISCURSO = [
             "Assembleia", 
             "Congresso", 
             "Especiais", 
             "Familia de Betel", 
+            "Servos Ministeriais",
+            "5 ou 10min",
             "Publicos", 
             "Extras", 
             "Necessidades Locais", 
             "Pré assembleia"
         ];
+
+        // --- SISTEMA DE TOAST ---
+        function showToast(message, isSuccess = true) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = isSuccess ? 'bg-green-500' : 'bg-red-500';
+            toast.className = `toast text-white p-4 rounded-md shadow-lg flex items-center justify-between ${bgColor}`;
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            toast.appendChild(messageSpan);
+            toastContainer.appendChild(toast);
+            setTimeout(() => { toast.classList.add('show'); }, 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
 
         // --- TEMA ---
         const themeToggleBtn = document.getElementById('theme-toggle');
@@ -405,7 +490,6 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                
                 const displayName = getDisplayNameFromEmail(user.email);
                 document.getElementById('profile-initials').textContent = displayName.charAt(0).toUpperCase();
                 document.getElementById('profile-menu-name').textContent = displayName;
@@ -422,7 +506,7 @@
             }
         });
 
-        // --- SISTEMA DE NAVEGAÇÃO DE ABAS ---
+        // --- NAVEGAÇÃO ---
         const tabDiscursos = document.getElementById('tab-discursos');
         const tabAdicionar = document.getElementById('tab-adicionar');
         const tabPesquisar = document.getElementById('tab-pesquisar');
@@ -431,47 +515,45 @@
         const viewAdicionar = document.getElementById('view-adicionar');
         const viewPesquisar = document.getElementById('view-pesquisar');
 
-        // Sub-views dentro de Discursos
         const viewFolders = document.getElementById('view-folders');
         const viewList = document.getElementById('view-list');
         const viewDetail = document.getElementById('view-detail');
 
         function switchTab(tabName) {
             currentView = tabName;
-
-            // Atualiza estilo das abas
             [tabDiscursos, tabAdicionar, tabPesquisar].forEach(tab => tab.classList.remove('active'));
             if (tabName === 'discursos') tabDiscursos.classList.add('active');
             if (tabName === 'adicionar') tabAdicionar.classList.add('active');
             if (tabName === 'pesquisar') tabPesquisar.classList.add('active');
 
-            // Esconde todas as views principais
             viewDiscursosWrapper.classList.add('hidden');
             viewAdicionar.classList.add('hidden');
             viewPesquisar.classList.add('hidden');
 
-            // Mostra a view correta
             if (tabName === 'discursos') {
                 viewDiscursosWrapper.classList.remove('hidden');
-                // Se voltamos para discursos, renderizamos a sub-view atual
+                // Se estávamos editando, cancelar edição ao mudar de aba
+                resetForm();
                 renderSubView();
             } else if (tabName === 'adicionar') {
                 viewAdicionar.classList.remove('hidden');
-                // Reset form visibility default
-                document.getElementById('input-visibility').value = 'public';
-                const btns = document.querySelectorAll('.visibility-btn');
-                btns.forEach(b => b.dataset.value === 'public' ? b.classList.add('active') : b.classList.remove('active'));
+                // Reset form visibility default se não estiver editando
+                if (!editingId) resetForm();
             } else if (tabName === 'pesquisar') {
                 viewPesquisar.classList.remove('hidden');
                 document.getElementById('input-search-term').focus();
+                // Cancelar edição
+                resetForm();
             }
         }
 
         tabDiscursos.addEventListener('click', () => switchTab('discursos'));
-        tabAdicionar.addEventListener('click', () => switchTab('adicionar'));
+        tabAdicionar.addEventListener('click', () => {
+            resetForm(); // Garante que é "Novo" e não "Editar" ao clicar na aba
+            switchTab('adicionar');
+        });
         tabPesquisar.addEventListener('click', () => switchTab('pesquisar'));
 
-        // --- SISTEMA DE NAVEGAÇÃO INTERNA (Discursos) ---
         function switchSubView(viewName) {
             subView = viewName;
             renderSubView();
@@ -495,7 +577,6 @@
         }
 
         // --- RENDERIZAÇÃO ---
-
         function updateAllDiscursos() {
             allDiscursos = [...privateDiscursos, ...publicDiscursos].sort((a, b) => {
                 const dateA = a.createdAt?.seconds || 0;
@@ -503,20 +584,16 @@
                 return dateB - dateA;
             });
             
-            // Atualiza a view ativa se estivermos na aba de discursos ou pesquisa
             if (currentView === 'discursos') renderSubView();
-            if (currentView === 'pesquisar') performSearch(); // Re-roda a pesquisa se dados mudarem
+            if (currentView === 'pesquisar') performSearch();
         }
 
         function renderFolders() {
             const grid = document.getElementById('grid-folders');
             grid.innerHTML = '';
-
             const counts = {};
             TIPOS_DISCURSO.forEach(t => counts[t] = 0);
-            allDiscursos.forEach(d => {
-                if (counts[d.tipo] !== undefined) counts[d.tipo]++;
-            });
+            allDiscursos.forEach(d => { if (counts[d.tipo] !== undefined) counts[d.tipo]++; });
 
             TIPOS_DISCURSO.forEach(tipo => {
                 const count = counts[tipo] || 0;
@@ -525,19 +602,14 @@
 
                 const card = document.createElement('div');
                 card.className = `folder-card border rounded-xl p-5 shadow-sm cursor-pointer flex flex-col items-center justify-center text-center h-40 ${bgClass}`;
-                card.onclick = () => {
-                    selectedType = tipo;
-                    switchSubView('list');
-                };
-
+                card.onclick = () => { selectedType = tipo; switchSubView('list'); };
                 card.innerHTML = `
                     <svg class="w-12 h-12 mb-3 ${colorClass}" fill="currentColor" viewBox="0 0 24 24">
                          <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2.06 11L15 10l-2.94 7H10l3.06-7.34c.1-.24.34-.4.6-.4h.68c.26 0 .5.16.6.4L17.94 17h-2zM4 6v12h16V8h-7.17l-2-2H4z" opacity="0.2"/>
                          <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                     </svg>
                     <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm md:text-base">${tipo}</h3>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">${count} ${count === 1 ? 'discurso' : 'discursos'}</span>
-                `;
+                    <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">${count} ${count === 1 ? 'discurso' : 'discursos'}</span>`;
                 grid.appendChild(card);
             });
         }
@@ -546,21 +618,13 @@
             document.getElementById('list-title').textContent = selectedType;
             const container = document.getElementById('container-list');
             container.innerHTML = '';
-
             const listToRender = allDiscursos.filter(d => d.tipo === selectedType);
 
             if (listToRender.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-10 text-gray-400">
-                        <p>Nenhum discurso salvo em "${selectedType}".</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="text-center py-10 text-gray-400"><p>Nenhum discurso salvo em "${selectedType}".</p></div>`;
                 return;
             }
-
-            listToRender.forEach(discurso => {
-                container.appendChild(createDiscursoCard(discurso));
-            });
+            listToRender.forEach(discurso => { container.appendChild(createDiscursoCard(discurso)); });
         }
 
         function renderDetail() {
@@ -583,112 +647,81 @@
 
             const dateStr = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('pt-BR') : '--';
             document.getElementById('detail-date').textContent = `Salvo em: ${dateStr}`;
-            
-            const authorText = d.authorName ? `Criado por: ${d.authorName}` : "";
-            document.getElementById('detail-author').textContent = authorText;
+            document.getElementById('detail-author').textContent = d.authorName ? `Criado por: ${d.authorName}` : "";
 
-            const btnDelete = document.getElementById('btn-delete-discurso');
-            const isOwner = d.userId === currentUser.uid;
+            const buttonsContainer = document.getElementById('action-buttons-container');
+            const isOwner = (d.autorId || d.userId) === currentUser.uid;
             
             if (isOwner) {
-                btnDelete.classList.remove('hidden');
-                btnDelete.onclick = async () => {
-                    if(confirm("Tem certeza que deseja excluir este discurso?")) {
-                        try {
-                            const collectionPath = d.isPublic ? 
-                                `artifacts/${appId}/public/data/discursos` : 
-                                `artifacts/${appId}/users/${currentUser.uid}/discursos`;
-                                
-                            await deleteDoc(doc(db, collectionPath, d.id));
-                            // Retornar para a lista ou busca
-                            if (currentView === 'pesquisar') {
-                                // Permanece na busca, o snapshot atualizará a lista
-                            } else {
-                                switchSubView('list'); 
-                            }
-                        } catch(e) {
-                            console.error("Erro ao excluir", e);
-                            alert("Erro ao excluir.");
-                        }
-                    }
+                buttonsContainer.classList.remove('hidden');
+                
+                // Configurar Botão Editar
+                document.getElementById('btn-edit-discurso').onclick = () => {
+                    openEditForm(d);
+                };
+
+                // Configurar Botão Excluir (Abrir Modal)
+                document.getElementById('btn-delete-discurso').onclick = () => {
+                    const collectionPath = d.isPublic ? 
+                        `artifacts/${appId}/public/data/discursos` : 
+                        `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                    deleteTarget = { id: d.id, path: collectionPath };
+                    toggleDeleteModal(true);
                 };
             } else {
-                btnDelete.classList.add('hidden');
+                buttonsContainer.classList.add('hidden');
             }
         }
 
-        // --- COMPONENTE CARD REUTILIZÁVEL ---
         function createDiscursoCard(discurso) {
             const item = document.createElement('div');
             item.className = "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors flex justify-between items-center group relative";
-            
             const publicBadge = discurso.isPublic ? 
                 `<span class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full" title="Público"></span>` : 
                 `<span class="absolute top-2 right-2 w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-full" title="Privado"></span>`;
 
             item.onclick = () => {
                 selectedDiscurso = discurso;
-                // Se estamos na busca, precisamos mudar a view principal também para mostrar detalhe
-                // Mas minha lógica de detail está dentro de discursos-wrapper.
-                // Truque: Mudar para aba discursos e ir direto para detail
                 switchTab('discursos');
                 switchSubView('detail');
             };
-
             const dateStr = discurso.createdAt ? new Date(discurso.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '--';
-
-            item.innerHTML = `
-                ${publicBadge}
-                <div class="flex-1 min-w-0 pr-4">
-                    <h4 class="font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">${discurso.tema}</h4>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                        <span class="uppercase font-semibold text-blue-500 mr-1">[${discurso.tipo}]</span>
-                        ${discurso.fonte || 'Fonte não inf.'}
-                    </p>
-                </div>
-                <div class="text-right flex-shrink-0">
-                     <span class="text-xs text-gray-400 block">${dateStr}</span>
-                </div>
-            `;
+            item.innerHTML = `${publicBadge}<div class="flex-1 min-w-0 pr-4"><h4 class="font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">${discurso.tema}</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate"><span class="uppercase font-semibold text-blue-500 mr-1">[${discurso.tipo}]</span>${discurso.fonte || 'Fonte não inf.'}</p></div><div class="text-right flex-shrink-0"><span class="text-xs text-gray-400 block">${dateStr}</span></div>`;
             return item;
         }
 
         // --- LÓGICA DE BUSCA ---
         const inputSearch = document.getElementById('input-search-term');
         const resultsContainer = document.getElementById('search-results-container');
-
         function performSearch() {
             if (currentView !== 'pesquisar') return;
-            
             const termo = inputSearch.value.toLowerCase();
             resultsContainer.innerHTML = '';
-
             if (termo.length === 0) {
                 resultsContainer.innerHTML = '<p class="text-center text-gray-500 py-10">Digite para buscar em todos os seus discursos.</p>';
                 return;
             }
-
             const filtered = allDiscursos.filter(d => 
                 d.tema.toLowerCase().includes(termo) || 
                 d.anotacao.toLowerCase().includes(termo) ||
                 (d.fonte && d.fonte.toLowerCase().includes(termo))
             );
-
             if (filtered.length === 0) {
                 resultsContainer.innerHTML = '<p class="text-center text-gray-500 py-10">Nenhum resultado encontrado.</p>';
             } else {
-                filtered.forEach(d => {
-                    resultsContainer.appendChild(createDiscursoCard(d));
-                });
+                filtered.forEach(d => { resultsContainer.appendChild(createDiscursoCard(d)); });
             }
         }
-
         inputSearch.addEventListener('input', performSearch);
 
-        // --- FORMULÁRIO ---
+        // --- FORMULÁRIO (ADD / EDIT) ---
         const formDiscurso = document.getElementById('form-discurso');
         const visButtons = document.querySelectorAll('.visibility-btn');
         const visInput = document.getElementById('input-visibility');
+        const formTitle = document.getElementById('form-title');
+        const formSubtitle = document.getElementById('form-subtitle');
+        const btnCancelEdit = document.getElementById('btn-cancel-edit');
+        const btnSubmit = document.getElementById('btn-submit-form');
 
         visButtons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -696,6 +729,55 @@
                 btn.classList.add('active');
                 visInput.value = btn.dataset.value;
             });
+        });
+
+        // Abrir formulário em modo de edição
+        function openEditForm(discurso) {
+            editingId = discurso.id;
+            editingOriginalVisibility = discurso.isPublic ? 'public' : 'private';
+            
+            // Preencher campos
+            document.getElementById('input-tipo').value = discurso.tipo;
+            document.getElementById('input-tema').value = discurso.tema;
+            document.getElementById('input-fonte').value = discurso.fonte;
+            document.getElementById('input-anotacao').value = discurso.anotacao;
+            visInput.value = editingOriginalVisibility;
+            
+            // Atualizar botões de visibilidade
+            visButtons.forEach(b => {
+                if (b.dataset.value === editingOriginalVisibility) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+
+            // Mudar textos da UI
+            formTitle.textContent = "Editar Discurso";
+            formSubtitle.textContent = "Edite os detalhes abaixo.";
+            btnSubmit.innerHTML = `<span>Salvar Alterações</span>`;
+            btnCancelEdit.classList.remove('hidden');
+
+            switchTab('adicionar');
+        }
+
+        function resetForm() {
+            formDiscurso.reset();
+            editingId = null;
+            editingOriginalVisibility = null;
+            
+            // UI de volta ao padrão "Novo"
+            formTitle.textContent = "Novo Discurso";
+            formSubtitle.textContent = "Preencha os dados abaixo para salvar uma nova anotação.";
+            btnSubmit.innerHTML = `<span>Salvar Anotação</span>`;
+            btnCancelEdit.classList.add('hidden');
+            
+            // Reset visibilidade
+            visInput.value = 'public';
+            visButtons.forEach(b => b.dataset.value === 'public' ? b.classList.add('active') : b.classList.remove('active'));
+        }
+
+        btnCancelEdit.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetForm();
+            switchTab('discursos');
         });
 
         formDiscurso.addEventListener('submit', async (e) => {
@@ -709,41 +791,122 @@
 
             const formData = new FormData(formDiscurso);
             const visibility = formData.get('visibility');
-            const novoDiscurso = {
+            const dataToSave = {
                 tipo: formData.get('tipo'),
                 tema: formData.get('tema'),
                 fonte: formData.get('fonte'),
                 anotacao: formData.get('anotacao'),
                 visibility: visibility,
-                createdAt: new Date(),
-                userId: currentUser.uid,
+                autorId: currentUser.uid, 
                 authorName: getDisplayNameFromEmail(currentUser.email)
             };
 
             try {
-                const collectionPath = visibility === 'public' ? 
-                    `artifacts/${appId}/public/data/discursos` : 
-                    `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                if (editingId) {
+                    // --- MODO EDIÇÃO ---
+                    const isOriginalPublic = editingOriginalVisibility === 'public';
+                    const isNewPublic = visibility === 'public';
+                    
+                    // Se a visibilidade mudou, precisamos mover o documento
+                    if (isOriginalPublic !== isNewPublic) {
+                        // 1. Criar novo
+                        const newPath = isNewPublic ? 
+                            `artifacts/${appId}/public/data/discursos` : 
+                            `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                        
+                        await addDoc(collection(db, newPath), { ...dataToSave, createdAt: new Date() }); // Mantém data original? Melhor criar nova ou passar a antiga se tiver
+                        
+                        // 2. Deletar antigo
+                        const oldPath = isOriginalPublic ? 
+                            `artifacts/${appId}/public/data/discursos` : 
+                            `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                        await deleteDoc(doc(db, oldPath, editingId));
+                        
+                        showToast("Discurso movido e atualizado!");
+                    } else {
+                        // Apenas atualizar
+                        const path = isOriginalPublic ? 
+                            `artifacts/${appId}/public/data/discursos` : 
+                            `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                        
+                        const docRef = doc(db, path, editingId);
+                        await updateDoc(docRef, dataToSave);
+                        showToast("Alterações salvas com sucesso!");
+                    }
+                } else {
+                    // --- MODO CRIAÇÃO ---
+                    const collectionPath = visibility === 'public' ? 
+                        `artifacts/${appId}/public/data/discursos` : 
+                        `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                    
+                    await addDoc(collection(db, collectionPath), { ...dataToSave, createdAt: new Date() });
+                    showToast("Discurso salvo com sucesso!");
+                }
                 
-                await addDoc(collection(db, collectionPath), novoDiscurso);
-                
-                // Sucesso! Limpa e volta para a lista
-                formDiscurso.reset();
+                resetForm();
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
                 
-                // Redireciona para a pasta onde foi salvo
-                selectedType = novoDiscurso.tipo;
+                selectedType = dataToSave.tipo;
                 switchTab('discursos');
                 switchSubView('list');
 
             } catch (error) {
                 console.error("Erro ao salvar:", error);
-                alert("Erro ao salvar. Tente novamente.");
+                showToast("Erro ao salvar. Verifique sua conexão.", false);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             }
         });
+
+        // --- MODAL DELETE ---
+        const modalDelete = document.getElementById('modal-confirm-delete');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+        const btnCancelDelete = document.getElementById('btn-cancel-delete');
+
+        function toggleDeleteModal(show) {
+            if (show) {
+                modalDelete.classList.remove('hidden');
+                setTimeout(() => modalDelete.classList.add('show'), 10);
+            } else {
+                modalDelete.classList.remove('show');
+                setTimeout(() => {
+                    modalDelete.classList.add('hidden');
+                    deleteTarget = null;
+                }, 200);
+            }
+        }
+
+        btnCancelDelete.onclick = () => toggleDeleteModal(false);
+        modalDelete.onclick = (e) => { if (e.target === modalDelete) toggleDeleteModal(false); };
+
+        btnConfirmDelete.onclick = async () => {
+            if (!deleteTarget) return;
+            
+            // UI Feedback
+            btnConfirmDelete.disabled = true;
+            btnConfirmDelete.textContent = "Excluindo...";
+
+            try {
+                await deleteDoc(doc(db, deleteTarget.path, deleteTarget.id));
+                showToast("Discurso excluído com sucesso.");
+                toggleDeleteModal(false);
+                
+                // Navegar de volta
+                if (currentView === 'pesquisar') {
+                    // Fica na pesquisa
+                } else {
+                    switchSubView('list');
+                }
+            } catch (e) {
+                console.error("Erro ao excluir", e);
+                showToast("Erro ao excluir.", false);
+                toggleDeleteModal(false);
+            } finally {
+                btnConfirmDelete.disabled = false;
+                btnConfirmDelete.textContent = "Sim, Excluir";
+            }
+        };
 
         // --- FIRESTORE LISTENERS ---
         function startDiscursosListeners() {
@@ -755,6 +918,8 @@
             onSnapshot(qPrivate, (snapshot) => {
                 privateDiscursos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isPublic: false }));
                 updateAllDiscursos();
+            }, (error) => {
+                console.error("Erro no listener privado:", error);
             });
 
             const publicPath = `artifacts/${appId}/public/data/discursos`;
@@ -763,19 +928,14 @@
             onSnapshot(qPublic, (snapshot) => {
                 publicDiscursos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isPublic: true }));
                 updateAllDiscursos();
+            }, (error) => {
+                console.error("Erro no listener público:", error);
             });
         }
 
         // --- BOTÕES DE VOLTAR ---
-        document.getElementById('btn-back-folders').addEventListener('click', () => {
-            selectedType = null;
-            switchSubView('folders');
-        });
-
-        document.getElementById('btn-back-list').addEventListener('click', () => {
-            selectedDiscurso = null;
-            switchSubView('list');
-        });
+        document.getElementById('btn-back-folders').addEventListener('click', () => { selectedType = null; switchSubView('folders'); });
+        document.getElementById('btn-back-list').addEventListener('click', () => { selectedDiscurso = null; switchSubView('list'); });
 
         // --- HELPERS E MENUS ---
         function capitalizeFirstLetter(string) {
@@ -787,32 +947,18 @@
             return capitalizeFirstLetter(email.split('@')[0].replace(/[\._0-9]/g, ' ').split(' ')[0]);
         }
 
-        // Menu Switcher
         const appSwitchBtn = document.getElementById('app-switch-btn');
         const appSwitchMenu = document.getElementById('app-switch-menu');
-        appSwitchBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            appSwitchMenu.classList.toggle('hidden');
-            profileMenu.classList.add('hidden');
-        });
+        appSwitchBtn.addEventListener('click', (e) => { e.stopPropagation(); appSwitchMenu.classList.toggle('hidden'); profileMenu.classList.add('hidden'); });
 
-        // Menu Perfil
         const profileButton = document.getElementById('profile-button');
         const profileMenu = document.getElementById('profile-menu');
         const logoutButton = document.getElementById('profile-menu-logout');
-        profileButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            profileMenu.classList.toggle('hidden');
-            appSwitchMenu.classList.add('hidden');
-        });
+        profileButton.addEventListener('click', (e) => { e.stopPropagation(); profileMenu.classList.toggle('hidden'); appSwitchMenu.classList.add('hidden'); });
 
         window.addEventListener('click', (e) => {
-            if (!profileMenu.classList.contains('hidden') && !profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
-                profileMenu.classList.add('hidden');
-            }
-            if (!appSwitchMenu.classList.contains('hidden') && !appSwitchMenu.contains(e.target) && !appSwitchBtn.contains(e.target)) {
-                appSwitchMenu.classList.add('hidden');
-            }
+            if (!profileMenu.classList.contains('hidden') && !profileMenu.contains(e.target) && !profileButton.contains(e.target)) profileMenu.classList.add('hidden');
+            if (!appSwitchMenu.classList.contains('hidden') && !appSwitchMenu.contains(e.target) && !appSwitchBtn.contains(e.target)) appSwitchMenu.classList.add('hidden');
         });
 
         logoutButton.onclick = () => signOut(auth);
