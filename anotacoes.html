@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anotações - Discursos</title>
+
+    <!-- Configuração PWA -->
+    <meta name="theme-color" content="#3e5a8a">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Anotações">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="icon" type="image/png" href="icons/favicon.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior-y: contain;
+        }
+        .bg-custom-blue {
+            background-color: #3e5a8a;
+        }
+        /* Estilos de Abas */
+        .nav-tab {
+            color: #6b7280; /* gray-500 */
+            border-bottom: 2px solid transparent;
+            padding-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+        .dark .nav-tab {
+            color: #9ca3af; /* gray-400 */
+        }
+        .nav-tab.active {
+            color: #2563eb; /* blue-600 */
+            border-bottom-color: #2563eb;
+        }
+        .dark .nav-tab.active {
+            color: #60a5fa; /* blue-400 */
+            border-bottom-color: #60a5fa;
+        }
+        .folder-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .folder-card:active {
+            transform: scale(0.98);
+        }
+        /* Botões de Visibilidade */
+        .search-type-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .search-type-btn {
+            background-color: transparent;
+            color: #4b5563; /* gray-600 */
+        }
+        .dark .search-type-btn {
+            color: #d1d5db; /* gray-300 */
+        }
+        
+        /* Loading overlay */
+        #auth-loading {
+            position: fixed;
+            inset: 0;
+            background-color: #1f2937;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: opacity 0.5s ease;
+        }
+        /* Z-index adjustment for dropdowns */
+        .z-dropdown {
+            z-index: 60;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+
+    <!-- Tela de Carregamento -->
+    <div id="auth-loading">
+        <div class="text-center">
+            <svg class="animate-spin h-10 w-10 text-blue-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-lg font-medium">Verificando acesso...</p>
+        </div>
+    </div>
+    
+    <div id="app-content" class="hidden">
+
+        <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center relative" style="height: 4rem;">
+            
+            <!-- Botão de Troca de App (Centralizado) -->
+            <div class="relative">
+                <button id="app-switch-btn" class="flex items-center space-x-2 focus:outline-none hover:bg-white/10 p-2 rounded-lg transition-colors">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <h1 class="text-xl font-bold truncate">Anotações</h1>
+                    <svg class="w-4 h-4 fill-current opacity-80 mt-1" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                </button>
+
+                <!-- Menu Dropdown de Apps -->
+                <div id="app-switch-menu" class="hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-lg z-dropdown ring-1 ring-black ring-opacity-5 overflow-hidden">
+                    <a href="index.html" class="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        Estudo Pessoal
+                    </a>
+                    <div class="flex items-center px-4 py-3 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 cursor-default">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Discursos (Atual)
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Perfil -->
+            <div class="absolute right-4 top-1/2 -translate-y-1/2">
+                <button id="profile-button" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold text-lg hover:bg-white/30 transition-colors focus:outline-none">
+                    <span id="profile-initials"></span>
+                </button>
+                <div id="profile-menu" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-lg z-dropdown text-gray-800 dark:text-gray-200 ring-1 ring-black ring-opacity-5">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+                        <p class="font-medium truncate" id="profile-menu-name">Carregando...</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate" id="profile-menu-email">...</p>
+                    </div>
+                    <button id="profile-menu-logout" class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container mx-auto p-2 sm:p-6 md:p-8 max-w-6xl" style="padding-top: 2rem;">
+            <div class="bg-white dark:bg-gray-800 shadow-md min-h-screen rounded-lg flex flex-col relative">
+
+                <!-- Abas de Navegação -->
+                <nav class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 z-10 rounded-t-lg sticky top-0">
+                    <div class="px-4 py-3 flex items-center justify-center space-x-8">
+                        
+                        <!-- Aba Discursos -->
+                        <button id="tab-discursos" class="nav-tab active flex items-center font-bold text-sm focus:outline-none">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                            DISCURSOS
+                        </button>
+
+                        <!-- Aba Adicionar -->
+                        <button id="tab-adicionar" class="nav-tab flex items-center font-bold text-sm focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        </button>
+
+                        <!-- Aba Pesquisar -->
+                        <button id="tab-pesquisar" class="nav-tab flex items-center font-bold text-sm focus:outline-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </button>
+
+                    </div>
+                </nav>
+
+                <!-- Área de Conteúdo -->
+                <main class="flex-1 p-4 sm:p-6 overflow-y-auto">
+                    
+                    <!-- VIEW: DISCURSOS (Pastas e Listas) -->
+                    <div id="view-discursos-wrapper">
+                        <!-- NÍVEL 1: VISÃO DE PASTAS -->
+                        <div id="view-folders" class="space-y-6">
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 px-2 border-l-4 border-blue-500">Categorias</h2>
+                            <div id="grid-folders" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                <!-- Cards serão gerados via JS -->
+                                <p class="col-span-full text-center text-gray-500 py-10">Carregando pastas...</p>
+                            </div>
+                        </div>
+
+                        <!-- NÍVEL 2: LISTA DE TEMAS (Inicialmente Oculto) -->
+                        <div id="view-list" class="hidden flex flex-col h-full">
+                            <div class="flex items-center mb-6">
+                                <button id="btn-back-folders" class="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                </button>
+                                <h2 id="list-title" class="text-xl font-bold text-gray-800 dark:text-gray-100">Nome da Pasta</h2>
+                            </div>
+                            <div id="container-list" class="space-y-3">
+                                <!-- Lista de temas será inserida aqui -->
+                            </div>
+                        </div>
+
+                        <!-- NÍVEL 3: DETALHES DO DISCURSO (Inicialmente Oculto) -->
+                        <div id="view-detail" class="hidden flex flex-col h-full">
+                            <div class="flex items-center mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button id="btn-back-list" class="mr-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                    <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                </button>
+                                <div class="flex-1 min-w-0">
+                                    <h2 id="detail-theme" class="text-xl font-bold text-gray-800 dark:text-gray-100 truncate">Tema do Discurso</h2>
+                                    <div class="flex items-center gap-2">
+                                        <p id="detail-type" class="text-xs text-blue-500 uppercase font-semibold tracking-wider">Categoria</p>
+                                        <span id="detail-visibility-badge" class="text-xs px-2 py-0.5 rounded-full font-bold"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 rounded-lg space-y-4">
+                                <!-- Fonte -->
+                                <div id="detail-source-container" class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border-l-4 border-green-500">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold mb-1">Fonte</p>
+                                    <p id="detail-source" class="text-sm text-gray-800 dark:text-gray-200 font-medium">--</p>
+                                </div>
+
+                                <!-- Anotação -->
+                                <div class="prose dark:prose-invert max-w-none">
+                                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Anotações</h3>
+                                    <div id="detail-note" class="whitespace-pre-wrap text-gray-600 dark:text-gray-300 text-base leading-relaxed bg-gray-50 dark:bg-gray-700/30 p-4 rounded-lg border border-gray-200 dark:border-gray-700 min-h-[200px]"></div>
+                                </div>
+                                
+                                <!-- Metadados -->
+                                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                                    <div>
+                                        <p id="detail-date" class="text-xs text-gray-400 italic">Salvo em: --</p>
+                                        <p id="detail-author" class="text-xs text-gray-400 italic mt-1"></p>
+                                    </div>
+                                    <button id="btn-delete-discurso" class="text-red-500 hover:text-red-600 text-sm font-medium flex items-center hidden">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIEW: ADICIONAR (Formulário) -->
+                    <div id="view-adicionar" class="hidden space-y-6 max-w-2xl mx-auto">
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Novo Discurso</h2>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Preencha os dados abaixo para salvar uma nova anotação.</p>
+                        </div>
+                        
+                        <form id="form-discurso" class="space-y-5">
+                            <!-- Tipo de Discurso -->
+                            <div>
+                                <label for="input-tipo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Discurso</label>
+                                <select id="input-tipo" name="tipo" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Assembleia">Assembleia</option>
+                                    <option value="Congresso">Congresso</option>
+                                    <option value="Especiais">Especiais</option>
+                                    <option value="Familia de Betel">Família de Betel</option>
+                                    <option value="Publicos">Públicos</option>
+                                    <option value="Extras">Extras</option>
+                                    <option value="Necessidades Locais">Necessidades Locais</option>
+                                    <option value="Pré assembleia">Pré Assembleia</option>
+                                </select>
+                            </div>
+
+                            <!-- Visibilidade -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Visibilidade</label>
+                                <input type="hidden" id="input-visibility" name="visibility" value="public">
+                                <div class="flex mt-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1 max-w-xs">
+                                    <button type="button" data-value="public" class="visibility-btn search-type-btn active w-1/2 py-2 rounded-md text-sm font-medium transition-colors">Público</button>
+                                    <button type="button" data-value="private" class="visibility-btn search-type-btn w-1/2 py-2 rounded-md text-sm font-medium transition-colors">Privado</button>
+                                </div>
+                            </div>
+
+                            <!-- Tema -->
+                            <div>
+                                <label for="input-tema" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tema</label>
+                                <input type="text" id="input-tema" name="tema" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white" placeholder="Ex: O Amor Nunca Acaba" required>
+                            </div>
+
+                            <!-- Fonte -->
+                            <div>
+                                <label for="input-fonte" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fonte</label>
+                                <input type="text" id="input-fonte" name="fonte" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white" placeholder="Ex: Orador, Texto base ou Link">
+                            </div>
+
+                            <!-- Anotação -->
+                            <div>
+                                <label for="input-anotacao" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Anotações</label>
+                                <textarea id="input-anotacao" name="anotacao" rows="8" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white" placeholder="Escreva aqui seus pontos principais..." required></textarea>
+                            </div>
+
+                            <div class="pt-4">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow transition-colors flex justify-center items-center">
+                                    <span>Salvar Anotação</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- VIEW: PESQUISAR (Busca) -->
+                    <div id="view-pesquisar" class="hidden space-y-6 max-w-2xl mx-auto">
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Pesquisar</h2>
+                            <div class="relative mt-4">
+                                <input type="text" id="input-search-term" class="block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white text-lg shadow-sm" placeholder="Digite palavra-chave..." autofocus>
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="search-results-container" class="space-y-4">
+                            <p class="text-center text-gray-500 py-10">Digite para buscar em todos os seus discursos.</p>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+            
+            <footer class="text-center py-4">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Módulo de Anotações</p>
+            </footer>
+        </div>
+
+        <!-- Botão de Tema -->
+        <button id="theme-toggle" class="fixed bottom-5 right-5 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-3 shadow-lg focus:outline-none z-50">
+            <svg id="theme-toggle-sun" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zm7.536 2.464a1 1 0 01-1.414 0l-.707-.707a1 1 0 011.414-1.414l.707.707a1 1 0 010 1.414z"></path></svg>
+            <svg id="theme-toggle-moon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        </button>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuração Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCf6441hETQDUcx0fEHK01-SaTo2kUn0eA",
+            authDomain: "meuep-29295.firebaseapp.com",
+            projectId: "meuep-29295",
+            storageBucket: "meuep-29295.firebasestorage.app",
+            messagingSenderId: "34951069719",
+            appId: "1:34951069719:web:020ee5896ba0c6679b5c52",
+            measurementId: "G-CKTFHX3Q7R"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = firebaseConfig.appId;
+
+        // Variáveis de Estado
+        let currentUser = null;
+        let publicDiscursos = [];
+        let privateDiscursos = [];
+        let allDiscursos = [];
+        let currentView = 'discursos'; // 'discursos', 'adicionar', 'pesquisar'
+        let subView = 'folders'; // 'folders', 'list', 'detail' (apenas para a tab discursos)
+        let selectedType = null;
+        let selectedDiscurso = null;
+
+        const TIPOS_DISCURSO = [
+            "Assembleia", 
+            "Congresso", 
+            "Especiais", 
+            "Familia de Betel", 
+            "Publicos", 
+            "Extras", 
+            "Necessidades Locais", 
+            "Pré assembleia"
+        ];
+
+        // --- TEMA ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('theme-toggle-sun');
+        const moonIcon = document.getElementById('theme-toggle-moon');
+
+        function setTema(isDark) {
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+        const temaSalvo = localStorage.getItem('theme');
+        const prefereEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTema(temaSalvo === 'dark' || (temaSalvo === null && prefereEscuro));
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            setTema(!isDark);
+        });
+
+        // --- AUTH & INIT ---
+        const authLoading = document.getElementById('auth-loading');
+        const appContent = document.getElementById('app-content');
+        
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                
+                const displayName = getDisplayNameFromEmail(user.email);
+                document.getElementById('profile-initials').textContent = displayName.charAt(0).toUpperCase();
+                document.getElementById('profile-menu-name').textContent = displayName;
+                document.getElementById('profile-menu-email').textContent = user.email;
+
+                authLoading.style.opacity = '0';
+                setTimeout(() => {
+                    authLoading.style.display = 'none';
+                    appContent.classList.remove('hidden');
+                    startDiscursosListeners();
+                }, 500);
+            } else {
+                window.location.replace("index.html");
+            }
+        });
+
+        // --- SISTEMA DE NAVEGAÇÃO DE ABAS ---
+        const tabDiscursos = document.getElementById('tab-discursos');
+        const tabAdicionar = document.getElementById('tab-adicionar');
+        const tabPesquisar = document.getElementById('tab-pesquisar');
+        
+        const viewDiscursosWrapper = document.getElementById('view-discursos-wrapper');
+        const viewAdicionar = document.getElementById('view-adicionar');
+        const viewPesquisar = document.getElementById('view-pesquisar');
+
+        // Sub-views dentro de Discursos
+        const viewFolders = document.getElementById('view-folders');
+        const viewList = document.getElementById('view-list');
+        const viewDetail = document.getElementById('view-detail');
+
+        function switchTab(tabName) {
+            currentView = tabName;
+
+            // Atualiza estilo das abas
+            [tabDiscursos, tabAdicionar, tabPesquisar].forEach(tab => tab.classList.remove('active'));
+            if (tabName === 'discursos') tabDiscursos.classList.add('active');
+            if (tabName === 'adicionar') tabAdicionar.classList.add('active');
+            if (tabName === 'pesquisar') tabPesquisar.classList.add('active');
+
+            // Esconde todas as views principais
+            viewDiscursosWrapper.classList.add('hidden');
+            viewAdicionar.classList.add('hidden');
+            viewPesquisar.classList.add('hidden');
+
+            // Mostra a view correta
+            if (tabName === 'discursos') {
+                viewDiscursosWrapper.classList.remove('hidden');
+                // Se voltamos para discursos, renderizamos a sub-view atual
+                renderSubView();
+            } else if (tabName === 'adicionar') {
+                viewAdicionar.classList.remove('hidden');
+                // Reset form visibility default
+                document.getElementById('input-visibility').value = 'public';
+                const btns = document.querySelectorAll('.visibility-btn');
+                btns.forEach(b => b.dataset.value === 'public' ? b.classList.add('active') : b.classList.remove('active'));
+            } else if (tabName === 'pesquisar') {
+                viewPesquisar.classList.remove('hidden');
+                document.getElementById('input-search-term').focus();
+            }
+        }
+
+        tabDiscursos.addEventListener('click', () => switchTab('discursos'));
+        tabAdicionar.addEventListener('click', () => switchTab('adicionar'));
+        tabPesquisar.addEventListener('click', () => switchTab('pesquisar'));
+
+        // --- SISTEMA DE NAVEGAÇÃO INTERNA (Discursos) ---
+        function switchSubView(viewName) {
+            subView = viewName;
+            renderSubView();
+        }
+
+        function renderSubView() {
+            viewFolders.classList.add('hidden');
+            viewList.classList.add('hidden');
+            viewDetail.classList.add('hidden');
+
+            if (subView === 'folders') {
+                viewFolders.classList.remove('hidden');
+                renderFolders();
+            } else if (subView === 'list') {
+                viewList.classList.remove('hidden');
+                renderList();
+            } else if (subView === 'detail') {
+                viewDetail.classList.remove('hidden');
+                renderDetail();
+            }
+        }
+
+        // --- RENDERIZAÇÃO ---
+
+        function updateAllDiscursos() {
+            allDiscursos = [...privateDiscursos, ...publicDiscursos].sort((a, b) => {
+                const dateA = a.createdAt?.seconds || 0;
+                const dateB = b.createdAt?.seconds || 0;
+                return dateB - dateA;
+            });
+            
+            // Atualiza a view ativa se estivermos na aba de discursos ou pesquisa
+            if (currentView === 'discursos') renderSubView();
+            if (currentView === 'pesquisar') performSearch(); // Re-roda a pesquisa se dados mudarem
+        }
+
+        function renderFolders() {
+            const grid = document.getElementById('grid-folders');
+            grid.innerHTML = '';
+
+            const counts = {};
+            TIPOS_DISCURSO.forEach(t => counts[t] = 0);
+            allDiscursos.forEach(d => {
+                if (counts[d.tipo] !== undefined) counts[d.tipo]++;
+            });
+
+            TIPOS_DISCURSO.forEach(tipo => {
+                const count = counts[tipo] || 0;
+                let colorClass = count > 0 ? "text-blue-500 dark:text-blue-400" : "text-gray-400 dark:text-gray-500";
+                let bgClass = count > 0 ? "bg-white dark:bg-gray-800 border-blue-200 dark:border-blue-900" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
+
+                const card = document.createElement('div');
+                card.className = `folder-card border rounded-xl p-5 shadow-sm cursor-pointer flex flex-col items-center justify-center text-center h-40 ${bgClass}`;
+                card.onclick = () => {
+                    selectedType = tipo;
+                    switchSubView('list');
+                };
+
+                card.innerHTML = `
+                    <svg class="w-12 h-12 mb-3 ${colorClass}" fill="currentColor" viewBox="0 0 24 24">
+                         <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2.06 11L15 10l-2.94 7H10l3.06-7.34c.1-.24.34-.4.6-.4h.68c.26 0 .5.16.6.4L17.94 17h-2zM4 6v12h16V8h-7.17l-2-2H4z" opacity="0.2"/>
+                         <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                    </svg>
+                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm md:text-base">${tipo}</h3>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">${count} ${count === 1 ? 'discurso' : 'discursos'}</span>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderList() {
+            document.getElementById('list-title').textContent = selectedType;
+            const container = document.getElementById('container-list');
+            container.innerHTML = '';
+
+            const listToRender = allDiscursos.filter(d => d.tipo === selectedType);
+
+            if (listToRender.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 text-gray-400">
+                        <p>Nenhum discurso salvo em "${selectedType}".</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listToRender.forEach(discurso => {
+                container.appendChild(createDiscursoCard(discurso));
+            });
+        }
+
+        function renderDetail() {
+            if (!selectedDiscurso) return;
+            const d = selectedDiscurso;
+            
+            document.getElementById('detail-theme').textContent = d.tema;
+            document.getElementById('detail-type').textContent = d.tipo;
+            document.getElementById('detail-source').textContent = d.fonte || 'Não informada';
+            document.getElementById('detail-note').textContent = d.anotacao;
+            
+            const badge = document.getElementById('detail-visibility-badge');
+            if (d.isPublic) {
+                badge.textContent = "Público";
+                badge.className = "text-xs px-2 py-0.5 rounded-full font-bold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+            } else {
+                badge.textContent = "Privado";
+                badge.className = "text-xs px-2 py-0.5 rounded-full font-bold bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+            }
+
+            const dateStr = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('pt-BR') : '--';
+            document.getElementById('detail-date').textContent = `Salvo em: ${dateStr}`;
+            
+            const authorText = d.authorName ? `Criado por: ${d.authorName}` : "";
+            document.getElementById('detail-author').textContent = authorText;
+
+            const btnDelete = document.getElementById('btn-delete-discurso');
+            const isOwner = d.userId === currentUser.uid;
+            
+            if (isOwner) {
+                btnDelete.classList.remove('hidden');
+                btnDelete.onclick = async () => {
+                    if(confirm("Tem certeza que deseja excluir este discurso?")) {
+                        try {
+                            const collectionPath = d.isPublic ? 
+                                `artifacts/${appId}/public/data/discursos` : 
+                                `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                                
+                            await deleteDoc(doc(db, collectionPath, d.id));
+                            // Retornar para a lista ou busca
+                            if (currentView === 'pesquisar') {
+                                // Permanece na busca, o snapshot atualizará a lista
+                            } else {
+                                switchSubView('list'); 
+                            }
+                        } catch(e) {
+                            console.error("Erro ao excluir", e);
+                            alert("Erro ao excluir.");
+                        }
+                    }
+                };
+            } else {
+                btnDelete.classList.add('hidden');
+            }
+        }
+
+        // --- COMPONENTE CARD REUTILIZÁVEL ---
+        function createDiscursoCard(discurso) {
+            const item = document.createElement('div');
+            item.className = "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors flex justify-between items-center group relative";
+            
+            const publicBadge = discurso.isPublic ? 
+                `<span class="absolute top-2 right-2 w-2 h-2 bg-green-500 rounded-full" title="Público"></span>` : 
+                `<span class="absolute top-2 right-2 w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-full" title="Privado"></span>`;
+
+            item.onclick = () => {
+                selectedDiscurso = discurso;
+                // Se estamos na busca, precisamos mudar a view principal também para mostrar detalhe
+                // Mas minha lógica de detail está dentro de discursos-wrapper.
+                // Truque: Mudar para aba discursos e ir direto para detail
+                switchTab('discursos');
+                switchSubView('detail');
+            };
+
+            const dateStr = discurso.createdAt ? new Date(discurso.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '--';
+
+            item.innerHTML = `
+                ${publicBadge}
+                <div class="flex-1 min-w-0 pr-4">
+                    <h4 class="font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">${discurso.tema}</h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                        <span class="uppercase font-semibold text-blue-500 mr-1">[${discurso.tipo}]</span>
+                        ${discurso.fonte || 'Fonte não inf.'}
+                    </p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                     <span class="text-xs text-gray-400 block">${dateStr}</span>
+                </div>
+            `;
+            return item;
+        }
+
+        // --- LÓGICA DE BUSCA ---
+        const inputSearch = document.getElementById('input-search-term');
+        const resultsContainer = document.getElementById('search-results-container');
+
+        function performSearch() {
+            if (currentView !== 'pesquisar') return;
+            
+            const termo = inputSearch.value.toLowerCase();
+            resultsContainer.innerHTML = '';
+
+            if (termo.length === 0) {
+                resultsContainer.innerHTML = '<p class="text-center text-gray-500 py-10">Digite para buscar em todos os seus discursos.</p>';
+                return;
+            }
+
+            const filtered = allDiscursos.filter(d => 
+                d.tema.toLowerCase().includes(termo) || 
+                d.anotacao.toLowerCase().includes(termo) ||
+                (d.fonte && d.fonte.toLowerCase().includes(termo))
+            );
+
+            if (filtered.length === 0) {
+                resultsContainer.innerHTML = '<p class="text-center text-gray-500 py-10">Nenhum resultado encontrado.</p>';
+            } else {
+                filtered.forEach(d => {
+                    resultsContainer.appendChild(createDiscursoCard(d));
+                });
+            }
+        }
+
+        inputSearch.addEventListener('input', performSearch);
+
+        // --- FORMULÁRIO ---
+        const formDiscurso = document.getElementById('form-discurso');
+        const visButtons = document.querySelectorAll('.visibility-btn');
+        const visInput = document.getElementById('input-visibility');
+
+        visButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                visButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                visInput.value = btn.dataset.value;
+            });
+        });
+
+        formDiscurso.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const submitBtn = formDiscurso.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `Salvando...`;
+
+            const formData = new FormData(formDiscurso);
+            const visibility = formData.get('visibility');
+            const novoDiscurso = {
+                tipo: formData.get('tipo'),
+                tema: formData.get('tema'),
+                fonte: formData.get('fonte'),
+                anotacao: formData.get('anotacao'),
+                visibility: visibility,
+                createdAt: new Date(),
+                userId: currentUser.uid,
+                authorName: getDisplayNameFromEmail(currentUser.email)
+            };
+
+            try {
+                const collectionPath = visibility === 'public' ? 
+                    `artifacts/${appId}/public/data/discursos` : 
+                    `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+                
+                await addDoc(collection(db, collectionPath), novoDiscurso);
+                
+                // Sucesso! Limpa e volta para a lista
+                formDiscurso.reset();
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                
+                // Redireciona para a pasta onde foi salvo
+                selectedType = novoDiscurso.tipo;
+                switchTab('discursos');
+                switchSubView('list');
+
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                alert("Erro ao salvar. Tente novamente.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+        // --- FIRESTORE LISTENERS ---
+        function startDiscursosListeners() {
+            if (!currentUser) return;
+
+            const privatePath = `artifacts/${appId}/users/${currentUser.uid}/discursos`;
+            const qPrivate = query(collection(db, privatePath), orderBy("createdAt", "desc"));
+            
+            onSnapshot(qPrivate, (snapshot) => {
+                privateDiscursos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isPublic: false }));
+                updateAllDiscursos();
+            });
+
+            const publicPath = `artifacts/${appId}/public/data/discursos`;
+            const qPublic = query(collection(db, publicPath), orderBy("createdAt", "desc"));
+
+            onSnapshot(qPublic, (snapshot) => {
+                publicDiscursos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isPublic: true }));
+                updateAllDiscursos();
+            });
+        }
+
+        // --- BOTÕES DE VOLTAR ---
+        document.getElementById('btn-back-folders').addEventListener('click', () => {
+            selectedType = null;
+            switchSubView('folders');
+        });
+
+        document.getElementById('btn-back-list').addEventListener('click', () => {
+            selectedDiscurso = null;
+            switchSubView('list');
+        });
+
+        // --- HELPERS E MENUS ---
+        function capitalizeFirstLetter(string) {
+            if (!string) return string;
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        function getDisplayNameFromEmail(email) {
+            if (!email) return 'Anônimo';
+            return capitalizeFirstLetter(email.split('@')[0].replace(/[\._0-9]/g, ' ').split(' ')[0]);
+        }
+
+        // Menu Switcher
+        const appSwitchBtn = document.getElementById('app-switch-btn');
+        const appSwitchMenu = document.getElementById('app-switch-menu');
+        appSwitchBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            appSwitchMenu.classList.toggle('hidden');
+            profileMenu.classList.add('hidden');
+        });
+
+        // Menu Perfil
+        const profileButton = document.getElementById('profile-button');
+        const profileMenu = document.getElementById('profile-menu');
+        const logoutButton = document.getElementById('profile-menu-logout');
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileMenu.classList.toggle('hidden');
+            appSwitchMenu.classList.add('hidden');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!profileMenu.classList.contains('hidden') && !profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
+                profileMenu.classList.add('hidden');
+            }
+            if (!appSwitchMenu.classList.contains('hidden') && !appSwitchMenu.contains(e.target) && !appSwitchBtn.contains(e.target)) {
+                appSwitchMenu.classList.add('hidden');
+            }
+        });
+
+        logoutButton.onclick = () => signOut(auth);
+
+    </script>
+</body>
+</html>

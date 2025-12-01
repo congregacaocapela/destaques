@@ -179,8 +179,7 @@
     <!-- Tela de Login -->
     <div id="login-screen" class="fixed inset-0 bg-gray-800 z-50 flex flex-col items-center justify-center p-4 transition-opacity duration-1000 ease-in-out">
         <div class="absolute inset-0 overflow-hidden">
-            <!-- Nomes dos livros animados serão inseridos aqui via JS -->
-        </div>
+            </div>
         <div class="relative z-10 text-center text-white w-full max-w-sm">
             <h1 class="text-4xl md:text-5xl font-bold mb-2 text-shadow">Bem-vindo</h1>
             <p class="text-lg text-gray-300 mb-8">Acesse seu estudo pessoal</p>
@@ -195,15 +194,31 @@
     
     <div id="app-content" class="hidden">
 
-        <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-center relative" style="height: 4rem;">
-            <!-- Título Centralizado -->
-            <div id="header-title" class="flex items-center cursor-pointer min-w-0">
-                <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                <h1 class="text-xl font-bold truncate">Estudo Pessoal</h1>
+        <header class="fixed top-0 left-0 right-0 bg-custom-blue text-white p-4 shadow-md z-20 flex items-center justify-end relative" style="height: 4rem;">
+            
+            <!-- Botão de Troca de App (Esquerda/Centro) -->
+            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30">
+                <button id="app-switch-btn" class="flex items-center space-x-2 focus:outline-none hover:bg-white/10 p-2 rounded-lg transition-colors">
+                    <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <h1 class="text-xl font-bold truncate">Estudo Pessoal</h1>
+                    <svg class="w-4 h-4 fill-current opacity-80 mt-1" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                </button>
+
+                <!-- Menu Dropdown de Apps -->
+                <div id="app-switch-menu" class="hidden absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50 ring-1 ring-black ring-opacity-5 overflow-hidden">
+                    <div class="flex items-center px-4 py-3 text-sm font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 cursor-default">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        Estudo Pessoal (Atual)
+                    </div>
+                    <a href="anotacoes.html" class="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        Discursos
+                    </a>
+                </div>
             </div>
         
             <!-- Botão de Perfil e Menu Dropdown -->
-            <div class="absolute right-4 top-1/2 -translate-y-1/2">
+            <div class="relative">
                 <button id="profile-button" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white font-semibold text-lg hover:bg-white/30 transition-colors focus:outline-none">
                     <span id="profile-initials"></span>
                 </button>
@@ -2353,10 +2368,21 @@
             const profileButton = document.getElementById('profile-button');
             const profileMenu = document.getElementById('profile-menu');
             const logoutButton = document.getElementById('profile-menu-logout');
+            
+            // NOVO: Menu Switcher
+            const appSwitchBtn = document.getElementById('app-switch-btn');
+            const appSwitchMenu = document.getElementById('app-switch-menu');
+
+            appSwitchBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                appSwitchMenu.classList.toggle('hidden');
+                profileMenu.classList.add('hidden');
+            });
 
             profileButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 profileMenu.classList.toggle('hidden');
+                appSwitchMenu.classList.add('hidden');
             });
 
             logoutButton.onclick = () => {
@@ -2370,6 +2396,12 @@
                 if (!profileMenu.classList.contains('hidden')) {
                     if (!profileMenu.contains(e.target) && !profileButton.contains(e.target)) {
                         profileMenu.classList.add('hidden');
+                    }
+                }
+                // Fecha menu switch ao clicar fora
+                if (appSwitchMenu && !appSwitchMenu.classList.contains('hidden')) {
+                    if (!appSwitchMenu.contains(e.target) && !appSwitchBtn.contains(e.target)) {
+                        appSwitchMenu.classList.add('hidden');
                     }
                 }
             });
@@ -2389,7 +2421,9 @@
             document.getElementById('form-edit').addEventListener('submit', salvarEdicao);
             
             // Listeners das abas (Tabs)
-            headerTitle.addEventListener('click', () => mudarAba('inicio')); 
+            // headerTitle foi substituido pelo dropdown, então removemos o listener antigo de headerTitle se existir
+            // ou adaptamos se quisermos clicar na label
+            
             tabs.inicio.addEventListener('click', (e) => { e.preventDefault(); mudarAba('inicio'); }); 
             tabs.livros.addEventListener('click', (e) => { e.preventDefault(); mudarAba('livros'); });
             tabs.adicionar.addEventListener('click', (e) => { e.preventDefault(); mudarAba('adicionar'); });
@@ -2542,5 +2576,4 @@
         
     </script>
 </body>
-
 </html>
