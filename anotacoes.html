@@ -230,8 +230,9 @@
                                     <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                                 </button>
                                 <div class="flex-1 min-w-0">
-                                    <h2 id="detail-theme" class="text-xl font-bold text-gray-800 dark:text-gray-100 truncate">Tema do Discurso</h2>
-                                    <div class="flex items-center gap-2">
+                                    <!-- REMOVIDO: class 'truncate' para permitir quebra de linha -->
+                                    <h2 id="detail-theme" class="text-xl font-bold text-gray-800 dark:text-gray-100 leading-tight">Tema do Discurso</h2>
+                                    <div class="flex items-center gap-2 mt-1">
                                         <p id="detail-type" class="text-xs text-blue-500 uppercase font-semibold tracking-wider">Categoria</p>
                                         <span id="detail-visibility-badge" class="text-xs px-2 py-0.5 rounded-full font-bold"></span>
                                     </div>
@@ -360,7 +361,7 @@
             </div>
             
             <footer class="text-center py-4">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Módulo de Anotações</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Criado por Guilherme Almeida</p>
             </footer>
         </div>
 
@@ -631,6 +632,7 @@
             if (!selectedDiscurso) return;
             const d = selectedDiscurso;
             
+            // REMOVIDO: class 'truncate' para permitir quebra de linha
             document.getElementById('detail-theme').textContent = d.tema;
             document.getElementById('detail-type').textContent = d.tipo;
             document.getElementById('detail-source').textContent = d.fonte || 'Não informada';
@@ -686,7 +688,8 @@
                 switchSubView('detail');
             };
             const dateStr = discurso.createdAt ? new Date(discurso.createdAt.seconds * 1000).toLocaleDateString('pt-BR') : '--';
-            item.innerHTML = `${publicBadge}<div class="flex-1 min-w-0 pr-4"><h4 class="font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">${discurso.tema}</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate"><span class="uppercase font-semibold text-blue-500 mr-1">[${discurso.tipo}]</span>${discurso.fonte || 'Fonte não inf.'}</p></div><div class="text-right flex-shrink-0"><span class="text-xs text-gray-400 block">${dateStr}</span></div>`;
+            // REMOVIDO: class 'truncate' do título para permitir quebra de linha
+            item.innerHTML = `${publicBadge}<div class="flex-1 min-w-0 pr-4"><h4 class="font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 leading-tight">${discurso.tema}</h4><p class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate"><span class="uppercase font-semibold text-blue-500 mr-1">[${discurso.tipo}]</span>${discurso.fonte || 'Fonte não inf.'}</p></div><div class="text-right flex-shrink-0"><span class="text-xs text-gray-400 block">${dateStr}</span></div>`;
             return item;
         }
 
