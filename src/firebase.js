@@ -12,9 +12,9 @@ const firebaseConfig = {
   measurementId: 'G-CKTFHX3Q7R',
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = initializeFirestore(app, {
+export const firebaseApp = initializeApp(firebaseConfig);
+export const auth = getAuth(firebaseApp);
+export const db = initializeFirestore(firebaseApp, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 });
 export const STUDY_APP_ID = firebaseConfig.appId;

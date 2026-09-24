@@ -77,7 +77,8 @@ p { color: var(--muted); line-height: 1.6; }
 .icon-button:disabled { opacity: .35; cursor: default; }
 .header-icon { color: white; border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.08); }
 .header-icon:hover { background: rgba(255,255,255,.16) !important; border-color: rgba(255,255,255,.3) !important; }
-.avatar-button { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; color: #30466f; background: #e7edf7; font-weight: 800; cursor: pointer; }
+.avatar-button { width: 40px; height: 40px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; color: #30466f; background: #e7edf7; font-weight: 800; cursor: pointer; }
+.avatar-button img, .profile-menu .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .offline-pill { display: flex; align-items: center; gap: 6px; border-radius: 99px; padding: 7px 10px; background: rgba(255,255,255,.1); color: #dce9e4; font-size: .75rem; }
 
 .popover { position: fixed; z-index: 60; top: 68px; padding: 8px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); animation: pop .16s ease-out; }
@@ -91,10 +92,13 @@ p { color: var(--muted); line-height: 1.6; }
 .profile-menu { right: max(16px, calc((100% - 1180px)/2)); width: 270px; }
 .profile-menu > div { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); }
 .profile-menu .avatar { display: grid; place-items: center; width: 42px; height: 42px; flex: 0 0 42px; border-radius: 50%; background: var(--brand-soft); color: var(--brand-strong); font-weight: 800; }
+.profile-menu .avatar.has-photo { overflow: hidden; }
 .profile-menu p { display: grid; gap: 3px; min-width: 0; margin: 0; }
 .profile-menu p small { max-width: 175px; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
 .profile-menu > button { display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 6px; padding: 11px 12px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
-.profile-menu > button:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
+.profile-menu > button:hover { color: var(--brand-strong); background: var(--brand-soft); }
+.profile-menu > button.logout { border-top: 1px solid var(--border); border-radius: 0 0 10px 10px; }
+.profile-menu > button.logout:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
 
 .tabs { position: sticky; top: 74px; z-index: 35; display: flex; justify-content: center; gap: 7px; min-height: 57px; padding: 7px 16px; overflow-x: auto; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(14px); scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
@@ -274,6 +278,24 @@ legend, .field-label { display: block; margin-bottom: 9px; font-size: .8rem; fon
 .modal-actions { display: flex; justify-content: end; gap: 9px; padding: 18px 22px 22px; }
 .modal-form { display: grid; gap: 16px; padding: 22px; }
 .modal-form .modal-actions { padding: 7px 0 0; }
+.profile-editor { display: grid; gap: 0; color: var(--text); }
+.profile-identity { display: flex; align-items: center; gap: 15px; padding: 22px; border-bottom: 1px solid var(--border); }
+.profile-identity h3, .profile-identity p { margin: 0; }
+.profile-identity p { margin-top: 4px; overflow-wrap: anywhere; font-size: .8rem; }
+.profile-photo-preview { display: grid; place-items: center; width: 72px; height: 72px; flex: 0 0 72px; overflow: hidden; border: 2px solid var(--border); border-radius: 50%; color: var(--brand-strong); background: var(--brand-soft); font-size: 1.4rem; font-weight: 850; }
+.profile-photo-preview img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.profile-section { display: grid; gap: 14px; padding: 22px; border-bottom: 1px solid var(--border); }
+.profile-section:last-child { border-bottom: 0; }
+.profile-section-heading { display: flex; align-items: start; justify-content: space-between; gap: 14px; }
+.profile-section-heading h3, .profile-section-heading p { margin: 0; }
+.profile-section-heading p { margin-top: 4px; font-size: .77rem; }
+.profile-section-heading > svg { flex: 0 0 auto; color: var(--faint); }
+.profile-photo-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.file-button { position: relative; overflow: hidden; }
+.file-button input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.selected-file { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+.password-form label { display: grid; gap: 8px; font-size: .8rem; font-weight: 750; }
+.password-button { justify-self: end; }
 .notice { position: fixed; z-index: 130; right: 22px; bottom: 22px; max-width: min(390px, calc(100% - 44px)); padding: 13px 17px; border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--border)); border-radius: 13px; color: var(--brand-strong); background: var(--brand-soft); box-shadow: var(--shadow); font-size: .84rem; font-weight: 700; animation: notice-in .22s ease-out; }
 .notice.error { border-color: color-mix(in srgb, var(--danger) 35%, var(--border)); color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, var(--surface)); }
 @keyframes notice-in { from { opacity: 0; transform: translateY(8px); } }
