@@ -1,4 +1,4 @@
-const CACHE = 'estudo-pessoal-v4';
+const CACHE = 'estudo-pessoal-v5';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/favicon.png', './icons/icon-192.png'];
 
 self.addEventListener('install', (event) => {
