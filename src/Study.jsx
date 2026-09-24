@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from './firebase';
 import { ALL_BOOKS, BIBLE, CHAPTER_COUNTS, STUDY_TABS, TOTAL_CHAPTERS } from './data';
@@ -79,9 +79,11 @@ function Library({ data, user, onEdit, onDelete }) {
     visible.forEach((item) => { if (item.livro && item.capitulo) (map[item.livro] ||= new Set()).add(Number(item.capitulo)); });
     return map;
   }, [visible]);
+  useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: 'auto' }); }, [book, chapter]);
   if (book && chapter) {
     const items = visible.filter((item) => item.livro === book && Number(item.capitulo) === chapter);
-    return <div className="page-stack"><button className="back-button" onClick={() => setChapter(null)}><Icon name="back" size={18} />Capítulos de {book}</button><div className="section-heading"><div><span className="kicker">{book}</span><h1>Capítulo {chapter}</h1></div><span className="count-pill">{items.length} {items.length === 1 ? 'joia' : 'joias'}</span></div><div className="card-grid">{items.map((item) => <HighlightCard key={`${item.path}/${item.id}`} item={item} user={user} onEdit={onEdit} onDelete={onDelete} />)}{items.length === 0 && <Empty icon="book" title="Capítulo ainda sem joias">Registre uma descoberta na aba Adicionar.</Empty>}</div></div>;
+    const totalChapters = CHAPTER_COUNTS[book];
+    return <div className="page-stack"><button className="back-button" onClick={() => setChapter(null)}><Icon name="back" size={18} />Capítulos de {book}</button><div className="book-title-row chapter-title-row"><button className="icon-button" disabled={chapter === 1} onClick={() => setChapter((current) => current - 1)} aria-label="Capítulo anterior"><Icon name="back" /></button><div><span className="kicker">{book}</span><h1>Capítulo {chapter}</h1><p>{items.length} {items.length === 1 ? 'joia' : 'joias'}</p></div><button className="icon-button next" disabled={chapter === totalChapters} onClick={() => setChapter((current) => current + 1)} aria-label="Próximo capítulo"><Icon name="chevron" /></button></div><div className="card-grid">{items.map((item) => <HighlightCard key={`${item.path}/${item.id}`} item={item} user={user} onEdit={onEdit} onDelete={onDelete} />)}{items.length === 0 && <Empty icon="book" title="Capítulo ainda sem joias">Registre uma descoberta na aba Adicionar.</Empty>}</div></div>;
   }
   if (book) {
     const index = ALL_BOOKS.indexOf(book);

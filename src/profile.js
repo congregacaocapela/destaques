@@ -17,7 +17,7 @@ function loadImage(file) {
   });
 }
 
-export async function compressProfilePhoto(file) {
+export async function compressProfilePhoto(file, crop = { x: 50, y: 50 }) {
   if (!file || !file.type.startsWith('image/')) throw new Error('Escolha um arquivo de imagem.');
   if (file.size > MAX_SOURCE_BYTES) throw new Error('A foto original deve ter no máximo 12 MB.');
 
@@ -32,8 +32,10 @@ export async function compressProfilePhoto(file) {
     const sourceWidth = image.naturalWidth;
     const sourceHeight = image.naturalHeight;
     const sourceSize = Math.min(sourceWidth, sourceHeight);
-    const sourceX = (sourceWidth - sourceSize) / 2;
-    const sourceY = (sourceHeight - sourceSize) / 2;
+    const cropX = Math.min(100, Math.max(0, Number(crop.x) || 0));
+    const cropY = Math.min(100, Math.max(0, Number(crop.y) || 0));
+    const sourceX = (sourceWidth - sourceSize) * (cropX / 100);
+    const sourceY = (sourceHeight - sourceSize) * (cropY / 100);
     context.fillStyle = '#ffffff';
     context.fillRect(0, 0, PHOTO_SIZE, PHOTO_SIZE);
     context.drawImage(image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, PHOTO_SIZE, PHOTO_SIZE);
@@ -47,8 +49,8 @@ export async function compressProfilePhoto(file) {
   }
 }
 
-export async function uploadProfilePhoto(uid, file) {
-  const photo = await compressProfilePhoto(file);
+export async function uploadProfilePhoto(uid, file, crop) {
+  const photo = await compressProfilePhoto(file, crop);
   const { getDownloadURL, getStorage, ref, uploadBytes } = await import('firebase/storage');
   const storage = getStorage(firebaseApp);
   const photoRef = ref(storage, `profilePhotos/${uid}/avatar.jpg`);

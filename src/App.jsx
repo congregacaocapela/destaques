@@ -31,9 +31,11 @@ function profileError(error, fallback) {
 function ProfileEditor({ user, photoURL, onPhotoSaved, onClose, notify }) {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [preview, setPreview] = useState('');
+  const [crop, setCrop] = useState({ x: 50, y: 50 });
   const [photoBusy, setPhotoBusy] = useState(false);
   const [passwordBusy, setPasswordBusy] = useState(false);
   const photoInputRef = useRef(null);
+  const cropDragRef = useRef(null);
   const currentPhoto = preview || photoURL;
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
@@ -52,14 +54,36 @@ function ProfileEditor({ user, photoURL, onPhotoSaved, onClose, notify }) {
       return;
     }
     setSelectedPhoto(file);
+    setCrop({ x: 50, y: 50 });
     setPreview(URL.createObjectURL(file));
+  };
+
+  const startCropDrag = (event) => {
+    if (!selectedPhoto) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    cropDragRef.current = { pointerX: event.clientX, pointerY: event.clientY, cropX: crop.x, cropY: crop.y };
+  };
+
+  const moveCrop = (event) => {
+    const start = cropDragRef.current;
+    if (!start) return;
+    event.preventDefault();
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = start.cropX - ((event.clientX - start.pointerX) / bounds.width) * 100;
+    const y = start.cropY - ((event.clientY - start.pointerY) / bounds.height) * 100;
+    setCrop({ x: Math.min(100, Math.max(0, x)), y: Math.min(100, Math.max(0, y)) });
+  };
+
+  const stopCropDrag = (event) => {
+    cropDragRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
   const savePhoto = async () => {
     if (!selectedPhoto) return;
     setPhotoBusy(true);
     try {
-      const downloadURL = await uploadProfilePhoto(user.uid, selectedPhoto);
+      const downloadURL = await uploadProfilePhoto(user.uid, selectedPhoto, crop);
       await updateProfile(user, { photoURL: downloadURL });
       onPhotoSaved(downloadURL);
       setSelectedPhoto(null);
@@ -105,11 +129,21 @@ function ProfileEditor({ user, photoURL, onPhotoSaved, onClose, notify }) {
 
   return <Modal title="Meu perfil" onClose={onClose} wide><div className="profile-editor">
     <section className="profile-identity">
-      <span className={`profile-photo-preview ${currentPhoto ? 'has-photo' : ''}`}>{currentPhoto ? <img src={currentPhoto} alt="Sua foto de perfil" /> : displayName(user.email)[0]}</span>
+      <span className={`profile-photo-preview ${currentPhoto ? 'has-photo' : ''}`}>{currentPhoto ? <img src={currentPhoto} alt="Sua foto de perfil" style={preview ? { objectPosition: `${crop.x}% ${crop.y}%` } : undefined} /> : displayName(user.email)[0]}</span>
       <div><h3>{displayName(user.email)}</h3><p>{user.email}</p></div>
     </section>
     <section className="profile-section">
       <div className="profile-section-heading"><div><h3>Foto do perfil</h3><p>Será recortada em formato quadrado e otimizada para economizar dados.</p></div></div>
+      {selectedPhoto && <div className="photo-crop-area">
+        <div className="photo-cropper" onPointerDown={startCropDrag} onPointerMove={moveCrop} onPointerUp={stopCropDrag} onPointerCancel={stopCropDrag}>
+          <img src={preview} alt="Prévia do recorte" draggable="false" style={{ objectPosition: `${crop.x}% ${crop.y}%` }} />
+        </div>
+        <p>Arraste a foto para escolher o enquadramento.</p>
+        <div className="crop-sliders">
+          <label>Horizontal<input type="range" min="0" max="100" value={crop.x} onChange={(event) => setCrop((current) => ({ ...current, x: Number(event.target.value) }))} /></label>
+          <label>Vertical<input type="range" min="0" max="100" value={crop.y} onChange={(event) => setCrop((current) => ({ ...current, y: Number(event.target.value) }))} /></label>
+        </div>
+      </div>}
       <div className="profile-photo-actions">
         <label className="button secondary file-button"><Icon name="image" size={17} />Escolher foto<input ref={photoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" onChange={choosePhoto} /></label>
         {selectedPhoto && <button type="button" className="button primary" disabled={photoBusy} onClick={savePhoto}>{photoBusy ? 'Enviando…' : 'Salvar foto'}</button>}
@@ -203,6 +237,7 @@ function Application({ user }) {
   const notify = useCallback((message, type = 'success') => setNotice({ message, type, key: Date.now() }), []);
   const setMode = (next) => { setModeState(next); const url = new URL(window.location.href); if (next === 'speeches') url.searchParams.set('app', 'discursos'); else url.searchParams.delete('app'); window.history.replaceState({}, '', url); };
   useEffect(() => { const yes = () => setOnline(true); const no = () => setOnline(false); window.addEventListener('online', yes); window.addEventListener('offline', no); return () => { window.removeEventListener('online', yes); window.removeEventListener('offline', no); }; }, []);
+  useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: 'auto' }); }, [mode, studyTab, speechTab]);
   const tabs = mode === 'study' ? STUDY_TABS : SPEECH_TABS; const tab = mode === 'study' ? studyTab : speechTab; const setTab = mode === 'study' ? setStudyTab : setSpeechTab;
   return <div className="app"><Header mode={mode} setMode={setMode} user={user} dark={dark} setDark={setDark} online={online} notify={notify} /><Tabs tabs={tabs} value={tab} onChange={setTab} />{mode === 'study' ? <Study data={studyData} user={user} tab={studyTab} setTab={setStudyTab} notify={notify} /> : <Speeches data={speechData} user={user} tab={speechTab} setTab={setSpeechTab} notify={notify} />}<footer className="site-footer">Criado por Guilherme Almeida</footer><Notice notice={notice} onClear={() => setNotice(null)} /></div>;
 }
