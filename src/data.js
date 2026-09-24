@@ -27,7 +27,7 @@ export const SPEECH_TYPES = [
 ];
 
 export const STUDY_TABS = [
-  ['inicio', 'Início', 'home'], ['livros', 'Bíblia', 'book'], ['pesquisas', 'Pesquisas', 'file'],
+  ['inicio', 'Início', 'home'], ['livros', 'Joias', 'book'], ['pesquisas', 'Pesquisas', 'file'],
   ['adicionar', 'Adicionar', 'plus'], ['buscar', 'Buscar', 'search'],
 ];
 
