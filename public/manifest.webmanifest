@@ -1,0 +1,14 @@
+{
+  "name": "Estudo Pessoal",
+  "short_name": "Estudo",
+  "description": "Joias espirituais, pesquisas e discursos em um só lugar.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#3e5a8a",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
