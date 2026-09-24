@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore';
 import { db } from './firebase';
 import { ALL_BOOKS, BIBLE, CHAPTER_COUNTS, STUDY_TABS, TOTAL_CHAPTERS } from './data';
 import { AutoGrowTextarea, Badge, Confirm, Empty, ItemActions, Modal, Segmented, Spinner, dateLabel, displayName, plain } from './ui';
@@ -124,17 +124,92 @@ function SearchStudy({ data, user, onEdit, onDelete }) {
   return <div className="form-page search-page"><span className="kicker">Busca unificada</span><h1>Encontre o que precisa</h1><p>A pesquisa acontece nos dados já carregados, sem gastar internet extra.</p><Segmented value={type} onChange={setType} label="Pesquisar em" options={[["joias", 'Joias'], ['pesquisas', 'Pesquisas']]} /><label className="search-box"><Icon name="search" /><input value={term} onChange={(event) => setTerm(event.target.value)} type="search" placeholder="Digite uma palavra-chave…" autoFocus /></label><div className="search-summary">{normalized ? `${items.length} resultado${items.length === 1 ? '' : 's'}` : 'Comece digitando para pesquisar'}</div><div className="card-grid">{items.map((item) => type === 'joias' ? <HighlightCard key={`${item.path}/${item.id}`} item={item} user={user} onEdit={onEdit} onDelete={onDelete} /> : <ResearchCard key={`${item.path}/${item.id}`} item={item} user={user} onEdit={onEdit} onDelete={onDelete} />)}{normalized && items.length === 0 && <Empty icon="search" title="Nada encontrado">Tente uma palavra diferente ou altere o tipo de conteúdo.</Empty>}</div></div>;
 }
 
-function EditStudy({ item, onClose, notify }) {
-  const isHighlight = item.path.includes('destaques'); const [busy, setBusy] = useState(false);
-  const submit = async (event) => { event.preventDefault(); setBusy(true); const form = new FormData(event.currentTarget); try { const values = isHighlight ? { versiculo: form.get('versiculo').trim(), texto: form.get('texto').trim() } : { titulo: form.get('titulo').trim(), tags: form.get('tags').split(',').map((tag) => tag.trim()).filter(Boolean), fonte: form.get('fonte').trim(), textoBiblico: form.get('textoBiblico').trim(), anotacoes: form.get('anotacoes').trim() }; await updateDoc(doc(db, item.path, item.id), values); notify('Alterações salvas.'); onClose(); } catch (error) { console.error(error); notify('Não foi possível atualizar.', 'error'); setBusy(false); } };
-  return <Modal title={isHighlight ? 'Editar joia' : 'Editar pesquisa'} onClose={onClose} wide><form className="modal-form" onSubmit={submit}>{isHighlight ? <><label>Versículo(s)<input name="versiculo" defaultValue={item.versiculo} required /></label><label>Joia<AutoGrowTextarea name="texto" rows="7" defaultValue={item.texto} required /></label></> : <><label>Título<input name="titulo" defaultValue={item.titulo} required /></label><label>Tags<input name="tags" defaultValue={(item.tags || []).join(', ')} /></label><label>Fonte<input name="fonte" type="url" defaultValue={item.fonte} /></label><label>Texto bíblico<textarea name="textoBiblico" rows="3" defaultValue={item.textoBiblico} /></label><label>Anotações<AutoGrowTextarea name="anotacoes" rows="7" defaultValue={item.anotacoes} required /></label></>}<div className="modal-actions"><button type="button" className="button secondary" onClick={onClose}>Cancelar</button><button className="button primary" disabled={busy}>{busy ? 'Salvando…' : 'Salvar alterações'}</button></div></form></Modal>;
+function EditVisibility({ isPublic }) {
+  return <fieldset><legend>Visibilidade</legend><div className="radio-cards">
+    <label><input type="radio" name="visibility" value="public" defaultChecked={isPublic} /><span><Icon name="globe" /><b>Público</b><small>Visível para todos</small></span></label>
+    <label><input type="radio" name="visibility" value="private" defaultChecked={!isPublic} /><span><Icon name="lock" /><b>Privado</b><small>Somente na sua conta</small></span></label>
+  </div></fieldset>;
+}
+
+function EditStudy({ item, data, onClose, notify }) {
+  const isHighlight = item.path.includes('destaques');
+  const [busy, setBusy] = useState(false);
+  const [book, setBook] = useState(item.livro || '');
+  const [chapter, setChapter] = useState(String(item.capitulo || ''));
+
+  const changeBook = (event) => {
+    const nextBook = event.target.value;
+    setBook(nextBook);
+    if (!nextBook || Number(chapter) > CHAPTER_COUNTS[nextBook]) setChapter('');
+  };
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setBusy(true);
+    const form = new FormData(event.currentTarget);
+    const visibility = form.get('visibility');
+    try {
+      const values = isHighlight ? {
+        livro: form.get('livro'),
+        capitulo: Number(form.get('capitulo')),
+        versiculo: form.get('versiculo').trim(),
+        texto: form.get('texto').trim(),
+        visibility,
+      } : {
+        titulo: form.get('titulo').trim(),
+        tags: form.get('tags').split(',').map((tag) => tag.trim()).filter(Boolean),
+        fonte: form.get('fonte').trim(),
+        textoBiblico: form.get('textoBiblico').trim(),
+        anotacoes: form.get('anotacoes').trim(),
+        visibility,
+      };
+      const targetPath = isHighlight
+        ? (visibility === 'public' ? data.paths.publicHighlights : data.paths.privateHighlights)
+        : (visibility === 'public' ? data.paths.publicResearch : data.paths.privateResearch);
+
+      if (targetPath === item.path) {
+        await updateDoc(doc(db, item.path, item.id), values);
+      } else {
+        const { id, path, isPublic, ...storedValues } = item;
+        const batch = writeBatch(db);
+        batch.set(doc(db, targetPath, item.id), { ...storedValues, ...values });
+        batch.delete(doc(db, path, id));
+        await batch.commit();
+      }
+      notify('Alterações salvas.');
+      onClose();
+    } catch (error) {
+      console.error(error);
+      notify('Não foi possível atualizar.', 'error');
+      setBusy(false);
+    }
+  };
+
+  return <Modal title={isHighlight ? 'Editar joia' : 'Editar pesquisa'} onClose={onClose} wide><form className="modal-form" onSubmit={submit}>
+    {isHighlight ? <>
+      <div className="form-grid">
+        <label>Livro<select name="livro" value={book} onChange={changeBook} required><option value="">Selecione</option>{ALL_BOOKS.map((name) => <option key={name}>{name}</option>)}</select></label>
+        <label>Capítulo<select name="capitulo" value={chapter} onChange={(event) => setChapter(event.target.value)} disabled={!book} required><option value="">Selecione</option>{book && Array.from({ length: CHAPTER_COUNTS[book] }, (_, index) => <option key={index + 1}>{index + 1}</option>)}</select></label>
+      </div>
+      <label>Versículo(s)<input name="versiculo" defaultValue={item.versiculo} required /></label>
+      <label>Joia<AutoGrowTextarea name="texto" rows="7" defaultValue={item.texto} required /></label>
+    </> : <>
+      <label>Título<input name="titulo" defaultValue={item.titulo} required /></label>
+      <label>Tags<input name="tags" defaultValue={(item.tags || []).join(', ')} /></label>
+      <label>Fonte<input name="fonte" type="url" defaultValue={item.fonte} /></label>
+      <label>Texto bíblico<AutoGrowTextarea name="textoBiblico" rows="3" defaultValue={item.textoBiblico} /></label>
+      <label>Anotações<AutoGrowTextarea name="anotacoes" rows="7" defaultValue={item.anotacoes} required /></label>
+    </>}
+    <EditVisibility isPublic={item.isPublic} />
+    <div className="modal-actions"><button type="button" className="button secondary" onClick={onClose}>Cancelar</button><button className="button primary" disabled={busy}>{busy ? 'Salvando…' : 'Salvar alterações'}</button></div>
+  </form></Modal>;
 }
 
 export default function Study({ data, user, tab, setTab, notify }) {
   const [editing, setEditing] = useState(null); const [deleting, setDeleting] = useState(null); const [busy, setBusy] = useState(false);
   const remove = async () => { setBusy(true); try { await deleteDoc(doc(db, deleting.path, deleting.id)); notify('Item excluído.'); setDeleting(null); } catch (error) { console.error(error); notify('Não foi possível excluir.', 'error'); } finally { setBusy(false); } };
   const common = { data, user, onEdit: setEditing, onDelete: setDeleting };
-  return <><div className="content-shell">{data.loading ? <Spinner label="Sincronizando seu estudo…" /> : <>{tab === 'inicio' && <Dashboard {...common} setTab={setTab} />}{tab === 'livros' && <Library {...common} />}{tab === 'pesquisas' && <ResearchList {...common} />}{tab === 'adicionar' && <AddStudy data={data} user={user} notify={notify} />}{tab === 'buscar' && <SearchStudy {...common} />}</>}</div>{editing && <EditStudy item={editing} onClose={() => setEditing(null)} notify={notify} />}{deleting && <Confirm title="Excluir este item?" busy={busy} onClose={() => setDeleting(null)} onConfirm={remove}>Essa ação é permanente e não poderá ser desfeita.</Confirm>}</>;
+  return <><div className="content-shell">{data.loading ? <Spinner label="Sincronizando seu estudo…" /> : <>{tab === 'inicio' && <Dashboard {...common} setTab={setTab} />}{tab === 'livros' && <Library {...common} />}{tab === 'pesquisas' && <ResearchList {...common} />}{tab === 'adicionar' && <AddStudy data={data} user={user} notify={notify} />}{tab === 'buscar' && <SearchStudy {...common} />}</>}</div>{editing && <EditStudy item={editing} data={data} onClose={() => setEditing(null)} notify={notify} />}{deleting && <Confirm title="Excluir este item?" busy={busy} onClose={() => setDeleting(null)} onConfirm={remove}>Essa ação é permanente e não poderá ser desfeita.</Confirm>}</>;
 }
 
 export { STUDY_TABS };

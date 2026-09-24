@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from './firebase';
 import { useAuth, useSpeechData, useStudyData, useTheme } from './hooks';
@@ -20,8 +20,68 @@ function Login() {
 }
 
 function Header({ mode, setMode, user, dark, setDark, online }) {
-  const [switcher, setSwitcher] = useState(false); const [profile, setProfile] = useState(false);
-  return <><header className="app-header"><div className="header-inner"><button className="brand-button" onClick={() => setSwitcher((open) => !open)} aria-expanded={switcher}><BrandLogo /><span><small>{mode === 'study' ? 'Biblioteca pessoal' : 'Arquivo pessoal'}</small><b>{mode === 'study' ? 'Estudo Pessoal' : 'Discursos'}</b></span><Icon name="chevron" size={16} /></button><div className="header-actions">{!online && <span className="offline-pill"><Icon name="wifiOff" size={15} />Offline</span>}<button className="icon-button header-icon" onClick={() => setDark(!dark)} aria-label={dark ? 'Usar tema claro' : 'Usar tema escuro'}><Icon name={dark ? 'sun' : 'moon'} /></button><button className="avatar-button" onClick={() => setProfile((open) => !open)} aria-expanded={profile}>{displayName(user.email)[0]}</button></div></div>{switcher && <div className="popover app-switcher"><span>Alternar espaço</span><button className={mode === 'study' ? 'active' : ''} onClick={() => { setMode('study'); setSwitcher(false); }}><Icon name="book" /><span><b>Estudo Pessoal</b><small>Joias e pesquisas</small></span></button><button className={mode === 'speeches' ? 'active' : ''} onClick={() => { setMode('speeches'); setSwitcher(false); }}><Icon name="folder" /><span><b>Discursos</b><small>Anotações organizadas</small></span></button></div>}{profile && <div className="popover profile-menu"><div><span className="avatar">{displayName(user.email)[0]}</span><p><b>{displayName(user.email)}</b><small>{user.email}</small></p></div><button onClick={() => signOut(auth)}><Icon name="logout" size={18} />Sair da conta</button></div>}</header></>;
+  const [switcher, setSwitcher] = useState(false);
+  const [profile, setProfile] = useState(false);
+  const switcherButtonRef = useRef(null);
+  const switcherMenuRef = useRef(null);
+  const profileButtonRef = useRef(null);
+  const profileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (switcher
+        && !switcherButtonRef.current?.contains(event.target)
+        && !switcherMenuRef.current?.contains(event.target)) setSwitcher(false);
+      if (profile
+        && !profileButtonRef.current?.contains(event.target)
+        && !profileMenuRef.current?.contains(event.target)) setProfile(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setSwitcher(false);
+        setProfile(false);
+      }
+    };
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [profile, switcher]);
+
+  const toggleSwitcher = () => {
+    setProfile(false);
+    setSwitcher((open) => !open);
+  };
+  const toggleProfile = () => {
+    setSwitcher(false);
+    setProfile((open) => !open);
+  };
+
+  return <header className="app-header">
+    <div className="header-inner">
+      <button ref={switcherButtonRef} className="brand-button" onClick={toggleSwitcher} aria-expanded={switcher} aria-haspopup="menu">
+        <BrandLogo />
+        <span><small>{mode === 'study' ? 'Biblioteca pessoal' : 'Arquivo pessoal'}</small><b>{mode === 'study' ? 'Estudo Pessoal' : 'Discursos'}</b></span>
+        <Icon name="chevron" size={16} />
+      </button>
+      <div className="header-actions">
+        {!online && <span className="offline-pill"><Icon name="wifiOff" size={15} />Offline</span>}
+        <button className="icon-button header-icon" onClick={() => setDark(!dark)} aria-label={dark ? 'Usar tema claro' : 'Usar tema escuro'}><Icon name={dark ? 'sun' : 'moon'} /></button>
+        <button ref={profileButtonRef} className="avatar-button" onClick={toggleProfile} aria-expanded={profile} aria-haspopup="menu">{displayName(user.email)[0]}</button>
+      </div>
+    </div>
+    {switcher && <div ref={switcherMenuRef} className="popover app-switcher" role="menu">
+      <span>Alternar espaço</span>
+      <button className={mode === 'study' ? 'active' : ''} onClick={() => { setMode('study'); setSwitcher(false); }}><Icon name="book" /><span><b>Estudo Pessoal</b><small>Joias e pesquisas</small></span></button>
+      <button className={mode === 'speeches' ? 'active' : ''} onClick={() => { setMode('speeches'); setSwitcher(false); }}><Icon name="folder" /><span><b>Discursos</b><small>Anotações organizadas</small></span></button>
+    </div>}
+    {profile && <div ref={profileMenuRef} className="popover profile-menu" role="menu">
+      <div><span className="avatar">{displayName(user.email)[0]}</span><p><b>{displayName(user.email)}</b><small>{user.email}</small></p></div>
+      <button onClick={() => signOut(auth)}><Icon name="logout" size={18} />Sair da conta</button>
+    </div>}
+  </header>;
 }
 
 function Application({ user }) {
