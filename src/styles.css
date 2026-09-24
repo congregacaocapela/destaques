@@ -82,11 +82,11 @@ p { color: var(--muted); line-height: 1.6; }
 .avatar-button img, .profile-menu .avatar img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .offline-pill { display: flex; align-items: center; gap: 6px; border-radius: 99px; padding: 7px 10px; background: rgba(255,255,255,.1); color: #dce9e4; font-size: .75rem; }
 
-.popover { position: fixed; z-index: 60; top: 68px; padding: 8px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); animation: pop .16s ease-out; }
+.popover { position: fixed; z-index: 60; top: 68px; padding: 8px; border: 1px solid var(--border); border-radius: 16px; color: var(--text); background: var(--surface); box-shadow: var(--shadow); animation: pop .16s ease-out; }
 @keyframes pop { from { opacity: 0; transform: translateY(-5px) scale(.98); } }
 .app-switcher { left: max(16px, calc((100% - 1180px)/2)); width: 285px; }
 .app-switcher > span { display: block; padding: 8px 10px 6px; color: var(--faint); font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
-.app-switcher button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border: 0; border-radius: 11px; background: transparent; cursor: pointer; text-align: left; }
+.app-switcher button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; border: 0; border-radius: 11px; color: var(--text); background: transparent; cursor: pointer; text-align: left; }
 .app-switcher button:hover, .app-switcher button.active { background: var(--brand-soft); color: var(--brand-strong); }
 .app-switcher button span { display: grid; gap: 2px; }
 .app-switcher button small { color: var(--muted); }
@@ -96,7 +96,7 @@ p { color: var(--muted); line-height: 1.6; }
 .profile-menu .avatar.has-photo { overflow: hidden; }
 .profile-menu p { display: grid; gap: 3px; min-width: 0; margin: 0; }
 .profile-menu p small { max-width: 175px; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
-.profile-menu > button { display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 6px; padding: 11px 12px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
+.profile-menu > button { display: flex; gap: 10px; align-items: center; width: 100%; margin-top: 6px; padding: 11px 12px; border: 0; border-radius: 10px; color: var(--text); background: transparent; cursor: pointer; }
 .profile-menu > button:hover { color: var(--brand-strong); background: var(--brand-soft); }
 .profile-menu > button.logout { border-top: 1px solid var(--border); border-radius: 0 0 10px 10px; }
 .profile-menu > button.logout:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
