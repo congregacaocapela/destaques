@@ -100,7 +100,8 @@ function ProfileEditor({ user, photoURL, onPhotoSaved, onClose, notify }) {
 
   const changePassword = async (event) => {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const currentPassword = form.get('currentPassword');
     const newPassword = form.get('newPassword');
     const confirmPassword = form.get('confirmPassword');
@@ -117,7 +118,7 @@ function ProfileEditor({ user, photoURL, onPhotoSaved, onClose, notify }) {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
-      event.currentTarget.reset();
+      formElement.reset();
       notify('Senha alterada com segurança.');
     } catch (error) {
       console.error(error);

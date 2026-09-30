@@ -98,7 +98,8 @@ function AddStudy({ data, user, notify }) {
   const [busy, setBusy] = useState(false);
   const submit = async (event) => {
     event.preventDefault(); setBusy(true);
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     try {
       if (type === 'joia') {
         const visibility = form.get('visibility');
@@ -108,7 +109,7 @@ function AddStudy({ data, user, notify }) {
         const visibility = form.get('visibility');
         await addDoc(collection(db, visibility === 'public' ? data.paths.publicResearch : data.paths.privateResearch), { autorEmail: user.email, autorId: user.uid, titulo: form.get('titulo').trim(), tags: form.get('tags').split(',').map((tag) => tag.trim()).filter(Boolean), fonte: form.get('fonte').trim(), textoBiblico: form.get('textoBiblico').trim(), anotacoes: form.get('anotacoes').trim(), visibility, createdAt: serverTimestamp() });
       }
-      event.currentTarget.reset(); notify(`${type === 'joia' ? 'Joia' : 'Pesquisa'} salva com sucesso.`);
+      formElement.reset(); notify(`${type === 'joia' ? 'Joia' : 'Pesquisa'} salva com sucesso.`);
     } catch (error) { console.error(error); notify('Não foi possível salvar. Confira sua conexão.', 'error'); }
     finally { setBusy(false); }
   };
